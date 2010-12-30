@@ -19,6 +19,8 @@ public class Channel {
 	
 	private boolean filterLinks;
 	
+	private String topic;
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -33,13 +35,17 @@ public class Channel {
 	}
 	
 	public void setCommand(String key, String command){
-		commands.put(key, command);
+		if(commands.containsKey(key)){
+			commands.remove(key);
+			commands.put(key, command);
+		}else{
+			commands.put(key, command);
+		}
 		
 		String commandsKey = "";
 		String commandsValues = "";
 		
-		Collection c = commands.values();
-		Iterator itr = c.iterator();
+		Iterator itr = commands.entrySet().iterator();
 		
 		while(itr.hasNext()){
 			Map.Entry pairs = (Map.Entry)itr.next();
@@ -52,6 +58,33 @@ public class Channel {
 
 	}
 	
+	public String getTopic(){
+		return topic;
+	}
+	
+	public void setTopic(String s){
+		topic = s;
+		config.setString("topic", topic);
+	}
+	
+	public boolean getFilterCaps(){
+		return filterCaps;
+	}
+	
+	public void setFilterCaps(String s){
+		filterCaps = Boolean.parseBoolean(s);
+		config.setBoolean("filterCaps", filterCaps);
+	}
+	
+	public int getFilterCapsLimit(){
+		return filterCapsLimit;
+	}
+	
+	public void setFilterCapsLimit(String s){
+		filterCapsLimit = Integer.parseInt(s);
+		config.setInt("filterCapsLimit", filterCapsLimit);
+	}
+	
 	private void loadProperties(String name){
 		try {
 			config.load();
@@ -61,7 +94,13 @@ public class Channel {
 		
 		if(!config.keyExists("server")) {
 			config.setString("server", name.substring(1, name.length())+".jtvirc.com");
+			
 		}
+		
+		if(!config.keyExists("port")) {
+			config.setInt("port", 6667);
+		}
+		
 		if(!config.keyExists("channel")) {
 			config.setString("channel", name);
 		}
@@ -78,12 +117,16 @@ public class Channel {
 			config.setBoolean("filterLinks", true);
 		}
 		
+		if(!config.keyExists("topic")) {
+			config.setString("topic", "GiantZombies will rule the world.");
+		}
+		
 		if(!config.keyExists("commandsKey")) {
 			config.setString("commandsKey", "");
 		}
 		
-		if(!config.keyExists("commandValues")) {
-			config.setString("commandValues", "");
+		if(!config.keyExists("commandsValues")) {
+			config.setString("commandsValues", "");
 		}
 		server = config.getString("server");
 		channel = config.getString("channel");
@@ -94,16 +137,30 @@ public class Channel {
 
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
+		topic  = config.getString("topic");
+		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValues = config.getString("commandsValues").split(",");
 		
 		for(int i = 0; i < commandsKey.length; i++){
 			if(commandsKey[i].length() > 1){
-				commands.put(commandsKey[i], commandsKey[i]);
+				commands.put(commandsKey[i], commandsValues[i]);
 			}
 		}
 
 		
+	}
+
+	public String getServer() {
+		return server;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getChannel() {
+		return channel;
 	}
 
 }

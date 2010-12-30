@@ -1,25 +1,38 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 
 
 public class Main {
-
+	
+	
 	/**
 	 * @param args
 	 * @throws IrcException 
 	 * @throws IOException 
 	 * @throws NickAlreadyInUseException 
 	 */
+
 	public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
-		GeoBot bot = new GeoBot();
+		ArrayList<GeoBot> botList = new ArrayList<GeoBot>();
 		
-		bot.setVerbose(true);
 		
-		bot.connect("bgeorge.jtvirc.com", 6667, "passwordgoeshere");
+		//Add global channel
+		GlobalChannel globalChannel = new GlobalChannel(botList);
+		GeoBot globalBot = new GeoBot(globalChannel, true);
+		globalBot.setVerbose(true);
+		globalBot.connect(globalChannel.getServer(), globalChannel.getPort(), globalChannel.getPassword());
+		globalBot.joinChannel(globalChannel.getChannel());
 		
-		bot.joinChannel("#bgeorge");
+		//Add other channels
+		for(Channel c:globalChannel.getChannelList()) {
+			botList.add(new GeoBot(globalChannel, c));
+			botList.get(botList.size() - 1).setVerbose(true);
+			botList.get(botList.size() - 1).connect(c.getServer(), c.getPort(), globalChannel.getPassword());
+			botList.get(botList.size() - 1).joinChannel(c.getChannel());
+		}
 
 	}
 
