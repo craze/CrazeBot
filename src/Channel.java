@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,10 +22,33 @@ public class Channel {
 	
 	private String topic;
 	
+	private ArrayList<String> regulars = new ArrayList<String>();
+	
+	private ArrayList<String> permittedUsers = new ArrayList<String>();
+
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
 	}
+	
+	//#############################################################
+
+	
+	public String getServer() {
+		return server;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+	
+	
+	//##############################################################
 	
 	public String getCommand(String key){
 		if(commands.containsKey(key)){
@@ -43,20 +67,43 @@ public class Channel {
 		}
 		
 		String commandsKey = "";
-		String commandsValues = "";
+		String commandsValue = "";
 		
 		Iterator itr = commands.entrySet().iterator();
 		
 		while(itr.hasNext()){
 			Map.Entry pairs = (Map.Entry)itr.next();
 			commandsKey += pairs.getKey() + ",";
-			commandsValues += pairs.getValue() + ",";
+			commandsValue += pairs.getValue() + ",";
 		}
 		
 		config.setString("commandsKey", commandsKey);
-		config.setString("commandValues", commandsValues);
+		config.setString("commandsValue", commandsValue);
 
 	}
+	
+	public void removeCommand(String key){
+		if(commands.containsKey(key)){
+			commands.remove(key);
+			
+			String commandsKey = "";
+			String commandsValue = "";
+			
+			Iterator itr = commands.entrySet().iterator();
+			
+			while(itr.hasNext()){
+				Map.Entry pairs = (Map.Entry)itr.next();
+				commandsKey += pairs.getKey() + ",";
+				commandsValue += pairs.getValue() + ",";
+			}
+			
+			config.setString("commandsKey", commandsKey);
+			config.setString("commandsValue", commandsValue);
+		}
+
+	}
+
+	//#####################################################
 	
 	public String getTopic(){
 		return topic;
@@ -71,8 +118,8 @@ public class Channel {
 		return filterCaps;
 	}
 	
-	public void setFilterCaps(String s){
-		filterCaps = Boolean.parseBoolean(s);
+	public void setFilterCaps(boolean caps){
+		filterCaps = caps;
 		config.setBoolean("filterCaps", filterCaps);
 	}
 	
@@ -80,10 +127,89 @@ public class Channel {
 		return filterCapsLimit;
 	}
 	
-	public void setFilterCapsLimit(String s){
-		filterCapsLimit = Integer.parseInt(s);
+	public void setFilterCapsLimit(int limit){
+		filterCapsLimit = limit;
 		config.setInt("filterCapsLimit", filterCapsLimit);
 	}
+	
+	public void setFilterLinks(boolean links){
+		filterLinks = links;
+		config.setBoolean("filterLinks", links);
+	}
+	
+	public boolean getFilterLinks(){
+		return filterLinks;
+	}
+	
+	//###################################################
+	
+	public boolean isRegular(String name){		
+		
+		for(String s:regulars){
+			if(s.equalsIgnoreCase(name)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public void addRegular(String name){
+		regulars.add(name);
+		
+		String regularsString = "";
+		
+		for(String s:regulars){
+			regularsString += s + ",";
+		}
+		
+		config.setString("regulars", regularsString);
+	}
+	
+	public void removeRegular(String name){
+		for(String s:regulars){
+			if(s.equalsIgnoreCase(name)){
+				regulars.remove(s);
+			}
+		}
+		
+		String regularsString = "";
+		
+		for(String s:regulars){
+			regularsString += s + ",";
+		}
+		
+		config.setString("regulars", regularsString);
+	}
+	
+	public void permitUser(String name){
+		
+		for(String s:permittedUsers){
+			if(s.equalsIgnoreCase(name)){
+				return;
+			}
+		}
+		
+		permittedUsers.add(name);
+	}
+	
+	public boolean linkPermissionCheck(String name){
+		
+		if(this.isRegular(name)){
+			return true;
+		}
+		
+		for(String s:permittedUsers){
+			if(s.equalsIgnoreCase(name)){
+				permittedUsers.remove(s);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	//###################################################
 	
 	private void loadProperties(String name){
 		try {
@@ -125,9 +251,14 @@ public class Channel {
 			config.setString("commandsKey", "");
 		}
 		
-		if(!config.keyExists("commandsValues")) {
-			config.setString("commandsValues", "");
+		if(!config.keyExists("commandsValue")) {
+			config.setString("commandsValue", "");
 		}
+		
+		if(!config.keyExists("regulars")) {
+			config.setString("regulars", "");
+		}
+		
 		server = config.getString("server");
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
@@ -140,27 +271,22 @@ public class Channel {
 		topic  = config.getString("topic");
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
-		String[] commandsValues = config.getString("commandsValues").split(",");
+		String[] commandsValue = config.getString("commandsValue").split(",");
 		
 		for(int i = 0; i < commandsKey.length; i++){
 			if(commandsKey[i].length() > 1){
-				commands.put(commandsKey[i], commandsValues[i]);
+				commands.put(commandsKey[i], commandsValue[i]);
 			}
 		}
-
 		
-	}
-
-	public String getServer() {
-		return server;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public String getChannel() {
-		return channel;
+		String[] regularsRaw = config.getString("regulars").split(",");
+		
+		for(int i = 0; i < regularsRaw.length; i++){
+			if(regularsRaw[i].length() > 1){
+				regulars.add(regularsRaw[i]);
+			}
+		}
+		
 	}
 
 }
