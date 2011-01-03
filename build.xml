@@ -1,14 +1,11 @@
 <project name="build" basedir="." default="jar">
-    <path id="classpath">
-        <fileset dir="lib" includes="*.jar"/>
-    </path>
+
     <target name="clean">
         <delete dir="build"/>
     </target>
     <target name="compile" >
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes" classpathref="classpath"
-            includeantruntime="false"/>
+        <javac srcdir="src" destdir="build/classes" />
     </target>
     <target name="jar" depends="compile" description="Create JAR for the whole MOD">
         <mkdir dir="build/jar"/>
