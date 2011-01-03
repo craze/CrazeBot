@@ -5,9 +5,6 @@
     <target name="clean">
         <delete dir="build"/>
     </target>
-    <target name="server">
-        <get src="pircbot.jar" dest="lib" verbose="on" usetimestamp="true"/>
-    </target>
     <target name="compile" >
         <mkdir dir="build/classes"/>
         <javac srcdir="src" destdir="build/classes" classpathref="classpath"
@@ -20,7 +17,6 @@
             <fileset dir="src" includes="*"/>
             <manifest>
                 <attribute name="Main-Class" value="Main"/>
-                <attribute name="Class-Path" value="lib/pircbot.jar"/>
             </manifest>
         </jar>
     </target>

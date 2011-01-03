@@ -1,3 +1,4 @@
+package net.bashtech.geobot;
 import java.io.IOException;
 
 import org.jibble.pircbot.*;
