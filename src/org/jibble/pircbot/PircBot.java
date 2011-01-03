@@ -172,12 +172,10 @@ public abstract class PircBot implements ReplyConstants {
         String line = null;
         int tries = 1;
         while ((line = breader.readLine()) != null) {
-            try{
-            	this.handleLine(line);
-            }catch(Exception e){
-            	
-            }
-            
+
+        	this.handleLine(line);
+      
+           
             
             int firstSpace = line.indexOf(" ");
             int secondSpace = line.indexOf(" ", firstSpace + 1);
@@ -877,7 +875,7 @@ public abstract class PircBot implements ReplyConstants {
      * 
      * @param line The raw line of text from the server.
      */
-    protected void handleLine(String line) throws Exception{
+    protected void handleLine(String line){
         this.log(line);
 
         // Check for server pings.
@@ -946,7 +944,7 @@ public abstract class PircBot implements ReplyConstants {
         if (sourceNick.startsWith(":")) {
             sourceNick = sourceNick.substring(1);
         }
-        if (target == null) {
+        if (target == null && tokenizer.hasMoreTokens()) {
             target = tokenizer.nextToken();
         }
         if (target.startsWith(":")) {
