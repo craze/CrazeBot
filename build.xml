@@ -1,0 +1,27 @@
+<project name="build" basedir="." default="jar">
+    <path id="classpath">
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+    <target name="server">
+        <get src="pircbot.jar" dest="lib" verbose="on" usetimestamp="true"/>
+    </target>
+    <target name="compile" >
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="classpath"
+            includeantruntime="false"/>
+    </target>
+    <target name="jar" depends="compile" description="Create JAR for the whole MOD">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/GeoBot.jar">
+            <fileset dir="build/classes"/>
+            <fileset dir="src" includes="*"/>
+            <manifest>
+                <attribute name="Main-Class" value="Main"/>
+                <attribute name="Class-Path" value="lib/pircbot.jar"/>
+            </manifest>
+        </jar>
+    </target>
+</project>

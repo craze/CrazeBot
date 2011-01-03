@@ -7,6 +7,7 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 
 public class GlobalChannel {
 	
+	private String nick;
 	private String server;
 	private int port;
 	private String channel;
@@ -33,6 +34,9 @@ public class GlobalChannel {
 			e.printStackTrace();
 		}
 		
+		if(!config.keyExists("nick")) {
+			config.setString("nick", "giantzombie");
+		}
 		if(!config.keyExists("server")) {
 			config.setString("server", "giantzombie.jtvirc.com");
 		}
@@ -52,6 +56,7 @@ public class GlobalChannel {
 			config.setString("channelList", "");
 		}
 		
+		nick = config.getString("nick");
 		server = config.getString("server");
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
@@ -63,6 +68,10 @@ public class GlobalChannel {
 				channelList.add(new Channel(s));
 			}
 		}
+	}
+	
+	public String getNick(){
+		return nick;
 	}
 	
 	public String getPassword(){

@@ -10,13 +10,13 @@ public class GeoBot extends PircBot {
 	public GeoBot(GlobalChannel g, Channel c){
 		globalChannel = g;
 		channelInfo = c;
-		this.setName("GiantZombie");
+		this.setName(g.getNick());
 	}
 	
 	public GeoBot(GlobalChannel g, boolean gCheck){
 		isGlobalChannel = gCheck;
 		globalChannel = g;
-		this.setName("GiantZombie");
+		this.setName(g.getNick());
 	}
 	
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
@@ -145,7 +145,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// Link filter
-				if(this.containsLink(message) && !(channelInfo.linkPermissionCheck(sender) || isOp )){
+				if(channelInfo.getFilterLinks() && this.containsLink(message) && !(channelInfo.linkPermissionCheck(sender) || isOp )){
 					this.kick(channel, sender);
 				}
 				
