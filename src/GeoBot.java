@@ -22,12 +22,23 @@ public class GeoBot extends PircBot {
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
 			
 			String[] msg = split(message.trim());
+			User user = matchUser(sender, channel);
+			
 			boolean isOp = false;
-			System.out.println("Prefix: " + matchUser(login, channel).getPrefix());
-			if(matchUser(sender, channel).getPrefix().equalsIgnoreCase("@")){
-				isOp = true;
+			try{
+				if(user.getPrefix().equalsIgnoreCase("@"))
+					isOp = true;
+				if(user.isOp())
+					isOp = true;
+			}catch(Exception e){
+				System.out.println("Prefix exception.");
 			}
-			//matchUser(sender,channel).isOp();
+
+			if(sender.equalsIgnoreCase("#" + channel))
+				isOp = true;
+			
+			if(isOp)
+				System.out.println("User is op");
 			
 			if(!isGlobalChannel){
 				//Normal channel stuff
@@ -45,7 +56,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !topic
-				if(msg[0].trim().equalsIgnoreCase("!topic")){
+				if(msg[0].equalsIgnoreCase("!topic")){
 					if(msg.length < 2 || !isOp){
 						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
 					}else if(msg.length > 1 && isOp){
@@ -56,7 +67,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !command - Sets commands
- 				if(msg[0].trim().equalsIgnoreCase("!command")){
+ 				if(msg[0].equalsIgnoreCase("!command")){
 					if(msg.length < 3 && isOp){
 						this.sendMessage(channel, "> !command add/delete name string");
 					}else if(msg.length > 2 && isOp){
@@ -80,7 +91,7 @@ public class GeoBot extends PircBot {
 				}
  				
  				// !links - Turns on/off link filter
- 				if(msg[0].trim().equalsIgnoreCase("!links") && isOp){
+ 				if(msg[0].equalsIgnoreCase("!links") && isOp){
  					if(msg.length == 2){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterLinks(true);
@@ -93,7 +104,7 @@ public class GeoBot extends PircBot {
  				}
 				
  				// !caps - Turns on/off caps filter and sets limit.
- 				if(msg[0].trim().equalsIgnoreCase("!caps") && isOp){
+ 				if(msg[0].equalsIgnoreCase("!caps") && isOp){
  					if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterCaps(true);
@@ -111,7 +122,7 @@ public class GeoBot extends PircBot {
  				}
  				
  				// !regulars - Add regulars
- 				if(msg[0].trim().equalsIgnoreCase("!regular")){
+ 				if(msg[0].equalsIgnoreCase("!regular")){
  					if(msg.length  > 2 && isOp){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isRegular(msg[2])){
@@ -131,7 +142,7 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				if(msg[0].trim().equalsIgnoreCase("!permit")){
+ 				if(msg[0].equalsIgnoreCase("!permit")){
  					if(msg.length > 1 && isOp){
  						channelInfo.permitUser(msg[1]);
  						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
@@ -156,9 +167,10 @@ public class GeoBot extends PircBot {
 	
 			}else{
 				//Global channel stuff
-				if (msg[0].trim().equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
+				if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
 					try {
-						globalChannel.addChannel(split(message)[1]);
+						globalChannel.addChannel(msg[1]);
+						sendMessage(channel, "Channel "+ msg[1] +" joined.");
 					} catch (NickAlreadyInUseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -171,9 +183,9 @@ public class GeoBot extends PircBot {
 					}
 				}
 				
-				if (split(message)[0].trim().equalsIgnoreCase("!leave") && split(message).length > 1 && isOp) {
+				if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && isOp) {
 						globalChannel.removeChannel(split(message)[1]);
-
+						sendMessage(channel, "Channel "+ msg[1] +" parted.");
 				}
 			}
 			
