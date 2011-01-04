@@ -66,6 +66,8 @@ public class GeoBot extends PircBot {
 					}else if(msg.length > 1 && isOp){
 						channelInfo.setTopic(message.substring(7));
 						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
+						//Below only works if bot is the channel owner
+						//this.sendMessage(channel, "/title " + channelInfo.getTopic());
 					}
 					//return;
 				}
@@ -150,6 +152,7 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
+ 				// !permit - Allows users to post 1 link
  				if(msg[0].equalsIgnoreCase("!permit")){
  					System.out.println("Matched command !permit");
  					if(msg.length > 1 && isOp){
