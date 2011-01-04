@@ -85,9 +85,13 @@ public class GeoBot extends PircBot {
 							for(int i = 3; i < msg.length; i++){
 								value = value + msg[i] + " ";
 							}
-							
-							channelInfo.setCommand(key, value);
-							this.sendMessage(channel, "> " + channelInfo.getCommand(key));
+							if(!value.contains(",")){
+								channelInfo.setCommand(key, value);
+								this.sendMessage(channel, "> " + channelInfo.getCommand(key));
+							}else{
+								sendMessage(channel, "Command cannot contain commas.");
+							}
+								
 						}else if(msg[1].equalsIgnoreCase("delete")){
 							String key = "!" + msg[2];
 							channelInfo.removeCommand(key);	
@@ -183,8 +187,13 @@ public class GeoBot extends PircBot {
 				//Global channel stuff
 				if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
 					try {
-						globalChannel.addChannel(msg[1]);
-						sendMessage(channel, "Channel "+ msg[1] +" joined.");
+						if(msg[1].contains("#")){
+							globalChannel.addChannel(msg[1]);
+							sendMessage(channel, "Channel "+ msg[1] +" joined.");
+						}else{
+							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+						}
+						
 					} catch (NickAlreadyInUseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -198,8 +207,13 @@ public class GeoBot extends PircBot {
 				}
 				
 				if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && isOp) {
+					if(msg[1].contains("#")){
 						globalChannel.removeChannel(split(message)[1]);
 						sendMessage(channel, "Channel "+ msg[1] +" parted.");
+					}else{
+						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+					}
+						
 				}
 			}
 			
