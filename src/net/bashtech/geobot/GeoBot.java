@@ -35,7 +35,7 @@ public class GeoBot extends PircBot {
 				System.out.println("Prefix exception.");
 			}
 
-			if(sender.equalsIgnoreCase("#" + channel))
+			if(channel.equalsIgnoreCase("#" + sender))
 				isOp = true;
 			
 			if(isOp)
@@ -45,6 +45,7 @@ public class GeoBot extends PircBot {
 				//Normal channel stuff
 				// !time - All
 				if (message.trim().equalsIgnoreCase("!time")) {
+						System.out.println("Matched command !time");
 						String time = new java.util.Date().toString();
 						sendMessage(channel, sender + ": The time is now " + time);
 						//return;
@@ -52,12 +53,14 @@ public class GeoBot extends PircBot {
 				
 				// !clear - Ops
 				if(message.trim().equalsIgnoreCase("!clear") && isOp){
+					System.out.println("Matched command !clear");
 					this.sendMessage(channel, "/clear");
 					//return;
 				}
 				
 				// !topic
 				if(msg[0].equalsIgnoreCase("!topic")){
+					System.out.println("Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
 					}else if(msg.length > 1 && isOp){
@@ -69,6 +72,7 @@ public class GeoBot extends PircBot {
 				
 				// !command - Sets commands
  				if(msg[0].equalsIgnoreCase("!command")){
+ 					System.out.println("Matched command !command");
 					if(msg.length < 3 && isOp){
 						this.sendMessage(channel, "> !command add/delete name string");
 					}else if(msg.length > 2 && isOp){
@@ -93,6 +97,7 @@ public class GeoBot extends PircBot {
  				
  				// !links - Turns on/off link filter
  				if(msg[0].equalsIgnoreCase("!links") && isOp){
+ 					System.out.println("Matched command !links");
  					if(msg.length == 2){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterLinks(true);
@@ -106,6 +111,7 @@ public class GeoBot extends PircBot {
 				
  				// !caps - Turns on/off caps filter and sets limit.
  				if(msg[0].equalsIgnoreCase("!caps") && isOp){
+ 					System.out.println("Matched command !caps");
  					if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterCaps(true);
@@ -124,6 +130,7 @@ public class GeoBot extends PircBot {
  				
  				// !regulars - Add regulars
  				if(msg[0].equalsIgnoreCase("!regular")){
+ 					System.out.println("Matched command !regular");
  					if(msg.length  > 2 && isOp){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isRegular(msg[2])){
@@ -144,6 +151,7 @@ public class GeoBot extends PircBot {
  				}
  				
  				if(msg[0].equalsIgnoreCase("!permit")){
+ 					System.out.println("Matched command !permit");
  					if(msg.length > 1 && isOp){
  						channelInfo.permitUser(msg[1]);
  						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
@@ -161,8 +169,10 @@ public class GeoBot extends PircBot {
 					this.kick(channel, sender);
 				}
 				
+			
 				//Command catch all
-				if(message.substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
+				if(message.trim().substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
+					System.out.println("Matched command " + message.trim());
 					sendMessage(channel, "> " + channelInfo.getCommand(message));
 				}
 	

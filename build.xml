@@ -13,7 +13,7 @@
             <fileset dir="build/classes"/>
             <fileset dir="src" includes="*"/>
             <manifest>
-                <attribute name="Main-Class" value="Main"/>
+                <attribute name="Main-Class" value="net.bashtech.geobot.Main"/>
             </manifest>
         </jar>
     </target>

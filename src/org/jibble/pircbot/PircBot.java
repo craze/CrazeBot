@@ -892,7 +892,7 @@ public abstract class PircBot implements ReplyConstants {
         StringTokenizer tokenizer = new StringTokenizer(line);
         String senderInfo = tokenizer.nextToken();
         String command = tokenizer.nextToken();
-        String target = null;
+        String target = ""; // Changed from null
 
         int exclamation = senderInfo.indexOf("!");
         int at = senderInfo.indexOf("@");
@@ -944,7 +944,7 @@ public abstract class PircBot implements ReplyConstants {
         if (sourceNick.startsWith(":")) {
             sourceNick = sourceNick.substring(1);
         }
-        if (target == null && tokenizer.hasMoreTokens()) {
+        if (target == "" && tokenizer.hasMoreTokens()) { //Changed target == null to target == ""
             target = tokenizer.nextToken();
         }
         if (target.startsWith(":")) {
