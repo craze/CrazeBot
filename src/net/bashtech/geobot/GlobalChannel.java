@@ -118,6 +118,7 @@ public class GlobalChannel {
 				channelList.remove(i);
 				botList.get(i).disconnect();
 				botList.get(i).dispose();
+				botList.remove(i);
 			}
 		}
 		

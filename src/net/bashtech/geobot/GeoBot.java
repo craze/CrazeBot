@@ -130,7 +130,7 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				// !regulars - Add regulars
+ 				// !regular - Add regulars
  				if(msg[0].equalsIgnoreCase("!regular")){
  					System.out.println("Matched command !regular");
  					if(msg.length  > 2 && isOp){

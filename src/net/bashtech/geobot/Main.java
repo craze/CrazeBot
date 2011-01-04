@@ -1,6 +1,7 @@
 package net.bashtech.geobot;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
@@ -34,7 +35,13 @@ public class Main {
 			botList.get(botList.size() - 1).connect(c.getServer(), c.getPort(), globalChannel.getPassword());
 			botList.get(botList.size() - 1).joinChannel(c.getChannel());
 		}
-
+		
+		
+		//Start reconnect timer
+		
+		Timer reconnectTimer = new Timer();
+		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(globalBot, botList), 30 * 1000, 30 * 1000);
+		System.out.println("Reconnect timer scheduled.");
 	}
 
 }
