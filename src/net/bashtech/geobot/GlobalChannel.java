@@ -96,7 +96,8 @@ public class GlobalChannel {
 	}
 	
 	public void addChannel(String name) throws NickAlreadyInUseException, IOException, IrcException{
-		channelList.add(new Channel(name));
+		Channel newChannel = new Channel(name);
+		channelList.add(newChannel);
 		String channelListString = "";
 		
 		for(Channel c:channelList) {
@@ -105,11 +106,10 @@ public class GlobalChannel {
 		config.setString("channelList", channelListString);
 		
 		//Create new Bot instance and connect
-		Channel c = channelList.get(channelList.size() - 1);
-		botList.add(new GeoBot(this, false));
+		botList.add(new GeoBot(this, newChannel));
 		botList.get(botList.size() - 1).setVerbose(true);
-		botList.get(botList.size() - 1).connect(c.getServer(), c.getPort(), this.getPassword());
-		botList.get(botList.size() - 1).joinChannel(c.getChannel());
+		botList.get(botList.size() - 1).connect(newChannel.getServer(), newChannel.getPort(), this.getPassword());
+		botList.get(botList.size() - 1).joinChannel(newChannel.getChannel());
 	}
 	
 	public void removeChannel(String name){

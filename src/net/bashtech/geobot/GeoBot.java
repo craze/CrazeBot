@@ -25,6 +25,8 @@ public class GeoBot extends PircBot {
 			String[] msg = split(message.trim());
 			User user = matchUser(sender, channel);
 			
+			System.out.println(user.toString());
+			
 			boolean isOp = false;
 			try{
 				if(user.getPrefix().equalsIgnoreCase("@"))
@@ -184,6 +186,7 @@ public class GeoBot extends PircBot {
 				}
 	
 			}else{
+				System.out.println("Input from global channel...");
 				//Global channel stuff
 				if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
 					try {
