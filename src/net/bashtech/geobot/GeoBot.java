@@ -25,7 +25,7 @@ public class GeoBot extends PircBot {
 			String[] msg = split(message.trim());
 			User user = matchUser(sender, channel);
 			
-			System.out.println(user.toString());
+			//System.out.println(user.toString());
 			
 			boolean isOp = false;
 			try{
