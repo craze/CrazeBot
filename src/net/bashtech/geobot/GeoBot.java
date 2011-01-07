@@ -40,14 +40,17 @@ public class GeoBot extends PircBot {
 			if(channel.equalsIgnoreCase("#" + sender))
 				isOp = true;
 			
-			if(channelInfo.isModerator(sender)){
-				isOp = true;
-			}
-			
-			if(isOp)
-				System.out.println("User is op");
+
 			
 			if(!isGlobalChannel){
+				
+				if(channelInfo.isModerator(sender)){
+					isOp = true;
+				}
+				
+				if(isOp)
+					System.out.println("User is op");
+				
 				//Normal channel stuff
 				// !time - All
 				if (message.trim().equalsIgnoreCase("!time")) {
@@ -213,6 +216,8 @@ public class GeoBot extends PircBot {
 	
 			}else{
 				System.out.println("Input from global channel...");
+				if(isOp)
+					System.out.println("User is op");
 				//Global channel stuff
 				if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
 					try {
