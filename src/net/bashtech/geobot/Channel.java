@@ -25,6 +25,8 @@ public class Channel {
 	
 	private ArrayList<String> regulars = new ArrayList<String>();
 	
+	private ArrayList<String> moderators = new ArrayList<String>();
+	
 	private ArrayList<String> permittedUsers = new ArrayList<String>();
 
 	
@@ -212,6 +214,47 @@ public class Channel {
 	
 	//###################################################
 	
+	public boolean isModerator(String name){		
+		
+		for(String s:moderators){
+			if(s.equalsIgnoreCase(name)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public void addModerator(String name){
+		moderators.add(name);
+		
+		String moderatorsString = "";
+		
+		for(String s:moderators){
+			moderatorsString += s + ",";
+		}
+		
+		config.setString("moderators", moderatorsString);
+	}
+	
+	public void removeModerator(String name){
+		for(String s:moderators){
+			if(s.equalsIgnoreCase(name)){
+				moderators.remove(s);
+			}
+		}
+		
+		String moderatorsString = "";
+		
+		for(String s:moderators){
+			moderatorsString += s + ",";
+		}
+		
+		config.setString("moderators", moderatorsString);
+	}
+	
+	// ##################################################
+	
 	private void loadProperties(String name){
 		try {
 			config.load();
@@ -260,6 +303,10 @@ public class Channel {
 			config.setString("regulars", "");
 		}
 		
+		if(!config.keyExists("moderators")) {
+			config.setString("moderators", name.substring(1, name.length()) + ",");
+		}
+		
 		server = config.getString("server");
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
@@ -285,6 +332,14 @@ public class Channel {
 		for(int i = 0; i < regularsRaw.length; i++){
 			if(regularsRaw[i].length() > 1){
 				regulars.add(regularsRaw[i]);
+			}
+		}
+		
+		String[] moderatorsRaw = config.getString("moderators").split(",");
+		
+		for(int i = 0; i < moderatorsRaw.length; i++){
+			if(moderatorsRaw[i].length() > 1){
+				moderators.add(moderatorsRaw[i]);
 			}
 		}
 		

@@ -40,6 +40,10 @@ public class GeoBot extends PircBot {
 			if(channel.equalsIgnoreCase("#" + sender))
 				isOp = true;
 			
+			if(channelInfo.isModerator(sender)){
+				isOp = true;
+			}
+			
 			if(isOp)
 				System.out.println("User is op");
 			
@@ -150,6 +154,28 @@ public class GeoBot extends PircBot {
  						}else if(msg[1].equalsIgnoreCase("delete")){
  							if(channelInfo.isRegular(msg[2])){
  								channelInfo.removeRegular(msg[2]);
+ 								sendMessage(channel,"> User removed.");
+ 							}else{
+ 								sendMessage(channel,"> User does not exist.");
+ 							}
+ 						}
+ 					}
+ 				}
+ 				
+ 				// !mod - Add moderators
+ 				if(msg[0].equalsIgnoreCase("!mod")){
+ 					System.out.println("Matched command !mod");
+ 					if(msg.length  > 2 && isOp){
+ 						if(msg[1].equalsIgnoreCase("add")){
+ 							if(channelInfo.isModerator(msg[2])){
+ 								sendMessage(channel,"> User already exists.");
+ 							}else{
+ 								channelInfo.addModerator(msg[2]);
+ 								sendMessage(channel,"> User added.");
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("delete")){
+ 							if(channelInfo.isModerator(msg[2])){
+ 								channelInfo.removeModerator(msg[2]);
  								sendMessage(channel,"> User removed.");
  							}else{
  								sendMessage(channel,"> User does not exist.");
