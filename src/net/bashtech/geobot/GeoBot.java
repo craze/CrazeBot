@@ -146,17 +146,17 @@ public class GeoBot extends PircBot {
  					if(msg.length  > 2 && isOp){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isRegular(msg[2])){
- 								sendMessage(channel,"> User already exists.");
+ 								sendMessage(channel,"> User already exists." + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addRegular(msg[2]);
- 								sendMessage(channel,"> User added.");
+ 								sendMessage(channel,"> User added." + "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete")){
  							if(channelInfo.isRegular(msg[2])){
  								channelInfo.removeRegular(msg[2]);
- 								sendMessage(channel,"> User removed.");
+ 								sendMessage(channel,"> User removed." + "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> User does not exist.");
+ 								sendMessage(channel,"> User does not exist." + "(" + msg[2] + ")");
  							}
  						}
  					}
@@ -168,17 +168,17 @@ public class GeoBot extends PircBot {
  					if(msg.length  > 2 && isOp){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isModerator(msg[2])){
- 								sendMessage(channel,"> User already exists.");
+ 								sendMessage(channel,"> User already exists." + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addModerator(msg[2]);
- 								sendMessage(channel,"> User added.");
+ 								sendMessage(channel,"> User added."+ "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete")){
  							if(channelInfo.isModerator(msg[2])){
  								channelInfo.removeModerator(msg[2]);
- 								sendMessage(channel,"> User removed.");
+ 								sendMessage(channel,"> User removed. "+ "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> User does not exist.");
+ 								sendMessage(channel,"> User does not exist."+ "(" + msg[2] + ")");
  							}
  						}
  					}
