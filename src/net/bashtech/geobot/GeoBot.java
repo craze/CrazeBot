@@ -1,5 +1,7 @@
 package net.bashtech.geobot;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.jibble.pircbot.*;
 
@@ -199,12 +201,13 @@ public class GeoBot extends PircBot {
 				// Cap filter
 				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || channelInfo.isRegular(sender))){
 					this.kick(channel, sender);
-					//this.unBan(channel,sender + "!" + sender + "@*.*");
+					tenSecondUnban(channel, sender);
 				}
 				
 				// Link filter
 				if(channelInfo.getFilterLinks() && this.containsLink(message) && !(channelInfo.linkPermissionCheck(sender) || isOp )){
 					this.kick(channel, sender);
+					tenSecondUnban(channel, sender);
 				}
 				
 			
@@ -303,6 +306,20 @@ public class GeoBot extends PircBot {
 	
 	public Channel getChannel(){
 		return channelInfo;
+	}
+	
+	public void tenSecondUnban(final String channel, final String name){
+		Timer timer = new Timer();
+		
+		int delay = 10000;
+		
+		timer.schedule(new TimerTask()
+	       {
+	        public void run() {
+	        	GeoBot.this.unBan(channel,name + "!" + name + "@*.*");
+	        }
+	      },delay);
+
 	}
 
 }
