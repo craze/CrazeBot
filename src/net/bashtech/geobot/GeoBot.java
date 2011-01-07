@@ -10,18 +10,56 @@ public class GeoBot extends PircBot {
 	private GlobalChannel globalChannel;
 	private Channel channelInfo;
 	
+	private Timer pjTimer;
+	
 	public GeoBot(GlobalChannel g, Channel c){
 		globalChannel = g;
 		channelInfo = c;
-		this.setName(g.getNick());
+		this.setName(globalChannel.getNick());
+		
+		this.setVerbose(true);
+		try {
+			this.connect(channelInfo.getServer(), channelInfo.getPort(), globalChannel.getPassword());
+		} catch (NickAlreadyInUseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IrcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.joinChannel(channelInfo.getChannel());
+		
+		autoPartandRejoin(channelInfo.getChannel());
+		
 	}
 	
 	public GeoBot(GlobalChannel g, boolean gCheck){
 		isGlobalChannel = gCheck;
 		globalChannel = g;
-		this.setName(g.getNick());
+		this.setName(globalChannel.getNick());
+		
+		this.setVerbose(true);
+		try {
+			this.connect(globalChannel.getServer(), globalChannel.getPort(), globalChannel.getPassword());
+		} catch (NickAlreadyInUseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IrcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.joinChannel(globalChannel.getChannel());
+		
+		autoPartandRejoin(globalChannel.getChannel());
 	}
 	
+	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
 			
 			String[] msg = split(message.trim());
@@ -258,6 +296,11 @@ public class GeoBot extends PircBot {
 			
 	}
 	
+	@Override
+	public void onDisconnect(){
+		pjTimer.cancel();
+	}
+	
 	public User matchUser(String nick, String channel){
 		User[] userList = this.getUsers(channel);
 		
@@ -319,6 +362,23 @@ public class GeoBot extends PircBot {
 	        	GeoBot.this.unBan(channel,name + "!" + name + "@*.*");
 	        }
 	      },delay);
+
+	}
+	
+	public void autoPartandRejoin(final String channel){
+		
+		pjTimer = new Timer();
+		
+		int delay = 3600000;
+		
+		pjTimer.scheduleAtFixedRate(new TimerTask()
+	       {
+	        public void run() {
+	        	System.out.print("Parting and rejoining " + channel);
+	        	GeoBot.this.partChannel(channel);
+	        	GeoBot.this.joinChannel(channel);
+	        }
+	      },delay,delay);
 
 	}
 

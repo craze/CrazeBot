@@ -24,16 +24,10 @@ public class Main {
 		//Add global channel
 		GlobalChannel globalChannel = new GlobalChannel(botList);
 		GeoBot globalBot = new GeoBot(globalChannel, true);
-		globalBot.setVerbose(true);
-		globalBot.connect(globalChannel.getServer(), globalChannel.getPort(), globalChannel.getPassword());
-		globalBot.joinChannel(globalChannel.getChannel());
 		
 		//Add other channels
 		for(Channel c:globalChannel.getChannelList()) {
 			botList.add(new GeoBot(globalChannel, c));
-			botList.get(botList.size() - 1).setVerbose(true);
-			botList.get(botList.size() - 1).connect(c.getServer(), c.getPort(), globalChannel.getPassword());
-			botList.get(botList.size() - 1).joinChannel(c.getChannel());
 		}
 		
 		

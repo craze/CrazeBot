@@ -21,7 +21,7 @@ public class ReconnectTimer extends TimerTask{
 	@Override
 	public void run() {
 		
-		System.out.println("Reconnect timer running...");
+		//System.out.println("Reconnect timer running...");
 		
 		if(!globalBot.isConnected()){
 			try {
