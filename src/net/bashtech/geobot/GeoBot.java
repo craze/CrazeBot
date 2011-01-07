@@ -311,7 +311,7 @@ public class GeoBot extends PircBot {
 	public void tenSecondUnban(final String channel, final String name){
 		Timer timer = new Timer();
 		
-		int delay = 10000;
+		int delay = 30000;
 		
 		timer.schedule(new TimerTask()
 	       {
