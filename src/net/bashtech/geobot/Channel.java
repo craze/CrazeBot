@@ -319,8 +319,10 @@ public class Channel {
 		topic  = config.getString("topic");
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
+		System.out.println("Size: " + commandsKey.length);
 		String[] commandsValue = config.getString("commandsValue").split(",,");
-		
+		System.out.println("Size: " + commandsValue.length);
+
 		for(int i = 0; i < commandsKey.length; i++){
 			if(commandsKey[i].length() > 1){
 				commands.put(commandsKey[i], commandsValue[i]);
