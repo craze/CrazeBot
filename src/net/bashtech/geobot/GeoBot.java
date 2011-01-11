@@ -134,11 +134,11 @@ public class GeoBot extends PircBot {
 							for(int i = 3; i < msg.length; i++){
 								value = value + msg[i] + " ";
 							}
-							if(!value.contains(",")){
+							if(!value.contains(",,")){
 								channelInfo.setCommand(key, value);
 								this.sendMessage(channel, "> " + channelInfo.getCommand(key));
 							}else{
-								sendMessage(channel, "Command cannot contain commas.");
+								sendMessage(channel, "Command cannot contain double commas (\",,\").");
 							}
 								
 						}else if(msg[1].equalsIgnoreCase("delete")){

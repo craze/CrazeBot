@@ -97,7 +97,7 @@ public class Channel {
 			while(itr.hasNext()){
 				Map.Entry pairs = (Map.Entry)itr.next();
 				commandsKey += pairs.getKey() + ",";
-				commandsValue += pairs.getValue() + ",";
+				commandsValue += pairs.getValue() + ",,";
 			}
 			
 			config.setString("commandsKey", commandsKey);
@@ -319,7 +319,7 @@ public class Channel {
 		topic  = config.getString("topic");
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
-		String[] commandsValue = config.getString("commandsValue").split(",");
+		String[] commandsValue = config.getString("commandsValue").split(",,");
 		
 		for(int i = 0; i < commandsKey.length; i++){
 			if(commandsKey[i].length() > 1){
