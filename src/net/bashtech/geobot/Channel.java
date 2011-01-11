@@ -77,7 +77,7 @@ public class Channel {
 		while(itr.hasNext()){
 			Map.Entry pairs = (Map.Entry)itr.next();
 			commandsKey += pairs.getKey() + ",";
-			commandsValue += pairs.getValue() + ",";
+			commandsValue += pairs.getValue() + ",,";
 		}
 		
 		config.setString("commandsKey", commandsKey);
