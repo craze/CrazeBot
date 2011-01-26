@@ -375,6 +375,19 @@ public class GeoBot extends PircBot {
 	       {
 	        public void run() {
 	        	System.out.print("Parting and rejoining " + channel);
+	        	GeoBot.this.disconnect();
+	        	try {
+					GeoBot.this.reconnect();
+				} catch (NickAlreadyInUseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IrcException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        	GeoBot.this.partChannel(channel);
 	        	GeoBot.this.joinChannel(channel);
 	        }
