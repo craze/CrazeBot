@@ -42,7 +42,7 @@ public class ReconnectTimer extends TimerTask{
 		for(GeoBot b:botList){
 			if(!b.isConnected()){
 				try {
-					System.out.println("Attempting to reconnet to " + b.getServer() + "...");
+					System.out.println("Attempting to reconnet to " + b.getServer() + "...\n");
 					b.reconnect();
 				} catch (NickAlreadyInUseException e) {
 					// TODO Auto-generated catch block

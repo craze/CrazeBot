@@ -298,7 +298,27 @@ public class GeoBot extends PircBot {
 	
 	@Override
 	public void onDisconnect(){
-		pjTimer.cancel();
+		//pjTimer.cancel();
+		for(Channel c:globalChannel.getChannelList()){
+			if(c.getChannel() == channelInfo.getChannel()){
+				System.out.println("Channel disconnected abnormally. Reconnecting...\n");
+				try {
+					this.reconnect();
+					this.joinChannel(channelInfo.getChannel());
+				} catch (NickAlreadyInUseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IrcException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
+		
 	}
 	
 	public User matchUser(String nick, String channel){
@@ -374,20 +394,8 @@ public class GeoBot extends PircBot {
 		pjTimer.scheduleAtFixedRate(new TimerTask()
 	       {
 	        public void run() {
-	        	System.out.print("Parting and rejoining " + channel);
-	        	GeoBot.this.disconnect();
-	        	try {
-					GeoBot.this.reconnect();
-				} catch (NickAlreadyInUseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IrcException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+	        	System.out.println("Parting and rejoining " + channel);
+
 	        	GeoBot.this.partChannel(channel);
 	        	GeoBot.this.joinChannel(channel);
 	        }
