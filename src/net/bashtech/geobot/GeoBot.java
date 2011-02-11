@@ -1,8 +1,15 @@
 package net.bashtech.geobot;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.gson.Gson;
 import org.jibble.pircbot.*;
 
 public class GeoBot extends PircBot {
@@ -98,6 +105,30 @@ public class GeoBot extends PircBot {
 						String time = new java.util.Date().toString();
 						sendMessage(channel, sender + ": The time is now " + time);
 						//return;
+				}
+				
+				// !viewers - All
+				if (message.trim().equalsIgnoreCase("!viewers")) {
+					System.out.println("Matched command !viewers");
+					try {
+						sendMessage(channel, "> " + this.getViewers() + " viewers.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
+				// !bitrate - All
+				if (message.trim().equalsIgnoreCase("!bitrate")) {
+					System.out.println("Matched command !bitrate");
+					try {
+						sendMessage(channel, "> Streaming at " + this.getBitRate() + " Kbps.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
 				}
 				
 				// !clear - Ops
@@ -401,6 +432,38 @@ public class GeoBot extends PircBot {
 	        }
 	      },delay,delay);
 
+	}
+	
+	public int getViewers() throws IOException{
+		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
+		URLConnection conn = url.openConnection();
+		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String jsonIn = "";
+		while(d.ready())
+		{
+			jsonIn = d.readLine();
+		}
+		
+		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
+		
+		return data.viewers_count;
+	}
+	
+	public int getBitRate() throws IOException{
+		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
+		URLConnection conn = url.openConnection();
+		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String jsonIn = "";
+		while(d.ready())
+		{
+			jsonIn = d.readLine();
+		}
+		
+		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
+		
+		return data.average_bitrate;
 	}
 
 }
