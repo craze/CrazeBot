@@ -105,6 +105,20 @@ public class Channel {
 		}
 
 	}
+	
+	public String getCommandList(){
+		String commandKeys = "";
+		
+		Iterator itr = commands.entrySet().iterator();
+		
+		while(itr.hasNext()){
+			Map.Entry pairs = (Map.Entry)itr.next();
+			commandKeys += pairs.getKey() + ", ";
+		}
+		
+		return commandKeys;
+		
+	}
 
 	//#####################################################
 	

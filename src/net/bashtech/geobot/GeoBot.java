@@ -131,6 +131,14 @@ public class GeoBot extends PircBot {
 					//return;
 				}
 				
+				// !{botname} - All
+				if (message.trim().equalsIgnoreCase("!" + this.getNick())) {
+					System.out.println("Matched command !" + this.getNick());
+					sendMessage(channel, "> Commands: " + channelInfo.getCommandList());
+
+					//return;
+				}
+				
 				// !clear - Ops
 				if(message.trim().equalsIgnoreCase("!clear") && isOp){
 					System.out.println("Matched command !clear");
