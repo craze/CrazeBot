@@ -147,7 +147,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !topic
-				if(msg[0].equalsIgnoreCase("!topic")){
+				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
 					System.out.println("Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
@@ -267,13 +267,46 @@ public class GeoBot extends PircBot {
  				}
  				
  				// !permit - Allows users to post 1 link
- 				if(msg[0].equalsIgnoreCase("!permit")){
+ 				if(msg[0].equalsIgnoreCase("!permit") && channelInfo.useFilters){
  					System.out.println("Matched command !permit");
- 					if(msg.length > 1 && isOp){
+ 					if(msg.length > 1 && isOp ){
  						channelInfo.permitUser(msg[1]);
  						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
  					}
  				}
+ 				
+ 				// !set - Allows you to turn off features of the bot.
+ 				if(msg[0].equalsIgnoreCase("!set")){
+ 					System.out.println("Matched command !set");
+ 					if(msg.length > 0 && isOp){
+ 						if(msg.length == 1){
+ 							//Display current settings
+ 						}else if(msg[1].equalsIgnoreCase("topic")){
+ 							//Topic
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.setTopicFeature(true);
+ 								sendMessage(channel, "> Feature: Topic is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setTopicFeature(false);
+ 								sendMessage(channel, "> Feature: Topic is off");
+ 							}
+ 								
+ 						}else if(msg[1].equalsIgnoreCase("filters")){
+ 							//filters
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.setFiltersFeature(true);
+ 								sendMessage(channel, "> Feature: Filters is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setFiltersFeature(false);
+ 								sendMessage(channel, "> Feature: Filters is off");
+ 							}
+ 						}
+ 					}
+ 				}
+ 				
+ 				//Filter feature check
+ 				if(!channelInfo.useFilters)
+ 					return;
  				
 				// Cap filter
 				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || channelInfo.isRegular(sender))){

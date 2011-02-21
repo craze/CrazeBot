@@ -28,7 +28,10 @@ public class Channel {
 	private ArrayList<String> moderators = new ArrayList<String>();
 	
 	private ArrayList<String> permittedUsers = new ArrayList<String>();
-
+	
+	//Checks for disabled features.
+	public boolean useTopic = true;
+	public boolean useFilters = true;
 	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -308,6 +311,19 @@ public class Channel {
 	
 	// ##################################################
 	
+	public void setTopicFeature(boolean setting){
+		this.useTopic = setting;
+		config.setBoolean("useTopic", this.useTopic);
+
+	}
+	
+	public void setFiltersFeature(boolean setting){
+		this.useFilters = setting;
+		config.setBoolean("useFilters", this.useFilters);
+	}
+	
+	// ##################################################
+	
 	private void loadProperties(String name){
 		try {
 			config.load();
@@ -360,6 +376,14 @@ public class Channel {
 			config.setString("moderators", name.substring(1, name.length()) + ",");
 		}
 		
+		if(!config.keyExists("useTopic")) {
+			config.setBoolean("useTopic", true);
+		}
+		
+		if(!config.keyExists("useFilters")) {
+			config.setBoolean("useFilters", true);
+		}
+		
 		server = config.getString("server");
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
@@ -370,6 +394,10 @@ public class Channel {
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
 		topic  = config.getString("topic");
+		
+		useTopic = Boolean.parseBoolean(config.getString("useTopic"));
+		useFilters = Boolean.parseBoolean(config.getString("useFilters"));
+
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");
