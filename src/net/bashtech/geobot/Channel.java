@@ -160,54 +160,69 @@ public class Channel {
 	
 	//###################################################
 	
-	public boolean isRegular(String name){		
-		
-		for(String s:regulars){
-			if(s.equalsIgnoreCase(name)){
-				return true;
+	public boolean isRegular(String name){
+		//boolean flag = false;
+		synchronized (regulars) { 
+			for(String s:regulars){
+				if(s.equalsIgnoreCase(name)){
+					return true;
+					//flag = true;
+				}
 			}
 		}
-		
+		//return flag;
 		return false;
 	}
 	
 	public void addRegular(String name){
-		regulars.add(name);
+		synchronized (regulars) { 
+			regulars.add(name);
+		}
 		
 		String regularsString = "";
 		
-		for(String s:regulars){
-			regularsString += s + ",";
+		synchronized (regulars) { 
+			for(String s:regulars){
+				regularsString += s + ",";
+			}
 		}
 		
 		config.setString("regulars", regularsString);
 	}
 	
 	public void removeRegular(String name){
-		for(String s:regulars){
-			if(s.equalsIgnoreCase(name)){
-				regulars.remove(s);
+		synchronized (regulars) { 
+			for(int c = 0; c < regulars.size(); c++){
+				if(regulars.get(c).equalsIgnoreCase(name)){
+					regulars.remove(c);
+				}
+
 			}
-		}
-		
+
+		}		
 		String regularsString = "";
 		
-		for(String s:regulars){
-			regularsString += s + ",";
+		synchronized (regulars) { 
+			for(String s:regulars){
+				regularsString += s + ",";
+			}
 		}
 		
 		config.setString("regulars", regularsString);
 	}
 	
 	public void permitUser(String name){
-		
-		for(String s:permittedUsers){
-			if(s.equalsIgnoreCase(name)){
-				return;
+		synchronized (permittedUsers) { 
+			for(String s:permittedUsers){
+				if(s.equalsIgnoreCase(name)){
+					return;
+				}
 			}
 		}
 		
-		permittedUsers.add(name);
+		synchronized (permittedUsers) { 
+			permittedUsers.add(name);
+		}
 	}
 	
 	public boolean linkPermissionCheck(String name){
@@ -216,11 +231,20 @@ public class Channel {
 			return true;
 		}
 		
-		for(String s:permittedUsers){
-			if(s.equalsIgnoreCase(name)){
-				permittedUsers.remove(s);
-				return true;
+		synchronized (permittedUsers) {
+			for(int c = 0; c < permittedUsers.size(); c++){
+				if(permittedUsers.get(c).equalsIgnoreCase(name)){
+					permittedUsers.remove(c);
+					return true;
+				}
+
 			}
+//			for(String s:permittedUsers){
+//				if(s.equalsIgnoreCase(name)){
+//					permittedUsers.remove(s);
+//					return true;
+//				}
+//			}
 		}
 		
 		return false;
@@ -229,10 +253,11 @@ public class Channel {
 	//###################################################
 	
 	public boolean isModerator(String name){		
-		
-		for(String s:moderators){
-			if(s.equalsIgnoreCase(name)){
-				return true;
+		synchronized (moderators) { 
+			for(String s:moderators){
+				if(s.equalsIgnoreCase(name)){
+					return true;
+				}
 			}
 		}
 		
@@ -240,28 +265,42 @@ public class Channel {
 	}
 	
 	public void addModerator(String name){
-		moderators.add(name);
+		synchronized (moderators) {
+			moderators.add(name);
+		}
 		
 		String moderatorsString = "";
 		
-		for(String s:moderators){
-			moderatorsString += s + ",";
+		synchronized (moderators) { 
+			for(String s:moderators){
+				moderatorsString += s + ",";
+			}
 		}
 		
 		config.setString("moderators", moderatorsString);
 	}
 	
 	public void removeModerator(String name){
-		for(String s:moderators){
-			if(s.equalsIgnoreCase(name)){
-				moderators.remove(s);
+		synchronized (moderators) {
+			for(int c = 0; c < moderators.size(); c++){
+				if(moderators.get(c).equalsIgnoreCase(name)){
+					moderators.remove(c);
+				}
+
 			}
+//			for(String s:moderators){
+//				if(s.equalsIgnoreCase(name)){
+//					moderators.remove(s);
+//				}
+//			}
 		}
 		
 		String moderatorsString = "";
 		
-		for(String s:moderators){
-			moderatorsString += s + ",";
+		synchronized (moderators) { 
+			for(String s:moderators){
+				moderatorsString += s + ",";
+			}
 		}
 		
 		config.setString("moderators", moderatorsString);
@@ -343,20 +382,23 @@ public class Channel {
 		
 		String[] regularsRaw = config.getString("regulars").split(",");
 		
-		for(int i = 0; i < regularsRaw.length; i++){
-			if(regularsRaw[i].length() > 1){
-				regulars.add(regularsRaw[i]);
+		synchronized (regulars) {
+			for(int i = 0; i < regularsRaw.length; i++){
+				if(regularsRaw[i].length() > 1){
+					regulars.add(regularsRaw[i]);
+				}
 			}
 		}
 		
 		String[] moderatorsRaw = config.getString("moderators").split(",");
 		
-		for(int i = 0; i < moderatorsRaw.length; i++){
-			if(moderatorsRaw[i].length() > 1){
-				moderators.add(moderatorsRaw[i]);
+		synchronized (moderators) {
+			for(int i = 0; i < moderatorsRaw.length; i++){
+				if(moderatorsRaw[i].length() > 1){
+					moderators.add(moderatorsRaw[i]);
+				}
 			}
 		}
-		
 	}
 
 }

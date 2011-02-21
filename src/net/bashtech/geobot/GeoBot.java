@@ -302,6 +302,7 @@ public class GeoBot extends PircBot {
 				if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
 					try {
 						if(msg[1].contains("#")){
+							sendMessage(channel, "Channel "+ msg[1] +" joining...");
 							globalChannel.addChannel(msg[1]);
 							sendMessage(channel, "Channel "+ msg[1] +" joined.");
 						}else{
@@ -322,6 +323,7 @@ public class GeoBot extends PircBot {
 				
 				if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && isOp) {
 					if(msg[1].contains("#")){
+						sendMessage(channel, "Channel "+ msg[1] +" parting...");
 						globalChannel.removeChannel(split(message)[1]);
 						sendMessage(channel, "Channel "+ msg[1] +" parted.");
 					}else{
@@ -395,7 +397,11 @@ public class GeoBot extends PircBot {
 	}
 	
 	private boolean containsLink(String m){
-		if(m.contains(".com") || m.contains(".org") || m.contains(".net") || m.contains(".tv")){
+		m = m.toLowerCase();
+		if(m.contains(".com") || m.contains(".org") || m.contains(".net") || m.contains(".tv") || m.contains(".ca") || m.contains(".cc") ||
+		   m.contains(".de") || m.contains(".eu") || m.contains(".fm") || m.contains(".gov") || m.contains(".info") || m.contains(".io") ||
+		   m.contains(".jobs") || m.contains(".me") || m.contains(".mil") || m.contains(".mobi") || m.contains(".name") || m.contains("rn") ||
+		   m.contains(".tel") || m.contains(".travel") || m.contains(".tz") || m.contains(".uk") || m.contains(".us")){
 			return true;
 		}
 		
@@ -428,7 +434,7 @@ public class GeoBot extends PircBot {
 		
 		pjTimer = new Timer();
 		
-		int delay = 3600000;
+		int delay = 1800000;
 		
 		pjTimer.scheduleAtFixedRate(new TimerTask()
 	       {
