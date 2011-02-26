@@ -304,7 +304,13 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				//Filter feature check
+ 				//Command catch all
+				if(message.trim().substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
+					System.out.println("Matched command " + message.trim());
+					sendMessage(channel, "> " + channelInfo.getCommand(message));
+				}
+ 				
+				//Filter feature check
  				if(!channelInfo.useFilters)
  					return;
  				
@@ -321,11 +327,7 @@ public class GeoBot extends PircBot {
 				}
 				
 			
-				//Command catch all
-				if(message.trim().substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
-					System.out.println("Matched command " + message.trim());
-					sendMessage(channel, "> " + channelInfo.getCommand(message));
-				}
+
 	
 			}else{
 				System.out.println("Input from global channel...");
