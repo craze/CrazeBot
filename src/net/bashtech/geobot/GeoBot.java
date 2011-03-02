@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,6 +21,8 @@ public class GeoBot extends PircBot {
 	private Channel channelInfo;
 	
 	private Timer pjTimer;
+	
+	private Map<String,Long> previousCommands = new HashMap<String,Long>();
 	
 	public GeoBot(GlobalChannel g, Channel c){
 		globalChannel = g;
@@ -68,6 +73,10 @@ public class GeoBot extends PircBot {
 	
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
+		
+		if(sender.equalsIgnoreCase(this.getNick())){
+			System.out.println("Message from bot");
+		}
 			
 			String[] msg = split(message.trim());
 			User user = matchUser(sender, channel);
@@ -373,6 +382,36 @@ public class GeoBot extends PircBot {
 	}
 	
 	@Override
+	public boolean onMessageSend(String target, String message){
+		long epoch = System.currentTimeMillis()/1000;
+		
+		//Clean up
+		Iterator<Map.Entry<String, Long>> i = previousCommands.entrySet().iterator();  
+		while (i.hasNext()) {  
+		    Map.Entry<String, Long> entry = i.next();  
+		    if (epoch - (long)entry.getValue() > 30) {  
+		        i.remove();  
+		    }  
+		} 
+
+		// Log message to previous commands
+		if(previousCommands.containsKey(message.toLowerCase())){
+			//Command was issued before
+			int timeDifference = (int) (epoch - previousCommands.get(message.toLowerCase()));
+			if( timeDifference < 30){
+				//Command was issued in the last 30 seconds
+				previousCommands.put(message.toLowerCase(), epoch);
+				System.out.println("Message not sent. Message repeated " + timeDifference + " seconds.");
+				return false;
+			}
+		}
+		previousCommands.put(message.toLowerCase(), epoch);
+		
+		return true;
+		
+	}
+	
+	@Override
 	public void onDisconnect(){
 		//pjTimer.cancel();
 		for(Channel c:globalChannel.getChannelList()){
@@ -397,7 +436,7 @@ public class GeoBot extends PircBot {
 		
 	}
 	
-	public User matchUser(String nick, String channel){
+	private User matchUser(String nick, String channel){
 		User[] userList = this.getUsers(channel);
 		
 		for(int i = 0; i < userList.length; i++){
@@ -411,7 +450,7 @@ public class GeoBot extends PircBot {
 	
 //#################################################################################
 	
-	public int countCapitals(String s){
+	private int countCapitals(String s){
 		int caps = 0;
 		int max = 0;
 		//boolean con = true;
@@ -451,7 +490,7 @@ public class GeoBot extends PircBot {
 		return channelInfo;
 	}
 	
-	public void tenSecondUnban(final String channel, final String name){
+	private void tenSecondUnban(final String channel, final String name){
 		Timer timer = new Timer();
 		
 		int delay = 30000;
@@ -465,7 +504,7 @@ public class GeoBot extends PircBot {
 
 	}
 	
-	public void autoPartandRejoin(final String channel){
+	private void autoPartandRejoin(final String channel){
 		
 		pjTimer = new Timer();
 		
@@ -483,7 +522,7 @@ public class GeoBot extends PircBot {
 
 	}
 	
-	public int getViewers() throws IOException{
+	private int getViewers() throws IOException{
 		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
 		URLConnection conn = url.openConnection();
 		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
@@ -499,7 +538,7 @@ public class GeoBot extends PircBot {
 		return data.viewers_count;
 	}
 	
-	public int getBitRate() throws IOException{
+	private int getBitRate() throws IOException{
 		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
 		URLConnection conn = url.openConnection();
 		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
