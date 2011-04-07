@@ -1,0 +1,7 @@
+*.properties
+lib/
+build/
+*.jar
+.project
+build.xml
+.settings
