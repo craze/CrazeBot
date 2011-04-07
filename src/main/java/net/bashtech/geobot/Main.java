@@ -9,7 +9,6 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 
 public class Main {
 	
-	
 	/**
 	 * @param args
 	 * @throws IrcException 
