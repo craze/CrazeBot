@@ -1,3 +1,7 @@
 *.properties
 lib/
-build/classes/
+build/
+*.jar
+.project
+build.xml
+.settings
