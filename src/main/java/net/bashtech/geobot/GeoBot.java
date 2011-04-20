@@ -330,9 +330,15 @@ public class GeoBot extends PircBot {
 				}
 				
 				// Link filter
-				if(channelInfo.getFilterLinks() && this.containsLink(message) && !(channelInfo.linkPermissionCheck(sender) || isOp )){
-					this.kick(channel, sender);
-					tenSecondUnban(channel, sender);
+				if(channelInfo.getFilterLinks() && this.containsLink(message) && !isOp ){
+					boolean result = channelInfo.linkPermissionCheck(sender);
+					if(result){
+						sendMessage(channel, "> Link permitted. (" + sender + ")" );
+					}else{
+						this.kick(channel, sender);
+						tenSecondUnban(channel, sender);
+					}
+					
 				}
 				
 			
