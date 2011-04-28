@@ -100,12 +100,62 @@ public class GeoBot extends PircBot {
 			
 			if(!isGlobalChannel){
 				
+				
 				if(channelInfo.isModerator(sender)){
 					isOp = true;
 				}
 				
 				if(isOp)
 					System.out.println("User is op");
+				
+				if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus()){
+					//Poll is open and accepting votes.
+					channelInfo.getPoll().vote(sender, msg[0]);
+					System.out.println("DEBUG: Voted.");
+				}
+				
+				// !poll - Ops
+				if(msg[0].equalsIgnoreCase("!poll") && isOp){
+					System.out.println("Matched command !poll");
+					if(msg.length >= 2){
+						if(msg[1].equalsIgnoreCase("create")){
+							String[] options = new String[msg.length - 2];
+							int oc = 0;
+							for(int c=2;c<msg.length;c++){
+								options[oc] = msg[c];
+								oc++;
+							}
+							channelInfo.setPoll(new Poll(options));
+							sendMessage(channel,"> Poll created. Do '!poll start' to start voting.");
+						}else if(msg[1].equalsIgnoreCase("start")){
+							if(channelInfo.getPoll() != null){
+								if(channelInfo.getPoll().getStatus()){
+									sendMessage(channel, "> Poll is alreay running.");
+								}else{
+									channelInfo.getPoll().setStatus(true);
+									sendMessage(channel, "> Poll started.");
+								}
+							}
+						}else if(msg[1].equalsIgnoreCase("stop")){ 
+							if(channelInfo.getPoll() != null){
+								if(channelInfo.getPoll().getStatus()){
+									channelInfo.getPoll().setStatus(false);
+									sendMessage(channel, "> Poll stopped.");
+								}else{
+									sendMessage(channel, "> Poll is not running.");
+								}
+							}
+						}else if(msg[1].equalsIgnoreCase("results")){
+							if(channelInfo.getPoll() != null){
+								String[] results = channelInfo.getPoll().getResults();
+								for(int c=0;c<results.length;c++){
+									sendMessage(channel, results[c]);
+								}
+							}
+						
+					   }
+					}
+				}
 				
 				//Normal channel stuff
 				// !time - All
@@ -387,35 +437,35 @@ public class GeoBot extends PircBot {
 			
 	}
 	
-	@Override
-	public boolean onMessageSend(String target, String message){
-		long epoch = System.currentTimeMillis()/1000;
-		
-		//Clean up
-		Iterator<Map.Entry<String, Long>> i = previousCommands.entrySet().iterator();  
-		while (i.hasNext()) {  
-		    Map.Entry<String, Long> entry = i.next();  
-		    if (epoch - (long)entry.getValue() > 30) {  
-		        i.remove();  
-		    }  
-		} 
-
-		// Log message to previous commands
-		if(previousCommands.containsKey(message.toLowerCase())){
-			//Command was issued before
-			int timeDifference = (int) (epoch - previousCommands.get(message.toLowerCase()));
-			if( timeDifference < 30){
-				//Command was issued in the last 30 seconds
-				previousCommands.put(message.toLowerCase(), epoch);
-				System.out.println("Message not sent. Message repeated " + timeDifference + " seconds.");
-				return false;
-			}
-		}
-		previousCommands.put(message.toLowerCase(), epoch);
-		
-		return true;
-		
-	}
+//	@Override
+//	public boolean onMessageSend(String target, String message){
+//		long epoch = System.currentTimeMillis()/1000;
+//		
+//		//Clean up
+//		Iterator<Map.Entry<String, Long>> i = previousCommands.entrySet().iterator();  
+//		while (i.hasNext()) {  
+//		    Map.Entry<String, Long> entry = i.next();  
+//		    if (epoch - (long)entry.getValue() > 30) {  
+//		        i.remove();  
+//		    }  
+//		} 
+//
+//		// Log message to previous commands
+//		if(previousCommands.containsKey(message.toLowerCase())){
+//			//Command was issued before
+//			int timeDifference = (int) (epoch - previousCommands.get(message.toLowerCase()));
+//			if( timeDifference < 30){
+//				//Command was issued in the last 30 seconds
+//				previousCommands.put(message.toLowerCase(), epoch);
+//				System.out.println("Message not sent. Message repeated " + timeDifference + " seconds.");
+//				return false;
+//			}
+//		}
+//		previousCommands.put(message.toLowerCase(), epoch);
+//		
+//		return true;
+//		
+//	}
 	
 	@Override
 	public void onDisconnect(){

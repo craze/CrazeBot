@@ -33,6 +33,8 @@ public class Channel {
 	public boolean useTopic = true;
 	public boolean useFilters = true;
 	
+	private Poll currentPoll;
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -320,6 +322,14 @@ public class Channel {
 	public void setFiltersFeature(boolean setting){
 		this.useFilters = setting;
 		config.setBoolean("useFilters", this.useFilters);
+	}
+	
+	public Poll getPoll(){
+		return currentPoll;
+	}
+	
+	public void setPoll(Poll _poll){
+		currentPoll = _poll;
 	}
 	
 	// ##################################################
