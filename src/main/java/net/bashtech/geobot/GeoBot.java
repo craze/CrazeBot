@@ -158,13 +158,13 @@ public class GeoBot extends PircBot {
 				}
 				
 				//Normal channel stuff
-				// !time - All
-				if (message.trim().equalsIgnoreCase("!time")) {
-						System.out.println("Matched command !time");
-						String time = new java.util.Date().toString();
-						sendMessage(channel, sender + ": The time is now " + time);
-						//return;
-				}
+//				// !time - All
+//				if (message.trim().equalsIgnoreCase("!time")) {
+//						System.out.println("Matched command !time");
+//						String time = new java.util.Date().toString();
+//						sendMessage(channel, sender + ": The time is now " + time);
+//						//return;
+//				}
 				
 				// !viewers - All
 				if (message.trim().equalsIgnoreCase("!viewers")) {
@@ -290,7 +290,7 @@ public class GeoBot extends PircBot {
  								sendMessage(channel,"> User already exists." + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addRegular(msg[2]);
- 								sendMessage(channel,"> User added." + "(" + msg[2] + ")");
+ 								sendMessage(channel,"> User added. " + "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete")){
  							if(channelInfo.isRegular(msg[2])){
@@ -336,7 +336,7 @@ public class GeoBot extends PircBot {
  				
  				// !set - Allows you to turn off features of the bot.
  				if(msg[0].equalsIgnoreCase("!set")){
- 					System.out.println("Matched command !set");
+ 					System.out.println("Matched command !set"
  					if(msg.length > 0 && isOp){
  						if(msg.length == 1){
  							//Display current settings
