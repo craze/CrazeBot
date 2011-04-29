@@ -164,12 +164,17 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !giveaway - Ops
-				if(msg[0].equalsIgnoreCase("!giveaway") && isOp){
+				if((msg[0].equalsIgnoreCase("!giveaway") || msg[0].equalsIgnoreCase("!ga")) && isOp){
 					System.out.println("Matched command !giveaway");
 					if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("create")){
+							String max;
+							if(msg[2] == null)
+								max = "" + 100;
+							else
+								max = msg[2];
 							channelInfo.setGiveaway(new Giveaway(msg[2]));
-							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 0-" + channelInfo.getGiveaway().getMax() + ".");
+							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 						}else if(msg[1].equalsIgnoreCase("start")){
 							if(channelInfo.getGiveaway() != null){
 								if(channelInfo.getGiveaway().getStatus()){
