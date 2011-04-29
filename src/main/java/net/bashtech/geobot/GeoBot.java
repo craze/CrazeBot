@@ -168,11 +168,10 @@ public class GeoBot extends PircBot {
 					System.out.println("Matched command !giveaway");
 					if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("create")){
-							String max;
-							if(msg.length < 3)
-								max = "" + 100;
-							else
+							String max = "" + 100;
+							if(msg.length > 2){
 								max = msg[2];
+							}
 							channelInfo.setGiveaway(new Giveaway(msg[2]));
 							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 						}else if(msg[1].equalsIgnoreCase("start")){
