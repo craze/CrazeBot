@@ -169,7 +169,7 @@ public class GeoBot extends PircBot {
 					if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("create")){
 							String max;
-							if(msg[2] == null)
+							if(msg.length < 3)
 								max = "" + 100;
 							else
 								max = msg[2];
