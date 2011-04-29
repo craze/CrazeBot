@@ -55,7 +55,7 @@ public class Giveaway {
 			}
 		}
 		
-		if(entryInt > maxInt || entryInt < 0){
+		if(entryInt > maxInt || entryInt < 1){
 			System.out.println("DEBUG: Out of range.");
 			return;
 		}
