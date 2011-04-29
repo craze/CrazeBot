@@ -114,6 +114,12 @@ public class GeoBot extends PircBot {
 					System.out.println("DEBUG: Voted.");
 				}
 				
+				if(channelInfo.getGiveaway() != null && channelInfo.getGiveaway().getStatus()){
+					//Giveaway is open and accepting entries.
+					System.out.println("DEBUG: Attempting entry.");
+					channelInfo.getGiveaway().submitEntry(sender, msg[0]);
+				}
+				
 				// !poll - Ops
 				if(msg[0].equalsIgnoreCase("!poll") && isOp){
 					System.out.println("Matched command !poll");
@@ -148,6 +154,43 @@ public class GeoBot extends PircBot {
 						}else if(msg[1].equalsIgnoreCase("results")){
 							if(channelInfo.getPoll() != null){
 								String[] results = channelInfo.getPoll().getResults();
+								for(int c=0;c<results.length;c++){
+									sendMessage(channel, results[c]);
+								}
+							}
+						
+					   }
+					}
+				}
+				
+				// !giveaway - Ops
+				if(msg[0].equalsIgnoreCase("!giveaway") && isOp){
+					System.out.println("Matched command !giveaway");
+					if(msg.length >= 2){
+						if(msg[1].equalsIgnoreCase("create")){
+							channelInfo.setGiveaway(new Giveaway(msg[2]));
+							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 0-" + channelInfo.getGiveaway().getMax() + ".");
+						}else if(msg[1].equalsIgnoreCase("start")){
+							if(channelInfo.getGiveaway() != null){
+								if(channelInfo.getGiveaway().getStatus()){
+									sendMessage(channel, "> Giveaway is alreay running.");
+								}else{
+									channelInfo.getGiveaway().setStatus(true);
+									sendMessage(channel, "> Giveaway started.");
+								}
+							}
+						}else if(msg[1].equalsIgnoreCase("stop")){ 
+							if(channelInfo.getGiveaway() != null){
+								if(channelInfo.getGiveaway().getStatus()){
+									channelInfo.getGiveaway().setStatus(false);
+									sendMessage(channel, "> Giveaway stopped.");
+								}else{
+									sendMessage(channel, "> Giveaway is not running.");
+								}
+							}
+						}else if(msg[1].equalsIgnoreCase("results")){
+							if(channelInfo.getGiveaway() != null){
+								String[] results = channelInfo.getGiveaway().getResults();
 								for(int c=0;c<results.length;c++){
 									sendMessage(channel, results[c]);
 								}
@@ -336,7 +379,7 @@ public class GeoBot extends PircBot {
  				
  				// !set - Allows you to turn off features of the bot.
  				if(msg[0].equalsIgnoreCase("!set")){
- 					System.out.println("Matched command !set"
+ 					System.out.println("Matched command !set");
  					if(msg.length > 0 && isOp){
  						if(msg.length == 1){
  							//Display current settings

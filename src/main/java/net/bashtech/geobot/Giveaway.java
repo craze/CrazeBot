@@ -14,11 +14,19 @@ public class Giveaway {
 	
 	private boolean isOpen = false;
 	
-	public Giveaway(int max){
+	private int maxInt;
+	
+	public Giveaway(String max){
 		Random rand = new Random();
 		entries = new ArrayList<GiveawayEntry>();
 		names = new HashSet<String>();
-		secretNumber = rand.nextInt(max) + 1;
+		if(isInteger(max))
+			maxInt = Integer.parseInt(max);
+		else
+			maxInt = 100;
+		
+		secretNumber = rand.nextInt(maxInt) + 1;
+		System.out.println("DEBUG: Secret number - " + secretNumber);
 	}
 	
 	public boolean getStatus(){
@@ -27,6 +35,10 @@ public class Giveaway {
 	
 	public void setStatus(boolean status){
 		isOpen = status;
+	}
+	
+	public int getMax(){
+		return maxInt;
 	}
 	
 	public void submitEntry(String nickname, String entry){
@@ -43,12 +55,19 @@ public class Giveaway {
 			}
 		}
 		
+		if(entryInt > maxInt || entryInt < 0){
+			System.out.println("DEBUG: Out of range.");
+			return;
+		}
+		
 		if(names.contains(nickname.toLowerCase())){
+			System.out.println("DEBUG: Already entered.");
 			return;
 		}else{
 			names.add(nickname.toLowerCase());
 		}
 		
+		System.out.println("DEBUG: Entry successfull.");
 		entries.add(new GiveawayEntry(nickname,entryInt));
 	}
 	
@@ -76,26 +95,45 @@ public class Giveaway {
         return true;
 	}
 	
-	private int findClosetNumber(){
+	
+	public ArrayList<GiveawayEntry> getWinners(){
+		ArrayList<GiveawayEntry> winners = new ArrayList<GiveawayEntry>();
 		
-		return -1;
-					
+		
+		int closest = Integer.MAX_VALUE;
+		for(GiveawayEntry e: entries){
+			if(e.getDistance(secretNumber) < closest){
+				closest = e.getDistance(secretNumber);
+			}
+		}
+		
+		for(GiveawayEntry e: entries){
+			if(e.getDistance(secretNumber) == closest){
+				winners.add(e);
+			}
+		}
+		
+		return winners;
+		
 	}
 	
 	public String[] getResults(){
-		return null;
-//		String[] results = new String[votes.size() + 4];
-//		results[0] = "> Poll Results";
-//		results[1] = "> -------------";
-//		int c = 2;
-//		for(Map.Entry<String, Integer> entry: votes.entrySet()){
-//			results[c] = "> '" + entry.getKey() + "' - " + entry.getValue();
-//			c++;
-//		}
-//		Map.Entry<String, Integer> most = this.getMostVotes();
-//		results[results.length-2] = "> -------------";
-//		results[results.length-1] = "> Winner: '" + most.getKey() + "' - " + most.getValue();
-//		return  results;		
+		ArrayList<GiveawayEntry> winners = getWinners();
+		
+		String[] results = new String[winners.size() + 4];
+		if(winners.size() > 1)
+			results[0] = "> TIE";
+		else
+			results[0] = "> Winner";
+		results[1] = "> -------------";
+		results[2] = "> Secret number - " + secretNumber;
+		results[3] = "> -------------";
+		int c=4;
+		for(GiveawayEntry e: winners){
+			results[c] = "> " +  e.nickname + " - " + e.entry;
+			c++;
+		}
+		return  results;		
 	}
 	
 	private class GiveawayEntry{

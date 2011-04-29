@@ -35,6 +35,8 @@ public class Channel {
 	
 	private Poll currentPoll;
 	
+	private Giveaway currentGiveaway;
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -330,6 +332,14 @@ public class Channel {
 	
 	public void setPoll(Poll _poll){
 		currentPoll = _poll;
+	}
+	
+	public Giveaway getGiveaway(){
+		return currentGiveaway;
+	}
+	
+	public void setGiveaway(Giveaway _gw){
+		currentGiveaway = _gw;
 	}
 	
 	// ##################################################
