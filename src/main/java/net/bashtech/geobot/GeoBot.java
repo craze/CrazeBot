@@ -209,6 +209,13 @@ public class GeoBot extends PircBot {
 //						//return;
 //				}
 				
+				// !bothelp - Ops
+				if (message.trim().equalsIgnoreCase("!bothelp") && isOp) {
+						System.out.println("Matched command !bothelp");
+						sendMessage(channel, "> Command help is available at https://github.com/bashtech/GeoBotIRC/wiki/Commands.");
+						//return;
+				}
+				
 				// !viewers - All
 				if (message.trim().equalsIgnoreCase("!viewers")) {
 					System.out.println("Matched command !viewers");
