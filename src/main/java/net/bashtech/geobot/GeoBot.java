@@ -629,7 +629,7 @@ public class GeoBot extends PircBot {
 		if(channelInfo.getGiveaway() != null){
 			if(!channelInfo.getGiveaway().getStatus()){
 				channelInfo.getGiveaway().setStatus(true);
-				sendMessage(channelInfo.getChannel(), "> Giveaway started.");
+				sendMessage(channelInfo.getChannel(), "> Giveaway started. (" + seconds + " seconds)");
 			}
 		}
 		
