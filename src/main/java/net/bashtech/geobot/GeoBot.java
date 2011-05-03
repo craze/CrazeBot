@@ -21,6 +21,7 @@ public class GeoBot extends PircBot {
 	private Channel channelInfo;
 	
 	private Timer pjTimer;
+	private Timer gaTimer;
 	
 	private Map<String,Long> previousCommands = new HashMap<String,Long>();
 	
@@ -173,7 +174,12 @@ public class GeoBot extends PircBot {
 								max = msg[2];
 							}
 							channelInfo.setGiveaway(new Giveaway(max));
-							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
+							if(msg.length > 3 && channelInfo.getGiveaway().isInteger(msg[3])){
+								this.startGaTimer(Integer.parseInt(msg[3]));
+							}else{
+								sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
+							}
+							
 						}else if(msg[1].equalsIgnoreCase("start")){
 							if(channelInfo.getGiveaway() != null){
 								if(channelInfo.getGiveaway().getStatus()){
@@ -198,6 +204,8 @@ public class GeoBot extends PircBot {
 								for(int c=0;c<results.length;c++){
 									sendMessage(channel, results[c]);
 								}
+							}else{
+								sendMessage(channel, "> No giveaway in memory.");
 							}
 						
 					   }
@@ -609,6 +617,35 @@ public class GeoBot extends PircBot {
 	       {
 	        public void run() {
 	        	GeoBot.this.unBan(channel,name + "!" + name + "@*.*");
+	        }
+	      },delay);
+
+	}
+	
+	private void startGaTimer(int seconds){
+		gaTimer = new Timer();
+		int delay = seconds*1000;
+		
+		if(channelInfo.getGiveaway() != null){
+			if(!channelInfo.getGiveaway().getStatus()){
+				channelInfo.getGiveaway().setStatus(true);
+				sendMessage(channelInfo.getChannel(), "> Giveaway started.");
+			}
+		}
+		
+		gaTimer.schedule(new TimerTask()
+	       {
+	        public void run() {
+				if(channelInfo.getGiveaway() != null){
+					if(channelInfo.getGiveaway().getStatus()){
+						channelInfo.getGiveaway().setStatus(false);
+						GeoBot.this.sendMessage(GeoBot.this.channelInfo.getChannel(), "> Giveaway over.");
+//						String[] results = channelInfo.getGiveaway().getResults();
+//						for(int c=0;c<results.length;c++){
+//							sendMessage(GeoBot.this.channelInfo.getChannel(), results[c]);
+//						}
+					}
+				}
 	        }
 	      },delay);
 
