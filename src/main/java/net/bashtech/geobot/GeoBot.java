@@ -229,7 +229,7 @@ public class GeoBot extends PircBot {
 							}
 //						}else if(msg[1].equalsIgnoreCase("number")){
 //							
-//						}
+						}
 					}
 				}
 				
