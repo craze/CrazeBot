@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,6 +82,9 @@ public class GeoBot extends PircBot {
 			
 			String[] msg = split(message.trim());
 			User user = matchUser(sender, channel);
+			if(user == null){
+				user = new User("", sender);
+			}
 			
 			//System.out.println(user.toString());
 			
@@ -209,6 +213,23 @@ public class GeoBot extends PircBot {
 							}
 						
 					   }
+					}
+				}
+				
+				// !random - Ops
+				if(msg[0].equalsIgnoreCase("!random")&& isOp){
+					System.out.println("Matched command !random");
+					if(msg.length >= 2){
+						if(msg[1].equalsIgnoreCase("user")){
+							User[] userList = this.getUsers(channel);
+							if(userList.length > 0){
+								Random rand = new Random();
+								int randIndex = rand.nextInt(userList.length);
+								sendMessage(channel,"> Random user: " + userList[randIndex].getNick());
+							}
+//						}else if(msg[1].equalsIgnoreCase("number")){
+//							
+//						}
 					}
 				}
 				
@@ -699,6 +720,30 @@ public class GeoBot extends PircBot {
 		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
 		
 		return data.average_bitrate;
+	}
+	
+	public static boolean isInteger(String str) {
+        if (str == null) {
+                return false;
+        }
+        int length = str.length();
+        if (length == 0) {
+                return false;
+        }
+        int i = 0;
+        if (str.charAt(0) == '-') {
+                if (length == 1) {
+                        return false;
+                }
+                i = 1;
+        }
+        for (; i < length; i++) {
+                char c = str.charAt(i);
+                if (c <= '/' || c >= ':') {
+                        return false;
+                }
+        }
+        return true;
 	}
 
 }
