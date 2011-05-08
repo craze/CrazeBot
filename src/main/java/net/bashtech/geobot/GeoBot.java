@@ -24,7 +24,11 @@ public class GeoBot extends PircBot {
 	private Timer pjTimer;
 	private Timer gaTimer;
 	
-	private Map<String,Long> previousCommands = new HashMap<String,Long>();
+	//private Map<String,Long> previousCommands = new HashMap<String,Long>();
+	
+	private String[] linksMasks = {".*\\.com.*",".*\\.org.*",".*\\.net.*",".*\\.tv.*",".*\\.ca.*",".*\\.xxx.*",".*\\.cc.*",".*\\.de.*",
+								   ".*\\.eu.*",".*\\.fm.*",".*\\.gov.*",".*\\.info.*",".*\\.io.*",".*\\.jobs.*",".*\\.me.*",".*\\.mil.*",
+			                       ".*\\.mobi.*",".*\\.name.*",".*\\.rn.*",".*\\.tel.*",".*\\.travel.*",".*\\.tz.*",".*\\.uk.*",".*\\.us.*"};
 	
 	public GeoBot(GlobalChannel g, Channel c){
 		globalChannel = g;
@@ -458,7 +462,7 @@ public class GeoBot extends PircBot {
  				
 				// Cap filter
 				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || channelInfo.isRegular(sender))){
-					this.kick(channel, sender);
+					this.kick(channel, sender, "Too many caps.");
 					tenSecondUnban(channel, sender);
 				}
 				
@@ -468,7 +472,7 @@ public class GeoBot extends PircBot {
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
 					}else{
-						this.kick(channel, sender);
+						this.kick(channel, sender, "Unauthorized link.");
 						tenSecondUnban(channel, sender);
 					}
 					
@@ -611,11 +615,11 @@ public class GeoBot extends PircBot {
 	
 	private boolean containsLink(String m){
 		m = m.toLowerCase();
-		if(m.contains(".com") || m.contains(".org") || m.contains(".net") || m.contains(".tv") || m.contains(".ca") || m.contains(".cc") ||
-		   m.contains(".de") || m.contains(".eu") || m.contains(".fm") || m.contains(".gov") || m.contains(".info") || m.contains(".io") ||
-		   m.contains(".jobs") || m.contains(".me") || m.contains(".mil") || m.contains(".mobi") || m.contains(".name") || m.contains("rn") ||
-		   m.contains(".tel") || m.contains(".travel") || m.contains(".tz") || m.contains(".uk") || m.contains(".us")){
-			return true;
+		
+		for(String mask: linksMasks){
+			if(m.matches(mask)){
+				return true;
+			}
 		}
 		
 		return false;
