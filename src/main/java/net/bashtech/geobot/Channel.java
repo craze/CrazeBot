@@ -33,6 +33,8 @@ public class Channel {
 	public boolean useTopic = true;
 	public boolean useFilters = true;
 	
+	public boolean publicCommands = true;
+	
 	private Poll currentPoll;
 	
 	private Giveaway currentGiveaway;
