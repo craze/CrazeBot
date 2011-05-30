@@ -52,6 +52,8 @@ public class GeoBot extends PircBot {
 		
 	}
 	
+
+	
 	
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
@@ -104,6 +106,8 @@ public class GeoBot extends PircBot {
 				
 				if(isOp)
 					System.out.println("User is op");
+				if(isRegular)
+					System.out.println("User is regular");
 				
 				if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus()){
 					//Poll is open and accepting votes.

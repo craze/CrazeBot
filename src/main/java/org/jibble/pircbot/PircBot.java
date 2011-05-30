@@ -943,7 +943,6 @@ public abstract class PircBot implements ReplyConstants {
                         String errorStr = token;
                         String response = line.substring(line.indexOf(errorStr, senderInfo.length()) + 4, line.length());
                         this.processServerResponse(code, response);
-                    	System.out.println("DEBUG: Error 1.");
 
                         // Return from the method.
                         return;
@@ -952,13 +951,14 @@ public abstract class PircBot implements ReplyConstants {
                         // This is not a server response.
                         // It must be a nick without login and hostname.
                         // (or maybe a NOTICE or suchlike from the server)
+                    	System.out.println("DEBUG: No hostname.");
                         sourceNick = senderInfo;
-                        target = token;
+                        //target = token; //Change to ngame
+                        target = tokenizer.nextToken();
                     }
                 }
                 else {
                     // We don't know what this line means.
-                	System.out.println("DEBUG: Error 2.");
                     this.onUnknown(line);
                     // Return from the method;
                     return;
@@ -979,6 +979,8 @@ public abstract class PircBot implements ReplyConstants {
         }
         System.out.println("DEBUG: command=" + command);
         System.out.println("DEBUG: line=\"" + line +"\"");
+        System.out.println("DEBUG: target=" + target);
+        System.out.println("DEBUG: sourceNick=" + sourceNick);
         // Check for CTCP requests.
         if (command.equals("PRIVMSG") && line.indexOf(":\u0001") > 0 && line.endsWith("\u0001")) {
             String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
@@ -1018,7 +1020,7 @@ public abstract class PircBot implements ReplyConstants {
         }
         else if (command.equals("PRIVMSG") && _channelPrefixes.indexOf(target.charAt(0)) >= 0) {
             // This is a normal message to a channel.
-        	System.out.println("DEBUG: Good message.");
+        	//System.out.println("DEBUG: Good message.");
             this.onMessage(target, sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));
         }
         else if (command.equals("PRIVMSG")) {
