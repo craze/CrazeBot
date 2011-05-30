@@ -685,6 +685,11 @@ public class GeoBot extends PircBot {
 		pjTimer.scheduleAtFixedRate(new TimerTask()
 	       {
 	        public void run() {
+	        	
+	        	if(GeoBot.this.channelInfo.getPoll().getStatus() == true || GeoBot.this.channelInfo.getGiveaway().getStatus() == true){
+	        		System.out.println("Skipping part/join due to running poll or giveaway.");
+	        		return;
+	        	}
 	        	System.out.println("Parting and rejoining " + channel);
 
 	        	GeoBot.this.partChannel(channel);
