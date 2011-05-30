@@ -28,7 +28,10 @@ public class BotManager {
 		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{
+			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
 			temp.joinChannel(entry.getValue().getChannel());
+			System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
+
 		}
 
 		

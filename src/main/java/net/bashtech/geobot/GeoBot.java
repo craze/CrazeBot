@@ -29,6 +29,7 @@ public class GeoBot extends PircBot {
 			                       ".*\\.mobi.*",".*\\.name.*",".*\\.rn.*",".*\\.tel.*",".*\\.travel.*",".*\\.tz.*",".*\\.uk.*",".*\\.us.*"};
 	
 	public GeoBot(BotManager bm){
+		System.out.println("DEBUG: Bot created.");
 		botManager = bm;
 		
 		this.setName(bm.nick);
@@ -47,7 +48,7 @@ public class GeoBot extends PircBot {
 			e.printStackTrace();
 		}
 		
-		autoPartandRejoin();
+		//autoPartandRejoin();
 		
 	}
 	
@@ -77,11 +78,14 @@ public class GeoBot extends PircBot {
 			//System.out.println(user.toString());
 			
 			boolean isOp = false;
+			boolean isRegular = false;
 			try{
-				if(user.getPrefix().equalsIgnoreCase("@"))
+				if(user.getPrefix().equalsIgnoreCase("@") || user.getPrefix().equalsIgnoreCase("~"))
 					isOp = true;
 				if(user.isOp())
 					isOp = true;
+				if(user.getPrefix().equalsIgnoreCase("@") || user.getPrefix().equalsIgnoreCase("~") || user.getPrefix().equalsIgnoreCase("+"))
+					isRegular = true;
 			}catch(Exception e){
 				System.out.println("Prefix exception.");
 			}
@@ -89,6 +93,8 @@ public class GeoBot extends PircBot {
 			if(channel.equalsIgnoreCase("#" + sender))
 				isOp = true;
 			
+			if(channelInfo.isRegular(sender))
+				isRegular = true;
 
 				
 				
@@ -444,13 +450,13 @@ public class GeoBot extends PircBot {
  					return;
  				
 				// Cap filter
-				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || channelInfo.isRegular(sender))){
+				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
 					this.kick(channel, sender, "Too many caps.");
 					tenSecondUnban(channel, sender);
 				}
 				
 				// Link filter
-				if(channelInfo.getFilterLinks() && this.containsLink(message) && !isOp ){
+				if(channelInfo.getFilterLinks() && this.containsLink(message) && (!isOp || !isRegular) ){
 					boolean result = channelInfo.linkPermissionCheck(sender);
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
