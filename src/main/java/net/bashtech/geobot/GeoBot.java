@@ -52,7 +52,50 @@ public class GeoBot extends PircBot {
 		
 	}
 	
+	public void onPrivateMessage(String sender, String login, String hostname, String message) {
+		String[] msg = split(message.trim());
 
+		if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && botManager.isAdmin(sender)) {
+			try {
+				if(msg[1].contains("#")){
+					sendMessage(sender, "Channel "+ msg[1] +" joining...");
+					botManager.addChannel(msg[1]);
+					sendMessage(sender, "Channel "+ msg[1] +" joined.");
+				}else{
+					sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
+				}
+				
+			} catch (NickAlreadyInUseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IrcException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && botManager.isAdmin(sender)) {
+			if(msg[1].contains("#")){
+				sendMessage(sender, "Channel "+ msg[1] +" parting...");
+				botManager.removeChannel(split(message)[1]);
+				sendMessage(sender, "Channel "+ msg[1] +" parted.");
+			}else{
+				sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
+			}
+				
+		}
+		
+		if (msg[0].equalsIgnoreCase("!rejoin") && botManager.isAdmin(sender)) {
+			sendMessage(sender, "Rejoining all channels.");
+			botManager.rejoinChannels();
+		}
+		
+		System.out.println("DEBUG: PM from " + sender + " message=" + message);
+		
+	}
 	
 	
 	@Override
@@ -281,7 +324,7 @@ public class GeoBot extends PircBot {
 				// !clear - Ops
 				if(message.trim().equalsIgnoreCase("!clear") && isOp){
 					System.out.println("Matched command !clear");
-					this.sendMessage(channel, "/clear");
+					this.sendMessage(channel, ".clear");
 					//return;
 				}
 				
@@ -681,12 +724,7 @@ public class GeoBot extends PircBot {
 	       {
 	        public void run() {
 	        	
-				for (Map.Entry<String, Channel> entry : botManager.channelList.entrySet())
-				{	
-					System.out.println("Parting and rejoining " + entry.getValue().getChannel());
-					GeoBot.this.partChannel(entry.getValue().getChannel());
-					GeoBot.this.joinChannel(entry.getValue().getChannel());
-				}
+ 
 	        	
 	        }
 	      },delay,delay);
