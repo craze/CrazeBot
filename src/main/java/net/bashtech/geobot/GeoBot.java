@@ -112,6 +112,7 @@ public class GeoBot extends PircBot {
 		
 		if(sender.equalsIgnoreCase(this.getNick())){
 			System.out.println("Message from bot");
+			return;
 		}
 			
 			String[] msg = split(message.trim());
@@ -120,7 +121,6 @@ public class GeoBot extends PircBot {
 				user = new User("", sender);
 			}
 			
-			//System.out.println(user.toString());
 			
 			boolean isOp = false;
 			boolean isRegular = false;
@@ -336,6 +336,7 @@ public class GeoBot extends PircBot {
 					}else if(msg.length > 1 && isOp){
 						channelInfo.setTopic(message.substring(7));
 						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
+						this.sendMessage(channel, ".topic " + channelInfo.getTopic());
 						//Below only works if bot is the channel owner
 						//this.sendMessage(channel, "/title " + channelInfo.getTopic());
 					}
@@ -498,7 +499,7 @@ public class GeoBot extends PircBot {
  				
 				// Cap filter
 				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
-					this.kick(channel, sender, "Too many caps.");
+					this.ban(channel, sender);
 					tenSecondUnban(channel, sender);
 				}
 				
@@ -508,87 +509,16 @@ public class GeoBot extends PircBot {
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
 					}else{
-						this.kick(channel, sender, "Unauthorized link.");
+						this.ban(channel, sender);
 						tenSecondUnban(channel, sender);
 					}
 					
 				}
-				
-			
 
-	
-
-//				System.out.println("Input from global channel...");
-//				if(isOp)
-//					System.out.println("User is op");
-//				//Global channel stuff
-//				if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && isOp) {
-//					try {
-//						if(msg[1].contains("#")){
-//							sendMessage(channel, "Channel "+ msg[1] +" joining...");
-//							globalChannel.addChannel(msg[1]);
-//							sendMessage(channel, "Channel "+ msg[1] +" joined.");
-//						}else{
-//							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
-//						}
-//						
-//					} catch (NickAlreadyInUseException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					} catch (IrcException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//				
-//				if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && isOp) {
-//					if(msg[1].contains("#")){
-//						sendMessage(channel, "Channel "+ msg[1] +" parting...");
-//						globalChannel.removeChannel(split(message)[1]);
-//						sendMessage(channel, "Channel "+ msg[1] +" parted.");
-//					}else{
-//						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
-//					}
-//						
-//				}
-			
-			
 			
 			
 	}
-	
-//	@Override
-//	public boolean onMessageSend(String target, String message){
-//		long epoch = System.currentTimeMillis()/1000;
-//		
-//		//Clean up
-//		Iterator<Map.Entry<String, Long>> i = previousCommands.entrySet().iterator();  
-//		while (i.hasNext()) {  
-//		    Map.Entry<String, Long> entry = i.next();  
-//		    if (epoch - (long)entry.getValue() > 30) {  
-//		        i.remove();  
-//		    }  
-//		} 
-//
-//		// Log message to previous commands
-//		if(previousCommands.containsKey(message.toLowerCase())){
-//			//Command was issued before
-//			int timeDifference = (int) (epoch - previousCommands.get(message.toLowerCase()));
-//			if( timeDifference < 30){
-//				//Command was issued in the last 30 seconds
-//				previousCommands.put(message.toLowerCase(), epoch);
-//				System.out.println("Message not sent. Message repeated " + timeDifference + " seconds.");
-//				return false;
-//			}
-//		}
-//		previousCommands.put(message.toLowerCase(), epoch);
-//		
-//		return true;
-//		
-//	}
+
 	
 	@Override
 	public void onDisconnect(){
@@ -679,7 +609,7 @@ public class GeoBot extends PircBot {
 		timer.schedule(new TimerTask()
 	       {
 	        public void run() {
-	        	GeoBot.this.unBan(channel,name + "!" + name + "@*.*");
+	        	GeoBot.this.unBan(channel,name);
 	        }
 	      },delay);
 
@@ -723,9 +653,7 @@ public class GeoBot extends PircBot {
 		pjTimer.scheduleAtFixedRate(new TimerTask()
 	       {
 	        public void run() {
-	        	
- 
-	        	
+	        	botManager.rejoinChannels();
 	        }
 	      },delay,delay);
 

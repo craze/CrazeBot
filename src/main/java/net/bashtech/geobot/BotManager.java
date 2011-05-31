@@ -52,7 +52,7 @@ public class BotManager {
 		//System.out.println("Reconnect timer scheduled.");
 	}
 	
-	private void loadGlobalProfile(){
+	private synchronized void loadGlobalProfile(){
 		config = new PropertiesFile("global.properties");
 		try {
 			config.load();
@@ -147,7 +147,7 @@ public class BotManager {
 		writeChannelList();
 	}
 	
-	public void rejoinChannels(){
+	public synchronized void rejoinChannels(){
 		String[] inChannels = botList.get(0).getChannels();
 		
 		for(String channel: inChannels){
@@ -162,7 +162,7 @@ public class BotManager {
 		}
 	}
 	
-	private void writeChannelList(){
+	private synchronized void writeChannelList(){
 		String channelString = "";
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
