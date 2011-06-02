@@ -37,6 +37,7 @@ public class GeoBot extends PircBot {
 		
 		this.setVerbose(true);
 		try {
+			System.out.println("INFO: Connecting to " + channelInfo.getServer());
 			this.connect(channelInfo.getServer(), channelInfo.getPort(), globalChannel.getPassword());
 		} catch (NickAlreadyInUseException e) {
 			// TODO Auto-generated catch block
@@ -61,6 +62,7 @@ public class GeoBot extends PircBot {
 		
 		this.setVerbose(true);
 		try {
+			System.out.println("INFO: Connecting to " + globalChannel.getServer());
 			this.connect(globalChannel.getServer(), globalChannel.getPort(), globalChannel.getPassword());
 		} catch (NickAlreadyInUseException e) {
 			// TODO Auto-generated catch block

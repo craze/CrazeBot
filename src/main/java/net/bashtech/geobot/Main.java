@@ -21,10 +21,12 @@ public class Main {
 		
 		
 		//Add global channel
+		System.out.println("INFO: Adding global channel...");
 		GlobalChannel globalChannel = new GlobalChannel(botList);
-		GeoBot globalBot = new GeoBot(globalChannel, true);
+		//GeoBot globalBot = new GeoBot(globalChannel, true);
 		
 		//Add other channels
+		System.out.println("INFO: Adding other channels...");
 		for(Channel c:globalChannel.getChannelList()) {
 			botList.add(new GeoBot(globalChannel, c));
 		}
@@ -32,9 +34,9 @@ public class Main {
 		
 		//Start reconnect timer
 		
-		Timer reconnectTimer = new Timer();
-		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(globalBot, botList), 30 * 1000, 30 * 1000);
-		System.out.println("Reconnect timer scheduled.");
+//		Timer reconnectTimer = new Timer();
+//		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(globalBot, botList), 30 * 1000, 30 * 1000);
+//		System.out.println("Reconnect timer scheduled.");
 	}
 
 }

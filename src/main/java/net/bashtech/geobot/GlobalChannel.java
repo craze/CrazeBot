@@ -19,6 +19,7 @@ public class GlobalChannel {
 	PropertiesFile config;
 	
 	ArrayList<GeoBot> botList;
+	
 
 	public GlobalChannel(ArrayList botListP){
 		channelList = new ArrayList<Channel>();
