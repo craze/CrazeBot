@@ -17,6 +17,7 @@ public class Main {
 	 */
 
 	public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
+		System.out.println("INFO: Staring up.");
 		ArrayList<GeoBot> botList = new ArrayList<GeoBot>();
 		
 		
