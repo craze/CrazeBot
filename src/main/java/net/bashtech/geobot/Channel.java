@@ -10,9 +10,9 @@ import java.util.Map;
 public class Channel {
 	public PropertiesFile config;
 	
-	//private String server;
+	private String server;
 	private String channel;
-	//private int port = 6667;
+	private int port = 6667;
 	
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	
@@ -47,13 +47,13 @@ public class Channel {
 	//#############################################################
 
 	
-//	public String getServer() {
-//		return server;
-//	}
+	public String getServer() {
+		return server;
+	}
 
-//	public int getPort() {
-//		return port;
-//	}
+	public int getPort() {
+		return port;
+	}
 
 	public String getChannel() {
 		return channel;
