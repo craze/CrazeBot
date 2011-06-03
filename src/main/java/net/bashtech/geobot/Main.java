@@ -24,7 +24,7 @@ public class Main {
 		//Add global channel
 		System.out.println("INFO: Adding global channel...");
 		GlobalChannel globalChannel = new GlobalChannel(botList);
-		//GeoBot globalBot = new GeoBot(globalChannel, true);
+		GeoBot globalBot = new GeoBot(globalChannel, true);
 		
 		//Add other channels
 		System.out.println("INFO: Adding other channels...");
