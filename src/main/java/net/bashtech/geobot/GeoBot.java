@@ -217,11 +217,11 @@ public class GeoBot extends PircBot {
 								max = msg[2];
 							}
 							channelInfo.setGiveaway(new Giveaway(max));
-//							if(msg.length > 3 && channelInfo.getGiveaway().isInteger(msg[3])){
-//								this.startGaTimer(Integer.parseInt(msg[3]));
-//							}else{
-//								sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
-//							}
+							if(msg.length > 3 && channelInfo.getGiveaway().isInteger(msg[3])){
+								this.startGaTimer(Integer.parseInt(msg[3]),channelInfo);
+							}else{
+								sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
+							}
 							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 							
 						}else if(msg[1].equalsIgnoreCase("start")){
@@ -273,14 +273,13 @@ public class GeoBot extends PircBot {
 					}
 				}
 				
-				//Normal channel stuff
-//				// !time - All
-//				if (message.trim().equalsIgnoreCase("!time")) {
-//						System.out.println("Matched command !time");
-//						String time = new java.util.Date().toString();
-//						sendMessage(channel, sender + ": The time is now " + time);
-//						//return;
-//				}
+				// !time - All
+				if (message.trim().equalsIgnoreCase("!time")) {
+						System.out.println("Matched command !time");
+						String time = new java.util.Date().toString();
+						sendMessage(channel, sender + ": The time is now " + time);
+						//return;
+				}
 				
 				// !bothelp - Ops
 				if (message.trim().equalsIgnoreCase("!bothelp") && isOp) {
@@ -289,29 +288,33 @@ public class GeoBot extends PircBot {
 						//return;
 				}
 				
-//				// !viewers - All
-//				if (message.trim().equalsIgnoreCase("!viewers")) {
-//					System.out.println("Matched command !viewers");
-//					try {
-//						sendMessage(channel, "> " + this.getViewers() + " viewers.");
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					//return;
-//				}
-//				
-//				// !bitrate - All
-//				if (message.trim().equalsIgnoreCase("!bitrate")) {
-//					System.out.println("Matched command !bitrate");
-//					try {
-//						sendMessage(channel, "> Streaming at " + this.getBitRate() + " Kbps.");
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					//return;
-//				}
+				// !viewers - All
+				if (message.trim().equalsIgnoreCase("!viewers")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("Matched command !viewers");
+					try {
+						sendMessage(channel, "> " + this.getViewers(channelInfo) + " viewers.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
+				// !bitrate - All
+				if (message.trim().equalsIgnoreCase("!bitrate")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("Matched command !bitrate");
+					try {
+						sendMessage(channel, "> Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
 				
 				// !{botname} - All
 				if (message.trim().equalsIgnoreCase("!" + this.getNick())) {
@@ -336,7 +339,8 @@ public class GeoBot extends PircBot {
 					}else if(msg.length > 1 && isOp){
 						channelInfo.setTopic(message.substring(7));
 						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
-						this.sendMessage(channel, ".topic " + channelInfo.getTopic());
+						if(botManager.network.equalsIgnoreCase("ngame"))
+							this.sendMessage(channel, ".topic " + channelInfo.getTopic());
 						//Below only works if bot is the channel owner
 						//this.sendMessage(channel, "/title " + channelInfo.getTopic());
 					}
@@ -499,7 +503,11 @@ public class GeoBot extends PircBot {
  				
 				// Cap filter
 				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
-					this.ban(channel, sender);
+					if(botManager.network.equalsIgnoreCase("ngame"))
+						this.ban(channel, sender);
+					else
+						this.kick(channel, sender, "Too many caps.");
+					
 					tenSecondUnban(channel, sender);
 				}
 				
@@ -509,7 +517,11 @@ public class GeoBot extends PircBot {
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
 					}else{
-						this.ban(channel, sender);
+						if(botManager.network.equalsIgnoreCase("ngame"))
+							this.ban(channel, sender);
+						else
+							this.kick(channel, sender, "Unauthorized link.");
+						
 						tenSecondUnban(channel, sender);
 					}
 					
@@ -609,40 +621,29 @@ public class GeoBot extends PircBot {
 		timer.schedule(new TimerTask()
 	       {
 	        public void run() {
-	        	GeoBot.this.unBan(channel,name);
+				if(botManager.network.equalsIgnoreCase("jtv"))
+		        	GeoBot.this.unBan(channel,name + "!*@*.*");
+				else
+					GeoBot.this.unBan(channel,name);
 	        }
 	      },delay);
 
 	}
 	
-//	private void startGaTimer(int seconds){
-//		gaTimer = new Timer();
-//		int delay = seconds*1000;
-//		
-//		if(channelInfo.getGiveaway() != null){
-//			if(!channelInfo.getGiveaway().getStatus()){
-//				channelInfo.getGiveaway().setStatus(true);
-//				sendMessage(channelInfo.getChannel(), "> Giveaway started. (" + seconds + " seconds)");
-//			}
-//		}
-//		
-//		gaTimer.schedule(new TimerTask()
-//	       {
-//	        public void run() {
-//				if(channelInfo.getGiveaway() != null){
-//					if(channelInfo.getGiveaway().getStatus()){
-//						channelInfo.getGiveaway().setStatus(false);
-//						GeoBot.this.sendMessage(GeoBot.this.channelInfo.getChannel(), "> Giveaway over.");
-////						String[] results = channelInfo.getGiveaway().getResults();
-////						for(int c=0;c<results.length;c++){
-////							sendMessage(GeoBot.this.channelInfo.getChannel(), results[c]);
-////						}
-//					}
-//				}
-//	        }
-//	      },delay);
-//
-//	}
+	private void startGaTimer(int seconds, Channel channelInfo){
+		gaTimer = new Timer();
+		int delay = seconds*1000;
+		
+		if(channelInfo.getGiveaway() != null){
+			if(!channelInfo.getGiveaway().getStatus()){
+				channelInfo.getGiveaway().setStatus(true);
+				sendMessage(channelInfo.getChannel(), "> Giveaway started. (" + seconds + " seconds)");
+			}
+		}
+		
+		gaTimer.schedule(new giveawayTimer(channelInfo),delay);
+
+	}
 	
 	private void autoPartandRejoin(){
 				
@@ -659,37 +660,37 @@ public class GeoBot extends PircBot {
 
 	}
 	
-//	private int getViewers() throws IOException{
-//		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
-//		URLConnection conn = url.openConnection();
-//		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-//		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-//		String jsonIn = "";
-//		while(d.ready())
-//		{
-//			jsonIn = d.readLine();
-//		}
-//		
-//		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
-//		
-//		return data.viewers_count;
-//	}
-//	
-//	private int getBitRate() throws IOException{
-//		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
-//		URLConnection conn = url.openConnection();
-//		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-//		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-//		String jsonIn = "";
-//		while(d.ready())
-//		{
-//			jsonIn = d.readLine();
-//		}
-//		
-//		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
-//		
-//		return data.average_bitrate;
-//	}
+	private int getViewers(Channel channelInfo) throws IOException{
+		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
+		URLConnection conn = url.openConnection();
+		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String jsonIn = "";
+		while(d.ready())
+		{
+			jsonIn = d.readLine();
+		}
+		
+		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
+		
+		return data.viewers_count;
+	}
+	
+	private int getBitRate(Channel channelInfo) throws IOException{
+		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
+		URLConnection conn = url.openConnection();
+		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String jsonIn = "";
+		while(d.ready())
+		{
+			jsonIn = d.readLine();
+		}
+		
+		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
+		
+		return data.average_bitrate;
+	}
 	
 	public static boolean isInteger(String str) {
         if (str == null) {
@@ -713,6 +714,27 @@ public class GeoBot extends PircBot {
                 }
         }
         return true;
+	}
+	
+	private class giveawayTimer extends TimerTask{
+		private Channel channelInfo;
+		
+		public giveawayTimer(Channel channelInfo2){
+			super();
+			channelInfo = channelInfo2;
+		}
+        public void run() {
+			if(channelInfo.getGiveaway() != null){
+				if(channelInfo.getGiveaway().getStatus()){
+					channelInfo.getGiveaway().setStatus(false);
+					GeoBot.this.sendMessage(channelInfo.getChannel(), "> Giveaway over.");
+//					String[] results = channelInfo.getGiveaway().getResults();
+//					for(int c=0;c<results.length;c++){
+//						sendMessage(GeoBot.this.channelInfo.getChannel(), results[c]);
+//					}
+				}
+			}
+        }
 	}
 
 }

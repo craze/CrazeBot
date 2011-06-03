@@ -17,6 +17,8 @@ public class BotManager {
 	String server;
 	int port;
 	String password;
+	String network;
+	
 	
 	Map<String,GeoBot> botList;
 	Map<String,Channel> channelList;
@@ -89,8 +91,13 @@ public class BotManager {
 			config.setString("adminList", "");
 		}
 		
+		if(!config.keyExists("network")) {
+			config.setString("network", "");
+		}
+		
 		nick = config.getString("nick");
 		server = config.getString("server");
+		network = config.getString("network");
 		port = Integer.parseInt(config.getString("port"));
 		
 		password = config.getString("password");
