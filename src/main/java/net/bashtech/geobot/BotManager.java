@@ -53,9 +53,9 @@ public class BotManager {
 		
 		
 		
-//		Timer reconnectTimer = new Timer();
-//		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
-//		System.out.println("Reconnect timer scheduled.");
+		Timer reconnectTimer = new Timer();
+		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
+		System.out.println("Reconnect timer scheduled.");
 	}
 	
 	private synchronized void loadGlobalProfile(){
