@@ -28,7 +28,7 @@ public class GeoBot extends PircBot {
 								   ".*\\.eu.*",".*\\.fm.*",".*\\.gov.*",".*\\.info.*",".*\\.io.*",".*\\.jobs.*",".*\\.me.*",".*\\.mil.*",
 			                       ".*\\.mobi.*",".*\\.name.*",".*\\.rn.*",".*\\.tel.*",".*\\.travel.*",".*\\.tz.*",".*\\.uk.*",".*\\.us.*"};
 	
-	public GeoBot(BotManager bm){
+	public GeoBot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
 		botManager = bm;
 		
@@ -36,7 +36,7 @@ public class GeoBot extends PircBot {
 		
 		this.setVerbose(true);
 		try {
-			this.connect(bm.server, bm.port, bm.password);
+			this.connect(server, port, bm.password);
 		} catch (NickAlreadyInUseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,7 +59,7 @@ public class GeoBot extends PircBot {
 			try {
 				if(msg[1].contains("#")){
 					sendMessage(sender, "Channel "+ msg[1] +" joining...");
-					botManager.addChannel(msg[1]);
+					botManager.addChannel(msg[1], msg[2]);
 					sendMessage(sender, "Channel "+ msg[1] +" joined.");
 				}else{
 					sendMessage(sender, "Invalid channel format. Must be in format #channelname.");

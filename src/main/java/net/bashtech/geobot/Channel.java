@@ -44,6 +44,12 @@ public class Channel {
 		loadProperties(name);
 	}
 	
+	public Channel(String name, String server2){
+		config = new PropertiesFile(name+".properties");
+		server = server2;
+		loadProperties(name);
+	}
+
 	//#############################################################
 
 	
@@ -353,8 +359,9 @@ public class Channel {
 			e.printStackTrace();
 		}
 		
+		System.out.println("DEBUG: Setting server " + server);
 		if(!config.keyExists("server")) {
-			config.setString("server", name.substring(1, name.length())+".jtvirc.com");
+			config.setString("server", server);
 			
 		}
 		
@@ -406,9 +413,9 @@ public class Channel {
 			config.setBoolean("useFilters", true);
 		}
 		
-		//server = config.getString("server");
+		server = config.getString("server");
 		channel = config.getString("channel");
-		//port = Integer.parseInt(config.getString("port"));
+		port = Integer.parseInt(config.getString("port"));
 		
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsLimit = Integer.parseInt(config.getString("filterCapsLimit"));

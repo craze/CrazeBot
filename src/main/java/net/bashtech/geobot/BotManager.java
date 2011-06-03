@@ -18,7 +18,7 @@ public class BotManager {
 	int port;
 	String password;
 	
-	ArrayList<GeoBot> botList;
+	Map<String,GeoBot> botList;
 	Map<String,Channel> channelList;
 	
 	Set<String> admins;
@@ -26,29 +26,36 @@ public class BotManager {
 	private PropertiesFile config;
 
 	public BotManager(){
-		botList = new ArrayList<GeoBot>();
+		botList = new HashMap<String,GeoBot>();
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
 		
 		loadGlobalProfile();
 		
-		GeoBot temp = new GeoBot(this);
+		botList.put(server, new GeoBot(this, server, port));
 		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-		{
-			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
-			temp.joinChannel(entry.getValue().getChannel());
-			System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
+		{	
+			System.out.println("DEBUG: Checking for bot on server " + entry.getValue().getServer());
+			if(botList.containsKey(entry.getValue().getServer())){
+				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel() + " NO CREATE.");
+				botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
+				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 
+			}else{
+				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel() + " CREATE");
+				botList.put(entry.getValue().getServer(), new GeoBot(this, entry.getValue().getServer(), entry.getValue().getPort()));
+				botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
+				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
+			}
 		}
 
 		
-		botList.add(temp);
 		
 		
-		Timer reconnectTimer = new Timer();
-		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
-		System.out.println("Reconnect timer scheduled.");
+//		Timer reconnectTimer = new Timer();
+//		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
+//		System.out.println("Reconnect timer scheduled.");
 	}
 	
 	private synchronized void loadGlobalProfile(){
@@ -120,15 +127,28 @@ public class BotManager {
 			return false;
 	}
 	
-	public void addChannel(String name) throws NickAlreadyInUseException, IOException, IrcException{
+	public void addChannel(String name, String server2) throws NickAlreadyInUseException, IOException, IrcException{
 		if(channelList.containsKey(name.toLowerCase())){
 			System.out.println("INFO: All ready in channel " + name);
 			return;
 		}
+		Channel tempChan = new Channel(name,server2);
 		
-		botList.get(0).joinChannel(name);
+		channelList.put(name, tempChan);
+
 		
-		channelList.put(name, new Channel(name));
+		if(botList.containsKey(server2)){
+			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " NO CREATE.");
+			botList.get(server2).joinChannel(tempChan.getChannel());
+			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
+
+		}else{
+			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " CREATE");
+			botList.put(server2, new GeoBot(this,tempChan.getServer(), tempChan.getPort()));
+			botList.get(server2).joinChannel(tempChan.getChannel());
+			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
+		}
+		
 		
 		writeChannelList();
 	}
@@ -139,25 +159,37 @@ public class BotManager {
 			return;
 		}
 		
-		botList.get(0).partChannel(name);
+		Channel tempChan = channelList.get(name.toLowerCase());
+		
+		if(botList.containsKey(tempChan.getServer())){
+			GeoBot tempBot = botList.get(tempChan.getServer());
+			tempBot.partChannel(name);
+		}
 		
 		channelList.remove(name.toLowerCase());
+		
 		
 		writeChannelList();
 	}
 	
 	public synchronized void rejoinChannels(){
-		String[] inChannels = botList.get(0).getChannels();
 		
-		for(String channel: inChannels){
-			System.out.println("INFO: Parting channel " + channel);
-			botList.get(0).partChannel(channel);
+		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		{
+			String[] inChannels = entry.getValue().getChannels();
+			
+			for(String channel: inChannels){
+				System.out.println("INFO: Parting channel " + channel);
+				entry.getValue().partChannel(channel);
+			}
+			
 		}
+
 		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
 			System.out.println("INFO: Joining channel " + entry.getKey());
-			botList.get(0).joinChannel(entry.getKey());
+			botList.get(entry.getValue().getServer()).joinChannel(entry.getKey());
 		}
 	}
 	
