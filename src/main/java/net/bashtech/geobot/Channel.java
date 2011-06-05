@@ -371,7 +371,7 @@ public class Channel {
 		}
 		
 		System.out.println("DEBUG: Setting server " + server);
-		if(!config.keyExists("server")) {
+		if(!config.keyExists("server") || server != null) {
 			config.setString("server", server);
 			
 		}
@@ -428,7 +428,9 @@ public class Channel {
 			config.setBoolean("enableThrow", true);
 		}
 		
+
 		server = config.getString("server");
+		
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
 		
