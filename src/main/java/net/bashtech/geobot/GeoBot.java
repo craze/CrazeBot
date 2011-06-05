@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import org.jibble.pircbot.*;
 
 public class GeoBot extends PircBot {	
-	private Timer pjTimer;
+	//private Timer pjTimer;
 	
 	private BotManager botManager;
 	
@@ -666,20 +666,20 @@ public class GeoBot extends PircBot {
 
 	}
 	
-	private void autoPartandRejoin(){
-				
-		pjTimer = new Timer();
-		
-		int delay = 1800000;
-		
-		pjTimer.scheduleAtFixedRate(new TimerTask()
-	       {
-	        public void run() {
-	        	botManager.rejoinChannels();
-	        }
-	      },delay,delay);
-
-	}
+//	private void autoPartandRejoin(){
+//				
+//		pjTimer = new Timer();
+//		
+//		int delay = 1800000;
+//		
+//		pjTimer.scheduleAtFixedRate(new TimerTask()
+//	       {
+//	        public void run() {
+//	        	botManager.rejoinChannels();
+//	        }
+//	      },delay,delay);
+//
+//	}
 	
 	private int getViewers(Channel channelInfo) throws IOException{
 		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));

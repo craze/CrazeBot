@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
@@ -24,6 +25,8 @@ public class BotManager {
 	Map<String,Channel> channelList;
 	
 	Set<String> admins;
+	
+	private Timer pjTimer;
 	
 	private PropertiesFile config;
 
@@ -58,6 +61,8 @@ public class BotManager {
 		Timer reconnectTimer = new Timer();
 		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
 		System.out.println("Reconnect timer scheduled.");
+		
+		this.autoPartandRejoin();
 	}
 	
 	private synchronized void loadGlobalProfile(){
@@ -180,7 +185,7 @@ public class BotManager {
 	}
 	
 	public synchronized void rejoinChannels(){
-		
+		System.out.println("INFO: Rejoining channels");
 		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
 		{
 			String[] inChannels = entry.getValue().getChannels();
@@ -208,6 +213,22 @@ public class BotManager {
 		}
 		
 		config.setString("channelList", channelString);
+	}
+	
+	
+	private void autoPartandRejoin(){
+		
+		pjTimer = new Timer();
+		
+		int delay = 1800000;
+		
+		pjTimer.scheduleAtFixedRate(new TimerTask()
+	       {
+	        public void run() {
+	        	BotManager.this.rejoinChannels();
+	        }
+	      },delay,delay);
+
 	}
 	
 }
