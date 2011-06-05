@@ -451,10 +451,10 @@ public class GeoBot extends PircBot {
  					if(msg.length  > 2 && isOp){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isModerator(msg[2])){
- 								sendMessage(channel,"> User already exists." + "(" + msg[2] + ")");
+ 								sendMessage(channel,"> User already exists. " + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addModerator(msg[2]);
- 								sendMessage(channel,"> User added."+ "(" + msg[2] + ")");
+ 								sendMessage(channel,"> User added. "+ "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete")){
  							if(channelInfo.isModerator(msg[2])){
