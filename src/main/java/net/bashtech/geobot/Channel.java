@@ -385,7 +385,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("filterCaps")) {
-			config.setBoolean("filterCaps", true);
+			config.setBoolean("filterCaps", false);
 		}
 		
 		if(!config.keyExists("filterCapsLimit")) {
@@ -393,7 +393,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("filterLinks")) {
-			config.setBoolean("filterLinks", true);
+			config.setBoolean("filterLinks", false);
 		}
 		
 		if(!config.keyExists("topic")) {
@@ -417,11 +417,11 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("useTopic")) {
-			config.setBoolean("useTopic", true);
+			config.setBoolean("useTopic", false);
 		}
 		
 		if(!config.keyExists("useFilters")) {
-			config.setBoolean("useFilters", true);
+			config.setBoolean("useFilters", false);
 		}
 		
 		if(!config.keyExists("enableThrow")) {
