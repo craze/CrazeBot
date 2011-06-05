@@ -31,6 +31,8 @@ public class Channel {
 	
 	private Set<String> permittedUsers = new HashSet<String>();
 	
+	private Set<String> permittedDomains = new HashSet<String>();
+	
 	//Checks for disabled features.
 	public boolean useTopic = true;
 	public boolean useFilters = true;
@@ -304,6 +306,48 @@ public class Channel {
 		return moderators;
 	}
 	
+	//###################################################
+	
+//	public boolean isPermittedDomain(String name){		
+//
+//	}
+	
+	public void addPermittedDomain(String name){
+		synchronized (permittedDomains) {
+			permittedDomains.add(name.toLowerCase());
+		}
+		
+		String permittedDomainsString = "";
+		
+		synchronized (permittedDomains) { 
+			for(String s:permittedDomains){
+				permittedDomainsString += s + ",";
+			}
+		}
+		
+		config.setString("permittedDomains", permittedDomainsString);
+	}
+	
+	public void removePermittedDomain(String name){
+		synchronized (permittedDomains) {
+			if(permittedDomains.contains(name.toLowerCase()))
+				permittedDomains.remove(name.toLowerCase());
+		}
+		
+		String permittedDomainsString = "";
+		
+		synchronized (permittedDomains) { 
+			for(String s:permittedDomains){
+				permittedDomainsString += s + ",";
+			}
+		}
+		
+		config.setString("permittedDomains", permittedDomainsString);
+	}
+	
+	public Set<String> getpermittedDomains(){
+		return permittedDomains;
+	}
 	// ##################################################
 	
 	public void setTopicFeature(boolean setting){
@@ -409,6 +453,10 @@ public class Channel {
 			config.setBoolean("enableThrow", true);
 		}
 		
+		if(!config.keyExists("permittedDomains")) {
+			config.setString("permittedDomains", "");
+		}
+		
 
 		server = config.getString("server");
 		
@@ -452,6 +500,16 @@ public class Channel {
 			for(int i = 0; i < moderatorsRaw.length; i++){
 				if(moderatorsRaw[i].length() > 1){
 					moderators.add(moderatorsRaw[i].toLowerCase());
+				}
+			}
+		}
+		
+		String[] domainsRaw = config.getString("permittedDomains").split(",");
+		
+		synchronized (permittedDomains) {
+			for(int i = 0; i < domainsRaw.length; i++){
+				if(domainsRaw[i].length() > 1){
+					permittedDomains.add(domainsRaw[i].toLowerCase());
 				}
 			}
 		}
