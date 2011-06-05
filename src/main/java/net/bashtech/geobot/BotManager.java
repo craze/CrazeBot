@@ -188,7 +188,7 @@ public class BotManager {
 		System.out.println("INFO: Rejoining channels");
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
-			if(entry.getValue().getGiveaway().getStatus() || entry.getValue().getPoll().getStatus())
+			if((entry.getValue().getGiveaway() != null && entry.getValue().getGiveaway().getStatus()) || (entry.getValue().getPoll() != null && entry.getValue().getPoll().getStatus()))
 				continue;
 			
 			System.out.println("INFO: Parting channel " + entry.getKey());
