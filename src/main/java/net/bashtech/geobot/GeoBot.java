@@ -18,7 +18,6 @@ import org.jibble.pircbot.*;
 
 public class GeoBot extends PircBot {	
 	private Timer pjTimer;
-	private Timer gaTimer;
 	
 	private BotManager botManager;
 	
@@ -649,17 +648,21 @@ public class GeoBot extends PircBot {
 	}
 	
 	private void startGaTimer(int seconds, Channel channelInfo){
-		gaTimer = new Timer();
-		int delay = seconds*1000;
+
 		
 		if(channelInfo.getGiveaway() != null){
+			channelInfo.getGiveaway().setTimer(new Timer());
+			int delay = seconds*1000;
+			
 			if(!channelInfo.getGiveaway().getStatus()){
 				channelInfo.getGiveaway().setStatus(true);
 				sendMessage(channelInfo.getChannel(), "> Giveaway started. (" + seconds + " seconds)");
 			}
+			
+			channelInfo.getGiveaway().getTimer().schedule(new giveawayTimer(channelInfo),delay);
 		}
 		
-		gaTimer.schedule(new giveawayTimer(channelInfo),delay);
+		
 
 	}
 	
