@@ -951,7 +951,7 @@ public abstract class PircBot implements ReplyConstants {
                         // This is not a server response.
                         // It must be a nick without login and hostname.
                         // (or maybe a NOTICE or suchlike from the server)
-                    	System.out.println("DEBUG: No hostname.");
+                    	//System.out.println("DEBUG: No hostname.");
                         sourceNick = senderInfo;
                         //target = token; //Change to ngame
                         target = tokenizer.nextToken();
@@ -977,14 +977,14 @@ public abstract class PircBot implements ReplyConstants {
         if (target.startsWith(":")) {
             target = target.substring(1);
         }
-        System.out.println("DEBUG: command=" + command);
-        System.out.println("DEBUG: line=\"" + line +"\"");
-        System.out.println("DEBUG: target=" + target);
-        System.out.println("DEBUG: sourceNick=" + sourceNick);
+        //System.out.println("DEBUG: command=" + command);
+        //System.out.println("DEBUG: line=\"" + line +"\"");
+        //System.out.println("DEBUG: target=" + target);
+        //System.out.println("DEBUG: sourceNick=" + sourceNick);
         // Check for CTCP requests.
         if (command.equals("PRIVMSG") && line.indexOf(":\u0001") > 0 && line.endsWith("\u0001")) {
             String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
-            System.out.println("DEBUG: Request=" + request);
+            //System.out.println("DEBUG: Request=" + request);
             if (request.equals("VERSION")) {
                 // VERSION request
                 this.onVersion(sourceNick, sourceLogin, sourceHostname, target);
