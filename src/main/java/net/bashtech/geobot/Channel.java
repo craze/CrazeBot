@@ -39,6 +39,8 @@ public class Channel {
 	
 	private Giveaway currentGiveaway;
 	
+	private boolean enableThrow;
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -350,6 +352,15 @@ public class Channel {
 		currentGiveaway = _gw;
 	}
 	
+	public boolean checkThrow(){
+		return enableThrow;
+	}
+	
+	public void setThrow(boolean setting){
+		this.enableThrow = setting;
+		config.setBoolean("enableThrow", this.enableThrow);
+	}
+	
 	// ##################################################
 	
 	private void loadProperties(String name){
@@ -366,7 +377,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("port")) {
-			config.setInt("port", 6667);
+			config.setString("port", "6667");
 		}
 		
 		if(!config.keyExists("channel")) {
@@ -413,6 +424,10 @@ public class Channel {
 			config.setBoolean("useFilters", true);
 		}
 		
+		if(!config.keyExists("enableThrow")) {
+			config.setBoolean("enableThrow", true);
+		}
+		
 		server = config.getString("server");
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
@@ -426,6 +441,7 @@ public class Channel {
 		
 		useTopic = Boolean.parseBoolean(config.getString("useTopic"));
 		useFilters = Boolean.parseBoolean(config.getString("useFilters"));
+		enableThrow = Boolean.parseBoolean(config.getString("enableThrow"));
 
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");

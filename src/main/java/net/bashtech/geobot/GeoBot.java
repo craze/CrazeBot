@@ -331,6 +331,15 @@ public class GeoBot extends PircBot {
 					//return;
 				}
 				
+				// !throw - All
+				if(msg[0].equalsIgnoreCase("!throw")){
+					System.out.println("Matched command !throw");
+					if(msg.length > 2){
+						this.sendMessage(channel, "> " + sender + " throws " + msg[1] + " at " + msg[2]);
+					}
+					//return;
+				}
+				
 				// !topic
 				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
 					System.out.println("Matched command !topic");
