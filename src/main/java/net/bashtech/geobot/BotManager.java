@@ -186,23 +186,17 @@ public class BotManager {
 	
 	public synchronized void rejoinChannels(){
 		System.out.println("INFO: Rejoining channels");
-		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
-		{
-			String[] inChannels = entry.getValue().getChannels();
-			
-			for(String channel: inChannels){
-				System.out.println("INFO: Parting channel " + channel);
-				entry.getValue().partChannel(channel);
-			}
-			
-		}
-
-		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
+			if(entry.getValue().getGiveaway().getStatus() || entry.getValue().getPoll().getStatus())
+				continue;
+			
+			System.out.println("INFO: Parting channel " + entry.getKey());
+			botList.get(entry.getValue().getServer()).partChannel(entry.getKey());
 			System.out.println("INFO: Joining channel " + entry.getKey());
 			botList.get(entry.getValue().getServer()).joinChannel(entry.getKey());
 		}
+
 	}
 	
 	private synchronized void writeChannelList(){
