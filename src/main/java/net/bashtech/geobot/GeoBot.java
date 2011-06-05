@@ -496,6 +496,15 @@ public class GeoBot extends PircBot {
  								channelInfo.setFiltersFeature(false);
  								sendMessage(channel, "> Feature: Filters is off");
  							}
+						}else if(msg[1].equalsIgnoreCase("throw")){
+ 							//filters
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.setThrow(true);
+ 								sendMessage(channel, "> Feature: !throw is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setThrow(false);
+ 								sendMessage(channel, "> Feature: !throw is off");
+ 							}
  						}
  					}
  				}
