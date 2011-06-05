@@ -222,7 +222,7 @@ public class GeoBot extends PircBot {
 							}else{
 								sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 							}
-							sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
+							//sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 							
 						}else if(msg[1].equalsIgnoreCase("start")){
 							if(channelInfo.getGiveaway() != null){
