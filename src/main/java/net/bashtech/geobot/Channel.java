@@ -3,8 +3,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 
 public class Channel {
@@ -23,11 +25,11 @@ public class Channel {
 	
 	private String topic;
 	
-	private ArrayList<String> regulars = new ArrayList<String>();
+	private Set<String> regulars = new HashSet<String>();
 	
-	private ArrayList<String> moderators = new ArrayList<String>();
+	private Set<String> moderators = new HashSet<String>();
 	
-	private ArrayList<String> permittedUsers = new ArrayList<String>();
+	private Set<String> permittedUsers = new HashSet<String>();
 	
 	//Checks for disabled features.
 	public boolean useTopic = true;
@@ -193,7 +195,7 @@ public class Channel {
 	
 	public void addRegular(String name){
 		synchronized (regulars) { 
-			regulars.add(name);
+			regulars.add(name.toLowerCase());
 		}
 		
 		String regularsString = "";
@@ -209,13 +211,8 @@ public class Channel {
 	
 	public void removeRegular(String name){
 		synchronized (regulars) { 
-			for(int c = 0; c < regulars.size(); c++){
-				if(regulars.get(c).equalsIgnoreCase(name)){
-					regulars.remove(c);
-				}
-
-			}
-
+			if(regulars.contains(name.toLowerCase()))
+				regulars.remove(name.toLowerCase());
 		}		
 		String regularsString = "";
 		
@@ -228,17 +225,18 @@ public class Channel {
 		config.setString("regulars", regularsString);
 	}
 	
+	public Set<String> getRegulars(){
+		return regulars;
+	}
+	
 	public void permitUser(String name){
 		synchronized (permittedUsers) { 
-			for(String s:permittedUsers){
-				if(s.equalsIgnoreCase(name)){
-					return;
-				}
-			}
+			if(permittedUsers.contains(name.toLowerCase()))
+				return;
 		}
 		
 		synchronized (permittedUsers) { 
-			permittedUsers.add(name);
+			permittedUsers.add(name.toLowerCase());
 		}
 	}
 	
@@ -249,19 +247,10 @@ public class Channel {
 		}
 		
 		synchronized (permittedUsers) {
-			for(int c = 0; c < permittedUsers.size(); c++){
-				if(permittedUsers.get(c).equalsIgnoreCase(name)){
-					permittedUsers.remove(c);
-					return true;
-				}
-
+			if(permittedUsers.contains(name.toLowerCase())){
+				permittedUsers.remove(name.toLowerCase());
+				return true;
 			}
-//			for(String s:permittedUsers){
-//				if(s.equalsIgnoreCase(name)){
-//					permittedUsers.remove(s);
-//					return true;
-//				}
-//			}
 		}
 		
 		return false;
@@ -271,11 +260,8 @@ public class Channel {
 	
 	public boolean isModerator(String name){		
 		synchronized (moderators) { 
-			for(String s:moderators){
-				if(s.equalsIgnoreCase(name)){
-					return true;
-				}
-			}
+			if(moderators.contains(name.toLowerCase()))
+				return true;
 		}
 		
 		return false;
@@ -283,7 +269,7 @@ public class Channel {
 	
 	public void addModerator(String name){
 		synchronized (moderators) {
-			moderators.add(name);
+			moderators.add(name.toLowerCase());
 		}
 		
 		String moderatorsString = "";
@@ -299,17 +285,8 @@ public class Channel {
 	
 	public void removeModerator(String name){
 		synchronized (moderators) {
-			for(int c = 0; c < moderators.size(); c++){
-				if(moderators.get(c).equalsIgnoreCase(name)){
-					moderators.remove(c);
-				}
-
-			}
-//			for(String s:moderators){
-//				if(s.equalsIgnoreCase(name)){
-//					moderators.remove(s);
-//				}
-//			}
+			if(moderators.contains(name.toLowerCase()))
+				moderators.remove(name.toLowerCase());
 		}
 		
 		String moderatorsString = "";
@@ -321,6 +298,10 @@ public class Channel {
 		}
 		
 		config.setString("moderators", moderatorsString);
+	}
+	
+	public Set<String> getModerators(){
+		return moderators;
 	}
 	
 	// ##################################################
@@ -413,7 +394,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("moderators")) {
-			config.setString("moderators", name.substring(1, name.length()) + ",");
+			config.setString("moderators", "");
 		}
 		
 		if(!config.keyExists("useTopic")) {
@@ -460,7 +441,7 @@ public class Channel {
 		synchronized (regulars) {
 			for(int i = 0; i < regularsRaw.length; i++){
 				if(regularsRaw[i].length() > 1){
-					regulars.add(regularsRaw[i]);
+					regulars.add(regularsRaw[i].toLowerCase());
 				}
 			}
 		}
@@ -470,7 +451,7 @@ public class Channel {
 		synchronized (moderators) {
 			for(int i = 0; i < moderatorsRaw.length; i++){
 				if(moderatorsRaw[i].length() > 1){
-					moderators.add(moderatorsRaw[i]);
+					moderators.add(moderatorsRaw[i].toLowerCase());
 				}
 			}
 		}

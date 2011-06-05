@@ -273,7 +273,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !time - All
-				if (message.trim().equalsIgnoreCase("!time")) {
+				if (msg[0].equalsIgnoreCase("!time")) {
 						System.out.println("Matched command !time");
 						String time = new java.util.Date().toString();
 						sendMessage(channel, sender + ": The time is now " + time);
@@ -281,14 +281,14 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !bothelp - Ops
-				if (message.trim().equalsIgnoreCase("!bothelp") && isOp) {
+				if (msg[0].equalsIgnoreCase("!bothelp") && isOp) {
 						System.out.println("Matched command !bothelp");
 						sendMessage(channel, "> Command help is available at https://github.com/bashtech/GeoBotIRC/wiki/Commands.");
 						//return;
 				}
 				
 				// !viewers - All
-				if (message.trim().equalsIgnoreCase("!viewers")) {
+				if (msg[0].equalsIgnoreCase("!viewers")) {
 					if(!botManager.network.equalsIgnoreCase("jtv"))
 						return;
 					System.out.println("Matched command !viewers");
@@ -302,7 +302,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !bitrate - All
-				if (message.trim().equalsIgnoreCase("!bitrate")) {
+				if (msg[0].equalsIgnoreCase("!bitrate")) {
 					if(!botManager.network.equalsIgnoreCase("jtv"))
 						return;
 					System.out.println("Matched command !bitrate");
@@ -316,7 +316,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !{botname} - All
-				if (message.trim().equalsIgnoreCase("!" + this.getNick())) {
+				if (msg[0].equalsIgnoreCase("!" + this.getNick())) {
 					System.out.println("Matched command !" + this.getNick());
 					sendMessage(channel, "> Commands: " + channelInfo.getCommandList());
 
@@ -324,7 +324,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !clear - Ops
-				if(message.trim().equalsIgnoreCase("!clear") && isOp){
+				if(msg[0].equalsIgnoreCase("!clear") && isOp){
 					System.out.println("Matched command !clear");
 					this.sendMessage(channel, ".clear");
 					//return;
@@ -436,6 +436,12 @@ public class GeoBot extends PircBot {
  								sendMessage(channel,"> User does not exist." + "(" + msg[2] + ")");
  							}
  						}
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
+ 						String tempList = "> Regulars: ";
+ 						for(String s:channelInfo.getRegulars()){
+ 							tempList += s + ", ";
+ 						}
+ 						sendMessage(channel, tempList);
  					}
  				}
  				
@@ -458,6 +464,12 @@ public class GeoBot extends PircBot {
  								sendMessage(channel,"> User does not exist."+ "(" + msg[2] + ")");
  							}
  						}
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
+ 						String tempList = "> Moderators: ";
+ 						for(String s:channelInfo.getModerators()){
+ 							tempList += s + ", ";
+ 						}
+ 						sendMessage(channel, tempList);
  					}
  				}
  				
