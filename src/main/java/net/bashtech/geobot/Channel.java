@@ -45,6 +45,8 @@ public class Channel {
 	
 	private boolean enableThrow;
 	
+	private boolean signKicks;
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -386,6 +388,15 @@ public class Channel {
 		config.setBoolean("enableThrow", this.enableThrow);
 	}
 	
+	public boolean checkSignKicks(){
+		return signKicks;
+	}
+	
+	public void setSignKicks(boolean setting){
+		this.signKicks = setting;
+		config.setBoolean("signKicks", this.signKicks);
+	}
+	
 	// ##################################################
 	
 	private void loadProperties(String name){
@@ -457,6 +468,9 @@ public class Channel {
 			config.setString("permittedDomains", "");
 		}
 		
+		if(!config.keyExists("signKicks")) {
+			config.setBoolean("signKicks", true);
+		}
 
 		server = config.getString("server");
 		
@@ -474,6 +488,7 @@ public class Channel {
 		useFilters = Boolean.parseBoolean(config.getString("useFilters"));
 		enableThrow = Boolean.parseBoolean(config.getString("enableThrow"));
 
+		signKicks = Boolean.parseBoolean(config.getString("signKicks"));
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");

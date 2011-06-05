@@ -516,6 +516,15 @@ public class GeoBot extends PircBot {
  								channelInfo.setThrow(false);
  								sendMessage(channel, "> Feature: !throw is off");
  							}
+						}else if(msg[1].equalsIgnoreCase("signkicks")){
+ 							//filters
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.setSignKicks(true);
+ 								sendMessage(channel, "> Feature: Sign-kicks is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setSignKicks(false);
+ 								sendMessage(channel, "> Feature: Sign-kicks is off");
+ 							}
  						}
  					}
  				}
@@ -538,6 +547,8 @@ public class GeoBot extends PircBot {
 						this.kick(channel, sender, "Too many caps.");
 					
 					tenSecondUnban(channel, sender);
+					if(channelInfo.checkSignKicks())
+						sendMessage(channel, "> " + sender + ", please don't shout or talk in all caps.");
 				}
 				
 				// Link filter
@@ -552,6 +563,8 @@ public class GeoBot extends PircBot {
 							this.kick(channel, sender, "Unauthorized link.");
 						
 						tenSecondUnban(channel, sender);
+						if(channelInfo.checkSignKicks())
+							sendMessage(channel, "> " + sender + ", please ask a moderator before posting links.");
 					}
 					
 				}
