@@ -3,8 +3,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 
 public class Channel {
@@ -23,11 +25,13 @@ public class Channel {
 	
 	private String topic;
 	
-	private ArrayList<String> regulars = new ArrayList<String>();
+	private Set<String> regulars = new HashSet<String>();
 	
-	private ArrayList<String> moderators = new ArrayList<String>();
+	private Set<String> moderators = new HashSet<String>();
 	
-	private ArrayList<String> permittedUsers = new ArrayList<String>();
+	private Set<String> permittedUsers = new HashSet<String>();
+	
+	private Set<String> permittedDomains = new HashSet<String>();
 	
 	//Checks for disabled features.
 	public boolean useTopic = true;
@@ -39,11 +43,19 @@ public class Channel {
 	
 	private Giveaway currentGiveaway;
 	
+	private boolean enableThrow;
+	
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
 	}
 	
+	public Channel(String name, String server2){
+		config = new PropertiesFile(name+".properties");
+		server = server2;
+		loadProperties(name);
+	}
+
 	//#############################################################
 
 	
@@ -185,7 +197,7 @@ public class Channel {
 	
 	public void addRegular(String name){
 		synchronized (regulars) { 
-			regulars.add(name);
+			regulars.add(name.toLowerCase());
 		}
 		
 		String regularsString = "";
@@ -201,13 +213,8 @@ public class Channel {
 	
 	public void removeRegular(String name){
 		synchronized (regulars) { 
-			for(int c = 0; c < regulars.size(); c++){
-				if(regulars.get(c).equalsIgnoreCase(name)){
-					regulars.remove(c);
-				}
-
-			}
-
+			if(regulars.contains(name.toLowerCase()))
+				regulars.remove(name.toLowerCase());
 		}		
 		String regularsString = "";
 		
@@ -220,17 +227,18 @@ public class Channel {
 		config.setString("regulars", regularsString);
 	}
 	
+	public Set<String> getRegulars(){
+		return regulars;
+	}
+	
 	public void permitUser(String name){
 		synchronized (permittedUsers) { 
-			for(String s:permittedUsers){
-				if(s.equalsIgnoreCase(name)){
-					return;
-				}
-			}
+			if(permittedUsers.contains(name.toLowerCase()))
+				return;
 		}
 		
 		synchronized (permittedUsers) { 
-			permittedUsers.add(name);
+			permittedUsers.add(name.toLowerCase());
 		}
 	}
 	
@@ -241,19 +249,10 @@ public class Channel {
 		}
 		
 		synchronized (permittedUsers) {
-			for(int c = 0; c < permittedUsers.size(); c++){
-				if(permittedUsers.get(c).equalsIgnoreCase(name)){
-					permittedUsers.remove(c);
-					return true;
-				}
-
+			if(permittedUsers.contains(name.toLowerCase())){
+				permittedUsers.remove(name.toLowerCase());
+				return true;
 			}
-//			for(String s:permittedUsers){
-//				if(s.equalsIgnoreCase(name)){
-//					permittedUsers.remove(s);
-//					return true;
-//				}
-//			}
 		}
 		
 		return false;
@@ -263,11 +262,8 @@ public class Channel {
 	
 	public boolean isModerator(String name){		
 		synchronized (moderators) { 
-			for(String s:moderators){
-				if(s.equalsIgnoreCase(name)){
-					return true;
-				}
-			}
+			if(moderators.contains(name.toLowerCase()))
+				return true;
 		}
 		
 		return false;
@@ -275,7 +271,7 @@ public class Channel {
 	
 	public void addModerator(String name){
 		synchronized (moderators) {
-			moderators.add(name);
+			moderators.add(name.toLowerCase());
 		}
 		
 		String moderatorsString = "";
@@ -291,17 +287,8 @@ public class Channel {
 	
 	public void removeModerator(String name){
 		synchronized (moderators) {
-			for(int c = 0; c < moderators.size(); c++){
-				if(moderators.get(c).equalsIgnoreCase(name)){
-					moderators.remove(c);
-				}
-
-			}
-//			for(String s:moderators){
-//				if(s.equalsIgnoreCase(name)){
-//					moderators.remove(s);
-//				}
-//			}
+			if(moderators.contains(name.toLowerCase()))
+				moderators.remove(name.toLowerCase());
 		}
 		
 		String moderatorsString = "";
@@ -315,6 +302,52 @@ public class Channel {
 		config.setString("moderators", moderatorsString);
 	}
 	
+	public Set<String> getModerators(){
+		return moderators;
+	}
+	
+	//###################################################
+	
+//	public boolean isPermittedDomain(String name){		
+//
+//	}
+	
+	public void addPermittedDomain(String name){
+		synchronized (permittedDomains) {
+			permittedDomains.add(name.toLowerCase());
+		}
+		
+		String permittedDomainsString = "";
+		
+		synchronized (permittedDomains) { 
+			for(String s:permittedDomains){
+				permittedDomainsString += s + ",";
+			}
+		}
+		
+		config.setString("permittedDomains", permittedDomainsString);
+	}
+	
+	public void removePermittedDomain(String name){
+		synchronized (permittedDomains) {
+			if(permittedDomains.contains(name.toLowerCase()))
+				permittedDomains.remove(name.toLowerCase());
+		}
+		
+		String permittedDomainsString = "";
+		
+		synchronized (permittedDomains) { 
+			for(String s:permittedDomains){
+				permittedDomainsString += s + ",";
+			}
+		}
+		
+		config.setString("permittedDomains", permittedDomainsString);
+	}
+	
+	public Set<String> getpermittedDomains(){
+		return permittedDomains;
+	}
 	// ##################################################
 	
 	public void setTopicFeature(boolean setting){
@@ -344,6 +377,15 @@ public class Channel {
 		currentGiveaway = _gw;
 	}
 	
+	public boolean checkThrow(){
+		return enableThrow;
+	}
+	
+	public void setThrow(boolean setting){
+		this.enableThrow = setting;
+		config.setBoolean("enableThrow", this.enableThrow);
+	}
+	
 	// ##################################################
 	
 	private void loadProperties(String name){
@@ -353,13 +395,14 @@ public class Channel {
 			e.printStackTrace();
 		}
 		
-		if(!config.keyExists("server")) {
-			config.setString("server", name.substring(1, name.length())+".jtvirc.com");
+		System.out.println("DEBUG: Setting server " + server);
+		if(!config.keyExists("server") || server != null) {
+			config.setString("server", server);
 			
 		}
 		
 		if(!config.keyExists("port")) {
-			config.setInt("port", 6667);
+			config.setString("port", "6667");
 		}
 		
 		if(!config.keyExists("channel")) {
@@ -367,7 +410,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("filterCaps")) {
-			config.setBoolean("filterCaps", true);
+			config.setBoolean("filterCaps", false);
 		}
 		
 		if(!config.keyExists("filterCapsLimit")) {
@@ -375,7 +418,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("filterLinks")) {
-			config.setBoolean("filterLinks", true);
+			config.setBoolean("filterLinks", false);
 		}
 		
 		if(!config.keyExists("topic")) {
@@ -395,18 +438,28 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("moderators")) {
-			config.setString("moderators", name.substring(1, name.length()) + ",");
+			config.setString("moderators", "");
 		}
 		
 		if(!config.keyExists("useTopic")) {
-			config.setBoolean("useTopic", true);
+			config.setBoolean("useTopic", false);
 		}
 		
 		if(!config.keyExists("useFilters")) {
-			config.setBoolean("useFilters", true);
+			config.setBoolean("useFilters", false);
 		}
 		
+		if(!config.keyExists("enableThrow")) {
+			config.setBoolean("enableThrow", true);
+		}
+		
+		if(!config.keyExists("permittedDomains")) {
+			config.setString("permittedDomains", "");
+		}
+		
+
 		server = config.getString("server");
+		
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));
 		
@@ -419,6 +472,7 @@ public class Channel {
 		
 		useTopic = Boolean.parseBoolean(config.getString("useTopic"));
 		useFilters = Boolean.parseBoolean(config.getString("useFilters"));
+		enableThrow = Boolean.parseBoolean(config.getString("enableThrow"));
 
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
@@ -435,7 +489,7 @@ public class Channel {
 		synchronized (regulars) {
 			for(int i = 0; i < regularsRaw.length; i++){
 				if(regularsRaw[i].length() > 1){
-					regulars.add(regularsRaw[i]);
+					regulars.add(regularsRaw[i].toLowerCase());
 				}
 			}
 		}
@@ -445,7 +499,17 @@ public class Channel {
 		synchronized (moderators) {
 			for(int i = 0; i < moderatorsRaw.length; i++){
 				if(moderatorsRaw[i].length() > 1){
-					moderators.add(moderatorsRaw[i]);
+					moderators.add(moderatorsRaw[i].toLowerCase());
+				}
+			}
+		}
+		
+		String[] domainsRaw = config.getString("permittedDomains").split(",");
+		
+		synchronized (permittedDomains) {
+			for(int i = 0; i < domainsRaw.length; i++){
+				if(domainsRaw[i].length() > 1){
+					permittedDomains.add(domainsRaw[i].toLowerCase());
 				}
 			}
 		}

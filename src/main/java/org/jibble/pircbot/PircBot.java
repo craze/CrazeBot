@@ -902,8 +902,20 @@ public abstract class PircBot implements ReplyConstants {
         String sourceHostname = "";
 
         StringTokenizer tokenizer = new StringTokenizer(line);
-        String senderInfo = tokenizer.nextToken();
-        String command = tokenizer.nextToken();
+        String senderInfo;
+        String command;
+        try{
+        	senderInfo =  tokenizer.nextToken();
+        }catch(NoSuchElementException ex){
+        	senderInfo = "";
+        }
+        
+        try{
+        	command =  tokenizer.nextToken();
+        }catch(NoSuchElementException ex){
+        	command = "";
+        }
+        
         String target = ""; // Changed from null
 
         int exclamation = senderInfo.indexOf("!");
@@ -931,6 +943,7 @@ public abstract class PircBot implements ReplyConstants {
                         String errorStr = token;
                         String response = line.substring(line.indexOf(errorStr, senderInfo.length()) + 4, line.length());
                         this.processServerResponse(code, response);
+
                         // Return from the method.
                         return;
                     }
@@ -938,8 +951,10 @@ public abstract class PircBot implements ReplyConstants {
                         // This is not a server response.
                         // It must be a nick without login and hostname.
                         // (or maybe a NOTICE or suchlike from the server)
+                    	//System.out.println("DEBUG: No hostname.");
                         sourceNick = senderInfo;
-                        target = token;
+                        //target = token; //Change to ngame
+                        target = tokenizer.nextToken();
                     }
                 }
                 else {
@@ -962,10 +977,14 @@ public abstract class PircBot implements ReplyConstants {
         if (target.startsWith(":")) {
             target = target.substring(1);
         }
-
+        //System.out.println("DEBUG: command=" + command);
+        //System.out.println("DEBUG: line=\"" + line +"\"");
+        //System.out.println("DEBUG: target=" + target);
+        //System.out.println("DEBUG: sourceNick=" + sourceNick);
         // Check for CTCP requests.
         if (command.equals("PRIVMSG") && line.indexOf(":\u0001") > 0 && line.endsWith("\u0001")) {
             String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
+            //System.out.println("DEBUG: Request=" + request);
             if (request.equals("VERSION")) {
                 // VERSION request
                 this.onVersion(sourceNick, sourceLogin, sourceHostname, target);
@@ -1001,6 +1020,7 @@ public abstract class PircBot implements ReplyConstants {
         }
         else if (command.equals("PRIVMSG") && _channelPrefixes.indexOf(target.charAt(0)) >= 0) {
             // This is a normal message to a channel.
+        	//System.out.println("DEBUG: Good message.");
             this.onMessage(target, sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));
         }
         else if (command.equals("PRIVMSG")) {

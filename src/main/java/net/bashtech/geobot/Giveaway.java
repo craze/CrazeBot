@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
 
 public class Giveaway {
 	// Key: number, Value: name
@@ -15,6 +16,8 @@ public class Giveaway {
 	private boolean isOpen = false;
 	
 	private int maxInt;
+	
+	private Timer gaTimer;
 	
 	public Giveaway(String max){
 		Random rand = new Random();
@@ -41,6 +44,13 @@ public class Giveaway {
 		return maxInt;
 	}
 	
+	public Timer getTimer(){
+		return gaTimer;
+	}
+	
+	public void setTimer(Timer t){
+		gaTimer = t;
+	}
 	public void submitEntry(String nickname, String entry){
 		//Check if is numeric
 		int entryInt = 0;
