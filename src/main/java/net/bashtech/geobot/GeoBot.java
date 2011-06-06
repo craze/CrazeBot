@@ -556,7 +556,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// Link filter
-				if(channelInfo.getFilterLinks() && this.containsLink(message) && (!isOp || !isRegular) ){
+				if(channelInfo.getFilterLinks() && this.containsLink(message) && !(isOp || isRegular) ){
 					boolean result = channelInfo.linkPermissionCheck(sender);
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
