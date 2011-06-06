@@ -25,7 +25,7 @@ public class GeoBot extends PircBot {
 	
 	private String[] linksMasks = {".*\\.com.*",".*\\.org.*",".*\\.net.*",".*\\.tv.*",".*\\.ca.*",".*\\.xxx.*",".*\\.cc.*",".*\\.de.*",
 								   ".*\\.eu.*",".*\\.fm.*",".*\\.gov.*",".*\\.info.*",".*\\.io.*",".*\\.jobs.*",".*\\.me.*",".*\\.mil.*",
-			                       ".*\\.mobi.*",".*\\.name.*",".*\\.rn.*",".*\\.tel.*",".*\\.travel.*",".*\\.tz.*",".*\\.uk.*",".*\\.us.*"};
+			                       ".*\\.mobi.*",".*\\.name.*",".*\\.rn.*",".*\\.tel.*",".*\\.travel.*",".*\\.tz.*",".*\\.uk.*",".*\\.us.*",".*\\.be.*"};
 	
 	public GeoBot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
@@ -544,7 +544,8 @@ public class GeoBot extends PircBot {
  					return;
  				
 				// Cap filter
- 				//System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
+ 				System.out.println("DEBUG: Message Length= " + message.length());
+ 				System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
 				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() > 4 && getCapsPercent(message) > channelInfo.getFilterCapsLimit()  ){
 					if(botManager.network.equalsIgnoreCase("ngame"))
 						this.ban(channel, sender);
