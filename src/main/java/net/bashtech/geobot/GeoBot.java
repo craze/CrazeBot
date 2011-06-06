@@ -544,6 +544,7 @@ public class GeoBot extends PircBot {
  					return;
  				
 				// Cap filter
+ 				System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
 				if(channelInfo.getFilterCaps() && getCapsPercent(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
 					if(botManager.network.equalsIgnoreCase("ngame"))
 						this.ban(channel, sender);
