@@ -544,7 +544,7 @@ public class GeoBot extends PircBot {
  					return;
  				
 				// Cap filter
-				if(channelInfo.getFilterCaps() && countCapitals(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
+				if(channelInfo.getFilterCaps() && getCapsPercent(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
 					if(botManager.network.equalsIgnoreCase("ngame"))
 						this.ban(channel, sender);
 					else
@@ -619,7 +619,19 @@ public class GeoBot extends PircBot {
 	
 //#################################################################################
 	
-	private int countCapitals(String s){
+	private int getCapsPercent(String s){
+		int caps = 0;
+		for (int i=0; i<s.length(); i++)
+		{
+			if (Character.isUpperCase(s.charAt(i))){
+					caps++;
+			}
+		}
+		
+		return (int)(caps/s.length()*100);
+	}
+	
+	private int countConsecutiveCapitals(String s){
 		int caps = 0;
 		int max = 0;
 		//boolean con = true;

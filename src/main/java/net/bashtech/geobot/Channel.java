@@ -425,7 +425,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("filterCapsLimit")) {
-			config.setInt("filterCapsLimit", 4);
+			config.setInt("filterCapsLimit", 50);
 		}
 		
 		if(!config.keyExists("filterLinks")) {
