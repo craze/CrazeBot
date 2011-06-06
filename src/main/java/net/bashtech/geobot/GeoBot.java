@@ -544,8 +544,8 @@ public class GeoBot extends PircBot {
  					return;
  				
 				// Cap filter
- 				System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
-				if(channelInfo.getFilterCaps() && getCapsPercent(message) > channelInfo.getFilterCapsLimit() && !(isOp || isRegular)){
+ 				//System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
+				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() > 4 && getCapsPercent(message) > channelInfo.getFilterCapsLimit()  ){
 					if(botManager.network.equalsIgnoreCase("ngame"))
 						this.ban(channel, sender);
 					else
@@ -557,7 +557,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// Link filter
-				if(channelInfo.getFilterLinks() && this.containsLink(message) && !(isOp || isRegular) ){
+				if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message) ){
 					boolean result = channelInfo.linkPermissionCheck(sender);
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
