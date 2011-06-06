@@ -629,7 +629,7 @@ public class GeoBot extends PircBot {
 			}
 		}
 		
-		return (int)(caps/s.length()*100);
+		return (int)(((double)caps)/s.length()*100);
 	}
 	
 	private int countConsecutiveCapitals(String s){
