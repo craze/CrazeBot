@@ -477,8 +477,12 @@ public class GeoBot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!permit") && channelInfo.getFilterLinks() && channelInfo.useFilters){
  					System.out.println("Matched command !permit");
  					if(msg.length > 1 && isOp ){
- 						channelInfo.permitUser(msg[1]);
- 						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
+ 						if(!channelInfo.isRegular(msg[1])){
+ 							channelInfo.permitUser(msg[1]);
+ 	 						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
+ 						}else{
+ 							sendMessage(channel, "> " + msg[1] + " is a regular and does not need to be permitted.");
+ 						}
  					}
  				}
  				
