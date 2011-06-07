@@ -535,7 +535,7 @@ public class GeoBot extends PircBot {
  				
  				//!leave - Ops
  				if (msg[0].equalsIgnoreCase("!leave") && isOp) {
- 						sendMessage(sender, "Channel "+ channel +" parting...");
+ 						sendMessage(channel, "Channel "+ channel +" parting...");
  						botManager.removeChannel(channel);
  				}
  				
