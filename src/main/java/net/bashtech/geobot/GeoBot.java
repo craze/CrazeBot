@@ -539,6 +539,51 @@ public class GeoBot extends PircBot {
  						botManager.removeChannel(channel);
  				}
  				
+ 				
+ 				
+ 				// *******************************************************************
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && botManager.isAdmin(sender)) {
+ 					try {
+ 						if(msg[1].contains("#")){
+ 							sendMessage(channel, "Channel "+ msg[1] +" joining...");
+ 							botManager.addChannel(msg[1], msg[2]);
+ 							sendMessage(channel, "Channel "+ msg[1] +" joined.");
+ 						}else{
+ 							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+ 						}
+ 						
+ 					} catch (NickAlreadyInUseException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (IOException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (IrcException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					}
+ 				}
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && botManager.isAdmin(sender)) {
+ 					if(msg[1].contains("#")){
+ 						sendMessage(channel, "Channel "+ msg[1] +" parting...");
+ 						botManager.removeChannel(split(message)[1]);
+ 						sendMessage(channel, "Channel "+ msg[1] +" parted.");
+ 					}else{
+ 						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+ 					}
+ 						
+ 				}
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && botManager.isAdmin(sender)) {
+ 					sendMessage(channel, "Rejoining all channels.");
+ 					botManager.rejoinChannels();
+ 				}
+ 				
+ 				// *******************************************************************
+
+ 				
  				//Command catch all
 				if(message.trim().substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
 					System.out.println("Matched command " + message.trim());
