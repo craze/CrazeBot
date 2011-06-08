@@ -343,10 +343,10 @@ public class GeoBot extends PircBot {
 				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
 					System.out.println("Matched command !topic");
 					if(msg.length < 2 || !isOp){
-						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
+						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 					}else if(msg.length > 1 && isOp){
 						channelInfo.setTopic(message.substring(7));
-						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic());
+						this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						if(botManager.network.equalsIgnoreCase("ngame"))
 							this.sendMessage(channel, ".topic " + channelInfo.getTopic());
 						//Below only works if bot is the channel owner

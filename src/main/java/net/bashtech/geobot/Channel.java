@@ -24,6 +24,7 @@ public class Channel {
 	private boolean filterLinks;
 	
 	private String topic;
+	private int topicTime;
 	
 	private Set<String> regulars = new HashSet<String>();
 	
@@ -152,6 +153,31 @@ public class Channel {
 	public void setTopic(String s){
 		topic = s;
 		config.setString("topic", topic);
+		topicTime = (int) (System.currentTimeMillis()/1000);
+		config.setInt("topicTime", topicTime);
+	}
+	
+	public String getTopicTime(){
+		int difference = (int) (System.currentTimeMillis()/1000) - topicTime;
+		String returnString = "";
+		
+		if(difference >= 86400){
+			int days = (int)(difference / 86400);
+			returnString += days + "d ";
+			difference -= days * 86400;
+		}
+		if(difference >= 3600){
+			int hours = (int)(difference / 3600 );
+			returnString += hours + "h ";
+			difference -= hours * 3600;
+		}
+	
+			int seconds = (int)(difference / 60 );
+			returnString += seconds + "m";
+			difference -= seconds * 60;
+		
+		
+		return returnString;
 	}
 	
 	public boolean getFilterCaps(){
@@ -471,6 +497,12 @@ public class Channel {
 		if(!config.keyExists("signKicks")) {
 			config.setBoolean("signKicks", true);
 		}
+		
+		if(!config.keyExists("topicTime")) {
+			config.setInt("topicTime", 0);
+		}
+		
+		
 
 		server = config.getString("server");
 		
@@ -483,6 +515,7 @@ public class Channel {
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
 		topic  = config.getString("topic");
+		topicTime = config.getInt("topicTime");
 		
 		useTopic = Boolean.parseBoolean(config.getString("useTopic"));
 		useFilters = Boolean.parseBoolean(config.getString("useFilters"));
