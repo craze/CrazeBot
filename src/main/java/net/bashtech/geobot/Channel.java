@@ -459,7 +459,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("topic")) {
-			config.setString("topic", "GiantZombies will rule the world.");
+			config.setString("topic", "");
 		}
 		
 		if(!config.keyExists("commandsKey")) {
