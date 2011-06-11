@@ -610,7 +610,7 @@ public class GeoBot extends PircBot {
 				// Cap filter
  				System.out.println("DEBUG: Message Length= " + message.length());
  				System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
-				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() > 4 && getCapsPercent(message) > channelInfo.getFilterCapsLimit()  ){
+				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() > 5 && getCapsPercent(message) > channelInfo.getFilterCapsLimit()  ){
 					if(botManager.network.equalsIgnoreCase("ngame"))
 						this.ban(channel, sender);
 					else
@@ -618,7 +618,7 @@ public class GeoBot extends PircBot {
 					
 					tenSecondUnban(channel, sender);
 					if(channelInfo.checkSignKicks())
-						sendMessage(channel, "> " + sender + ", please don't shout or talk in all caps.");
+						sendMessage(channel, "> " + sender + ", please don't shout or talk in all caps. (10 sec. timeout)");
 				}
 				
 				// Link filter
@@ -634,7 +634,7 @@ public class GeoBot extends PircBot {
 						
 						tenSecondUnban(channel, sender);
 						if(channelInfo.checkSignKicks())
-							sendMessage(channel, "> " + sender + ", please ask a moderator before posting links.");
+							sendMessage(channel, "> " + sender + ", please ask a moderator before posting links. (10 sec. timeout)");
 					}
 					
 				}
