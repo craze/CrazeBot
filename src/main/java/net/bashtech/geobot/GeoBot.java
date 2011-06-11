@@ -331,10 +331,15 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !throw - All
-				if(msg[0].equalsIgnoreCase("!throw")){
+				if(msg[0].equalsIgnoreCase("!throw") && channelInfo.checkThrow()){
 					System.out.println("Matched command !throw");
 					if(msg.length > 2){
-						this.sendMessage(channel, "> " + sender + " throws " + msg[1] + " at " + msg[2]);
+						String throwMessage = "";
+						for(int i=2;i<msg.length;i++){
+							throwMessage += msg[i] + " ";
+						}
+						
+						this.sendMessage(channel, "> " + sender + " throws " + throwMessage + "at " + msg[1]);
 					}
 					//return;
 				}
