@@ -19,7 +19,9 @@ public class Channel {
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	
 	private boolean filterCaps;
-	private int filterCapsLimit;
+	int filterCapsPercent;
+	int filterCapsMinCharacters;
+	int filterCapsMinCapitals;
 	
 	private boolean filterLinks;
 	
@@ -190,12 +192,12 @@ public class Channel {
 	}
 	
 	public int getFilterCapsLimit(){
-		return filterCapsLimit;
+		return filterCapsPercent;
 	}
 	
 	public void setFilterCapsLimit(int limit){
-		filterCapsLimit = limit;
-		config.setInt("filterCapsLimit", filterCapsLimit);
+		filterCapsPercent = limit;
+		config.setInt("filterCapsPercent", filterCapsPercent);
 	}
 	
 	public void setFilterLinks(boolean links){
@@ -450,8 +452,16 @@ public class Channel {
 			config.setBoolean("filterCaps", false);
 		}
 		
-		if(!config.keyExists("filterCapsLimit")) {
-			config.setInt("filterCapsLimit", 50);
+		if(!config.keyExists("filterCapsPercent")) {
+			config.setInt("filterCapsPercent", 50);
+		}
+		
+		if(!config.keyExists("filterCapsMinCharacters")) {
+			config.setInt("filterCapsMinCharacters", 0);
+		}
+		
+		if(!config.keyExists("filterCapsMinCapitals")) {
+			config.setInt("filterCapsMinCapitals", 6);
 		}
 		
 		if(!config.keyExists("filterLinks")) {
@@ -510,8 +520,12 @@ public class Channel {
 		port = Integer.parseInt(config.getString("port"));
 		
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
-		filterCapsLimit = Integer.parseInt(config.getString("filterCapsLimit"));
+		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
+		filterCapsMinCharacters = Integer.parseInt(config.getString("filterCapsMinCharacters"));
+		filterCapsMinCapitals = Integer.parseInt(config.getString("filterCapsMinCapitals"));
 
+		
+		
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
 		topic  = config.getString("topic");

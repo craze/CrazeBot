@@ -421,11 +421,23 @@ public class GeoBot extends PircBot {
  						}else if(msg[1].equalsIgnoreCase("off")){
  							channelInfo.setFilterCaps(false);
  							this.sendMessage(channel, "> Caps filter: " + channelInfo.getFilterCaps());
- 						}else if(msg[1].equalsIgnoreCase("limit")){
+ 						}else if(msg[1].equalsIgnoreCase("percent")){
  							if(msg.length > 2){
  								channelInfo.setFilterCapsLimit(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, "> Caps filter limit: " + channelInfo.getFilterCapsLimit());
+ 	 							this.sendMessage(channel, "> Caps filter percent: " + channelInfo.getFilterCapsLimit());
  							}
+ 						}else if(msg[1].equalsIgnoreCase("minchars")){
+ 							if(msg.length > 2){
+ 								channelInfo.filterCapsMinCharacters = Integer.parseInt(msg[2]);
+ 	 							this.sendMessage(channel, "> Caps filter min characters: " + channelInfo.filterCapsMinCharacters);
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("mincaps")){
+ 							if(msg.length > 2){
+ 								channelInfo.filterCapsMinCapitals = Integer.parseInt(msg[2]);
+ 	 							this.sendMessage(channel, "> Caps filter min captitals: " + channelInfo.filterCapsMinCapitals);
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("status")){
+ 							sendMessage(channel, "> Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.filterCapsPercent + ", minchars=" + channelInfo.filterCapsMinCharacters + ", mincaps= " + channelInfo.filterCapsMinCapitals);
  						}
  					}
  				}
@@ -608,9 +620,12 @@ public class GeoBot extends PircBot {
  					return;
  				
 				// Cap filter
+ 				int capsNumber = getCapsNumber(message);
+ 				int capsPercent = getCapsPercent(message);
  				System.out.println("DEBUG: Message Length= " + message.length());
- 				System.out.println("DEBUG: Caps percent= " + getCapsPercent(message));
-				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() > 5 && getCapsPercent(message) > channelInfo.getFilterCapsLimit()  ){
+ 				System.out.println("DEBUG: Caps percent= " + capsPercent);
+ 				System.out.println("DEBUG: Caps number= " + capsNumber);
+				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.filterCapsMinCharacters && capsPercent >= channelInfo.filterCapsPercent && capsNumber >= channelInfo.filterCapsMinCapitals){
 					if(botManager.network.equalsIgnoreCase("ngame"))
 						this.ban(channel, sender);
 					else
@@ -685,6 +700,18 @@ public class GeoBot extends PircBot {
 	
 //#################################################################################
 	
+	private int getCapsNumber(String s){
+		int caps = 0;
+		for (int i=0; i<s.length(); i++)
+		{
+			if (Character.isUpperCase(s.charAt(i))){
+					caps++;
+			}
+		}
+		
+		return caps;
+	}
+	
 	private int getCapsPercent(String s){
 		int caps = 0;
 		for (int i=0; i<s.length(); i++)
@@ -696,6 +723,8 @@ public class GeoBot extends PircBot {
 		
 		return (int)(((double)caps)/s.length()*100);
 	}
+	
+	
 	
 	private int countConsecutiveCapitals(String s){
 		int caps = 0;
