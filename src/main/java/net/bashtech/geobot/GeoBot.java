@@ -23,7 +23,7 @@ public class GeoBot extends PircBot {
 	
 	//private Map<String,Long> previousCommands = new HashMap<String,Long>();
 	
-	private String[] linksMasks = {".*http://.*",".*\\.(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|).*"};
+	private String[] linksMasks = {".*http://.*",".*\\.(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*"};
 	
 	/*private String[] linksMasks = {".*http://.*",".*\\.com(\\s+|/).*",".*\\.org(\\s+|/).*",".*\\.net(\\s+|/).*",".*\\.tv(\\s+|/).*",".*\\.ca(\\s+|/).*",".*\\.xxx(\\s+|/).*",".*\\.cc(\\s+|/).*",".*\\.de(\\s+|/).*",
 								   ".*\\.eu(\\s+|/).*",".*\\.fm(\\s+|/).*",".*\\.gov(\\s+|/).*",".*\\.info(\\s+|/).*",".*\\.io(\\s+|/).*",".*\\.jobs(\\s+|/).*",".*\\.me(\\s+|/).*",".*\\.mil(\\s+|/).*",
