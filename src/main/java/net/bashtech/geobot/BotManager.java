@@ -191,10 +191,10 @@ public class BotManager {
 			if((entry.getValue().getGiveaway() != null && entry.getValue().getGiveaway().getStatus()) || (entry.getValue().getPoll() != null && entry.getValue().getPoll().getStatus()))
 				continue;
 			
-			System.out.println("INFO: Parting channel " + entry.getKey());
-			botList.get(entry.getValue().getServer()).partChannel(entry.getKey());
-			System.out.println("INFO: Joining channel " + entry.getKey());
-			botList.get(entry.getValue().getServer()).joinChannel(entry.getKey());
+			System.out.println("INFO: Parting channel " + entry.getValue().getChannel());
+			botList.get(entry.getValue().getServer()).partChannel(entry.getValue().getChannel());
+			System.out.println("INFO: Joining channel " + entry.getValue().getChannel());
+			botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
 		}
 
 	}

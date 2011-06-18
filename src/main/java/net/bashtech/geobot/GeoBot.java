@@ -628,12 +628,15 @@ public class GeoBot extends PircBot {
  				System.out.println("DEBUG: Caps percent= " + capsPercent);
  				System.out.println("DEBUG: Caps number= " + capsNumber);
 				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.filterCapsMinCharacters && capsPercent >= channelInfo.filterCapsPercent && capsNumber >= channelInfo.filterCapsMinCapitals){
-					if(botManager.network.equalsIgnoreCase("ngame"))
+					if(botManager.network.equalsIgnoreCase("jtv")){
+						this.sendMessage(channel, ".timeout " + sender + " 10");
+					}else if(botManager.network.equalsIgnoreCase("ngame")){
 						this.ban(channel, sender);
-					else
+						tenSecondUnban(channel, sender);
+					}else{
 						this.kick(channel, sender, "Too many caps.");
-					
-					tenSecondUnban(channel, sender);
+						tenSecondUnban(channel, sender);
+					}
 					if(channelInfo.checkSignKicks())
 						sendMessage(channel, "> " + sender + ", please don't shout or talk in all caps. (10 sec. timeout)");
 				}
@@ -644,12 +647,16 @@ public class GeoBot extends PircBot {
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
 					}else{
-						if(botManager.network.equalsIgnoreCase("ngame"))
+						if(botManager.network.equalsIgnoreCase("jtv")){
+							this.sendMessage(channel, ".timeout " + sender + " 10");
+						}else if(botManager.network.equalsIgnoreCase("ngame")){
 							this.ban(channel, sender);
-						else
+							tenSecondUnban(channel, sender);
+						}else{
 							this.kick(channel, sender, "Unauthorized link.");
+							tenSecondUnban(channel, sender);
+						}
 						
-						tenSecondUnban(channel, sender);
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, "> " + sender + ", please ask a moderator before posting links. (10 sec. timeout)");
 					}
