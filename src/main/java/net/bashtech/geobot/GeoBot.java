@@ -608,6 +608,11 @@ public class GeoBot extends PircBot {
  					botManager.rejoinChannels();
  				}
  				
+ 				if (msg[0].equalsIgnoreCase("!bm-reconnect") && botManager.isAdmin(sender)) {
+ 					sendMessage(channel, "Reconnecting all servers.");
+ 					botManager.reconnectAllBots();
+ 				}
+ 				
  				// *******************************************************************
 
  				

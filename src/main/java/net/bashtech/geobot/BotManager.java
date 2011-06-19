@@ -54,6 +54,8 @@ public class BotManager {
 				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 			}
 		}
+		
+		rejoinChannels();
 
 		
 		
@@ -197,6 +199,29 @@ public class BotManager {
 			botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
 		}
 
+	}
+	
+	public synchronized void reconnectAllBots(){
+		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		{
+			GeoBot temp = entry.getValue();
+			System.out.println("INFO: Reconnecting " + temp.getServer());
+			try {
+				temp.reconnect();
+			} catch (NickAlreadyInUseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IrcException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("INFO: " + temp.getServer() + " reconnected.");
+			
+			rejoinChannels();
+		}
 	}
 	
 	private synchronized void writeChannelList(){
