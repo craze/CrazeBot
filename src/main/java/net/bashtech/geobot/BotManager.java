@@ -55,7 +55,7 @@ public class BotManager {
 			}
 		}
 		
-		rejoinChannels();
+		//rejoinChannels();
 
 		
 		
