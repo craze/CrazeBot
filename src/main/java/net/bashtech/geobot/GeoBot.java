@@ -34,6 +34,8 @@ public class GeoBot extends PircBot {
 		botManager = bm;
 		
 		this.setName(bm.nick);
+		this.setLogin("GeoBot");
+		this.setVersion("1.0");
 		
 		this.setVerbose(true);
 		try {

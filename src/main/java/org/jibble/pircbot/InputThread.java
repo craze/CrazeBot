@@ -136,7 +136,7 @@ public class InputThread extends Thread {
         }
 
         if (!_disposed) {
-            _bot.log("*** Disconnected.");        
+            _bot.log("*** Disconnected " + _bot.getServer() +".");        
             _isConnected = false;
             _bot.onDisconnect();
         }

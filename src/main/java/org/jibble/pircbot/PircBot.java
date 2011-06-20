@@ -138,7 +138,7 @@ public abstract class PircBot implements ReplyConstants {
         
         // Connect to the server.
         Socket socket =  new Socket(hostname, port);
-        this.log("*** Connected to server.");
+        this.log("*** Connected to server " + this.getServer() +".");
         
         _inetAddress = socket.getLocalAddress();
         

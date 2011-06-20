@@ -205,6 +205,13 @@ public class BotManager {
 		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
 		{
 			GeoBot temp = entry.getValue();
+			System.out.println("INFO: Disconnecting " + temp.getServer());
+			temp.disconnect();
+			System.out.println("INFO: " + temp.getServer() + " disconnected.");
+		}
+		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		{
+			GeoBot temp = entry.getValue();
 			System.out.println("INFO: Reconnecting " + temp.getServer());
 			try {
 				temp.reconnect();
@@ -219,8 +226,6 @@ public class BotManager {
 				e.printStackTrace();
 			}
 			System.out.println("INFO: " + temp.getServer() + " reconnected.");
-			
-			rejoinChannels();
 		}
 	}
 	
