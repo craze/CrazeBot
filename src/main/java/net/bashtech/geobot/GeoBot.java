@@ -680,10 +680,11 @@ public class GeoBot extends PircBot {
 		//pjTimer.cancel();
 
 		try {
+			System.out.println("Internal reconnection: " + this.getServer());
+			String[] channels = this.getChannels();
 			this.reconnect();
-			for (Map.Entry<String, Channel> entry : botManager.channelList.entrySet())
-			{
-				this.joinChannel(entry.getValue().getChannel());
+			for(int i=0;i<channels.length;i++){
+				this.joinChannel(channels[i]);
 			}
 		} catch (NickAlreadyInUseException e) {
 			// TODO Auto-generated catch block
