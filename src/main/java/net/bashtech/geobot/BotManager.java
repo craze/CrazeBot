@@ -201,7 +201,8 @@ public class BotManager {
 
 	}
 	
-	public synchronized void reconnectAllBots(){
+	
+	public synchronized void reconnectAllBotsSoft(){
 		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
 		{
 			GeoBot temp = entry.getValue();
@@ -209,24 +210,49 @@ public class BotManager {
 			temp.disconnect();
 			System.out.println("INFO: " + temp.getServer() + " disconnected.");
 		}
-//		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
-//		{
-//			GeoBot temp = entry.getValue();
-//			System.out.println("INFO: Reconnecting " + temp.getServer());
-//			try {
-//				temp.reconnect();
-//			} catch (NickAlreadyInUseException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IrcException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			System.out.println("INFO: " + temp.getServer() + " reconnected.");
-//		}
+	}
+	
+	@SuppressWarnings("static-access")
+	public synchronized void reconnectAllBotsHard(){
+		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		{
+			GeoBot temp = entry.getValue();
+			System.out.println("INFO: Disconnecting " + temp.getServer());
+			temp.disconnect();
+			System.out.println("INFO: " + temp.getServer() + " disconnected.");
+		}
+		System.out.println("DEBUG: Waiting....");
+		try {
+			Thread.currentThread().sleep(20000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("DEBUG: Done waiting. Kappa");
+		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		{
+			GeoBot temp = entry.getValue();
+			
+			if(temp.isConnected())
+				continue;
+			
+			System.out.println("INFO: Reconnecting " + temp.getServer());
+			try {
+				temp.reconnect();
+			} catch (NickAlreadyInUseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IrcException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("INFO: " + temp.getServer() + " reconnected.");
+		}
+		
+		rejoinChannels();
 	}
 	
 	private synchronized void writeChannelList(){

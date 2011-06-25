@@ -610,9 +610,14 @@ public class GeoBot extends PircBot {
  					botManager.rejoinChannels();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-reconnect") && botManager.isAdmin(sender)) {
+ 				if (msg[0].equalsIgnoreCase("!bm-softreconnect") && botManager.isAdmin(sender)) {
  					sendMessage(channel, "Reconnecting all servers.");
- 					botManager.reconnectAllBots();
+ 					botManager.reconnectAllBotsSoft();
+ 				}
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && botManager.isAdmin(sender)) {
+ 					sendMessage(channel, "Reconnecting all servers.");
+ 					botManager.reconnectAllBotsHard();
  				}
  				
  				// *******************************************************************

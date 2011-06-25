@@ -21,7 +21,7 @@ public class ReconnectTimer extends TimerTask{
 	@Override
 	public void run() {
 		
-		//System.out.println("Reconnect timer running...");
+		System.out.println("Reconnect timer running...");
 
 		
 		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
@@ -29,7 +29,7 @@ public class ReconnectTimer extends TimerTask{
 			GeoBot b = entry.getValue();
 			if(!b.isConnected()){
 				try {
-					System.out.println("Attempting to reconnet to " + b.getServer() + "...\n");
+					System.out.println("INFO: Attempting to reconnet to " + b.getServer() + "...\n");
 					b.reconnect();
 				} catch (NickAlreadyInUseException e) {
 					// TODO Auto-generated catch block
@@ -41,6 +41,8 @@ public class ReconnectTimer extends TimerTask{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}else{
+				System.out.println("INFO: " + b.getServer() + " is connected.");
 			}
 		}
 		
