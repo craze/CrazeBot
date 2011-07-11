@@ -347,7 +347,11 @@ public class GeoBot extends PircBot {
 						this.sendMessage(channel, "> " + sender + " throws " + throwMessage + "at " + msg[1]);
 					}else if(msg.length > 1){
 						//this.sendMessage(channel, "(â•¯Â°â€¿Â°ï¼‰â•¯ï¸µ" + msg[1]);
-						this.sendMessage(channel, "(╯°‿°）╯︵" + msg[1]);
+						String throwMessage = "";
+						for(int i=1;i<msg.length;i++){
+							throwMessage += msg[i] + " ";
+						}
+						this.sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
 					}
 					//return;
 				}
