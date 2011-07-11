@@ -338,14 +338,14 @@ public class GeoBot extends PircBot {
 				// !throw - All
 				if(msg[0].equalsIgnoreCase("!throw") && channelInfo.checkThrow()){
 					System.out.println("Matched command !throw");
-					if(msg.length > 2){
-						String throwMessage = "";
-						for(int i=2;i<msg.length;i++){
-							throwMessage += msg[i] + " ";
-						}
-						
-						this.sendMessage(channel, "> " + sender + " throws " + throwMessage + "at " + msg[1]);
-					}else if(msg.length > 1){
+//					if(msg.length > 2){
+//						String throwMessage = "";
+//						for(int i=2;i<msg.length;i++){
+//							throwMessage += msg[i] + " ";
+//						}
+//						
+//						this.sendMessage(channel, "> " + sender + " throws " + throwMessage + "at " + msg[1]);
+					if(msg.length > 1){
 						//this.sendMessage(channel, "(â•¯Â°â€¿Â°ï¼‰â•¯ï¸µ" + msg[1]);
 						String throwMessage = "";
 						for(int i=1;i<msg.length;i++){
