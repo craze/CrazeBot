@@ -336,7 +336,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !throw - All
-				if(msg[0].equalsIgnoreCase("!throw") && channelInfo.checkThrow()){
+				if(msg[0].equalsIgnoreCase("!throw") && (channelInfo.checkThrow() || isOp)){
 					System.out.println("Matched command !throw");
 //					if(msg.length > 2){
 //						String throwMessage = "";
