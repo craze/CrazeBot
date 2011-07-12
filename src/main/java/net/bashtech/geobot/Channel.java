@@ -434,10 +434,9 @@ public class Channel {
 			e.printStackTrace();
 		}
 		
-		System.out.println("DEBUG: Setting server " + server);
+		//System.out.println("DEBUG: Setting server " + server);
 		if(!config.keyExists("server") || server != null) {
-			config.setString("server", server);
-			
+			config.setString("server", server);	
 		}
 		
 		if(!config.keyExists("port")) {
@@ -515,6 +514,10 @@ public class Channel {
 		
 
 		server = config.getString("server");
+		
+		if(server == null || server.equalsIgnoreCase("")){
+			server = BotManager.getInstance().server;
+		}
 		
 		channel = config.getString("channel");
 		port = Integer.parseInt(config.getString("port"));

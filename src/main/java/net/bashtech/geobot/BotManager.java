@@ -14,6 +14,8 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 
 public class BotManager {
 	
+	static BotManager instance;
+	
 	String nick;
 	String server;
 	int port;
@@ -31,6 +33,7 @@ public class BotManager {
 	private PropertiesFile config;
 
 	public BotManager(){
+		BotManager.setInstance(this);
 		botList = new HashMap<String,GeoBot>();
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
@@ -79,7 +82,7 @@ public class BotManager {
 			config.setString("nick", "ackbot");
 		}
 		if(!config.keyExists("server")) {
-			config.setString("server", "chat.ngame.tv");
+			config.setString("server", "");
 		}
 		
 		if(!config.keyExists("password")) {
@@ -99,7 +102,7 @@ public class BotManager {
 		}
 		
 		if(!config.keyExists("network")) {
-			config.setString("network", "");
+			config.setString("network", "jtv");
 		}
 		
 		nick = config.getString("nick");
@@ -280,5 +283,17 @@ public class BotManager {
 	      },delay,delay);
 
 	}
+	
+	public static void setInstance(BotManager bm){
+		if(instance == null){
+			instance = bm;
+		}
+	}
+	
+	public static BotManager getInstance(){
+		return instance;
+	}
+	
+	
 	
 }
