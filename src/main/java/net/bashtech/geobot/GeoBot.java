@@ -663,7 +663,7 @@ public class GeoBot extends PircBot {
 				}
 				
 				// Link filter
-				if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message) ){
+				if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message,channelInfo) ){
 					boolean result = channelInfo.linkPermissionCheck(sender);
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
@@ -777,15 +777,18 @@ public class GeoBot extends PircBot {
 			return max;
 	}
 	
-	private boolean containsLink(String m){
-		m = m.toLowerCase();
-		
-		for(String mask: linksMasks){
-			if(m.matches(mask)){
-				System.out.println("DEBUG: Link match on " + mask);
-				return true;
+	private boolean containsLink(String message, Channel ch){
+		String [] splitMessage  = message.toLowerCase().split(" ");
+		for(String m: splitMessage){
+			for(String mask: linksMasks){
+				if(m.matches(mask)){
+					System.out.println("DEBUG: Link match on " + mask);
+					if(!ch.checkPermittedDomain(m))
+						return true;	
+				}
 			}
 		}
+
 		
 		return false;
 	}

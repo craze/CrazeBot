@@ -34,7 +34,7 @@ public class Channel {
 	
 	private Set<String> permittedUsers = new HashSet<String>();
 	
-	private Set<String> permittedDomains = new HashSet<String>();
+	private ArrayList<String> permittedDomains = new ArrayList<String>();
 	
 	//Checks for disabled features.
 	public boolean useTopic = true;
@@ -49,7 +49,7 @@ public class Channel {
 	private boolean enableThrow;
 	
 	private boolean signKicks;
-	
+		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -375,7 +375,7 @@ public class Channel {
 		config.setString("permittedDomains", permittedDomainsString);
 	}
 	
-	public Set<String> getpermittedDomains(){
+	public ArrayList<String> getpermittedDomains(){
 		return permittedDomains;
 	}
 	// ##################################################
@@ -426,6 +426,25 @@ public class Channel {
 	}
 	
 	// ##################################################
+	
+	public boolean checkPermittedDomain(String message){
+		//Allow base domain w/o a path
+		if(message.matches(".*(twitch\\.tv|twitchtv\\.com|justin\\.tv)")){
+			System.out.println("INFO: Permitted domain match on jtv/ttv base domain.");
+			return true;
+		}
+		
+		for(String d:permittedDomains){
+			String test = ".*" + d + ".*";
+			if(message.matches(test)){
+				System.out.println("DEBUG: Matched permitted domain: " + test);
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
 	
 	private void loadProperties(String name){
 		try {
@@ -574,10 +593,15 @@ public class Channel {
 		synchronized (permittedDomains) {
 			for(int i = 0; i < domainsRaw.length; i++){
 				if(domainsRaw[i].length() > 1){
-					permittedDomains.add(domainsRaw[i].toLowerCase());
+					permittedDomains.add(domainsRaw[i].toLowerCase().replaceAll("\\.", "\\\\."));
 				}
 			}
 		}
+		
+		// Manually set domains until commands are added.
+		System.out.println("DEBUG: " + permittedDomains.get(0));
+
+		
 	}
 
 }
