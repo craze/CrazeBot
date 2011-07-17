@@ -450,7 +450,7 @@ public class Channel {
 		for(String d:permittedDomains){
 			d = d.replaceAll("\\.", "\\\\.");
 
-			String test = ".*" + d + ".*";
+			String test = ".*(\\.|^)" + d + "(/|$).*";
 			if(message.matches(test)){
 				System.out.println("DEBUG: Matched permitted domain: " + test);
 				return true;
