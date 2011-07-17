@@ -471,7 +471,7 @@ public class GeoBot extends PircBot {
  								channelInfo.removeRegular(msg[2]);
  								sendMessage(channel,"> User removed." + "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> User does not exist." + "(" + msg[2] + ")");
+ 								sendMessage(channel,"> User does not exist. " + "(" + msg[2] + ")");
  							}
  						}
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
@@ -499,7 +499,7 @@ public class GeoBot extends PircBot {
  								channelInfo.removeModerator(msg[2]);
  								sendMessage(channel,"> User removed. "+ "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> User does not exist."+ "(" + msg[2] + ")");
+ 								sendMessage(channel,"> User does not exist. "+ "(" + msg[2] + ")");
  							}
  						}
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
@@ -521,6 +521,34 @@ public class GeoBot extends PircBot {
  						}else{
  							sendMessage(channel, "> " + msg[1] + " is a regular and does not need to be permitted.");
  						}
+ 					}
+ 				}
+ 				
+ 				// !pd - Add permitted domain
+ 				if(msg[0].equalsIgnoreCase("!pd")){
+ 					System.out.println("Matched command !pd");
+ 					if(msg.length  > 2 && isOp){
+ 						if(msg[1].equalsIgnoreCase("add")){
+ 							if(channelInfo.isDomainPermitted(msg[2])){
+ 								sendMessage(channel,"> Domain already exists. " + "(" + msg[2] + ")");
+ 							}else{
+ 								channelInfo.addPermittedDomain(msg[2]);
+ 								sendMessage(channel,"> Domain added. "+ "(" + msg[2] + ")");
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("delete")){
+ 							if(channelInfo.isDomainPermitted(msg[2])){
+ 								channelInfo.removePermittedDomain(msg[2]);
+ 								sendMessage(channel,"> Domain removed. "+ "(" + msg[2] + ")");
+ 							}else{
+ 								sendMessage(channel,"> Domain does not exist. "+ "(" + msg[2] + ")");
+ 							}
+ 						}
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
+ 						String tempList = "> Permitted domains: ";
+ 						for(String s:channelInfo.getpermittedDomains()){
+ 							tempList += s + ", ";
+ 						}
+ 						sendMessage(channel, tempList);
  					}
  				}
  				

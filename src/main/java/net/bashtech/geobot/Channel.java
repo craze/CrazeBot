@@ -360,8 +360,11 @@ public class Channel {
 	
 	public void removePermittedDomain(String name){
 		synchronized (permittedDomains) {
-			if(permittedDomains.contains(name.toLowerCase()))
-				permittedDomains.remove(name.toLowerCase());
+			for(int i=0;i<permittedDomains.size();i++){
+				if(permittedDomains.get(i).equalsIgnoreCase(name)){
+					permittedDomains.remove(i);
+				}
+			}
 		}
 		
 		String permittedDomainsString = "";
@@ -373,6 +376,16 @@ public class Channel {
 		}
 		
 		config.setString("permittedDomains", permittedDomainsString);
+	}
+	
+	public boolean isDomainPermitted(String domain){
+		for(String d:permittedDomains){
+			if(d.equalsIgnoreCase(domain)){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public ArrayList<String> getpermittedDomains(){
@@ -435,6 +448,8 @@ public class Channel {
 		}
 		
 		for(String d:permittedDomains){
+			d = d.replaceAll("\\.", "\\\\.");
+
 			String test = ".*" + d + ".*";
 			if(message.matches(test)){
 				System.out.println("DEBUG: Matched permitted domain: " + test);
@@ -593,13 +608,13 @@ public class Channel {
 		synchronized (permittedDomains) {
 			for(int i = 0; i < domainsRaw.length; i++){
 				if(domainsRaw[i].length() > 1){
-					permittedDomains.add(domainsRaw[i].toLowerCase().replaceAll("\\.", "\\\\."));
+//					permittedDomains.add(domainsRaw[i].toLowerCase().replaceAll("\\.", "\\\\."));
+					permittedDomains.add(domainsRaw[i].toLowerCase());
+					
 				}
 			}
 		}
-		
-		// Manually set domains until commands are added.
-		System.out.println("DEBUG: " + permittedDomains.get(0));
+
 
 		
 	}
