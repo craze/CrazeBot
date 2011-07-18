@@ -759,7 +759,7 @@ public class GeoBot extends PircBot {
     public void onJoin(String channel, String sender, String login, String hostname){  	
 		Channel channelInfo = botManager.getChannel(channel);
 		
-		if(channelInfo == null || !channelInfo.getAnnounceJoinParts())
+		if(channelInfo == null || !channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
 			return;
 		
 		sendMessage(channel, "> " + sender + " entered the room.");
@@ -768,7 +768,7 @@ public class GeoBot extends PircBot {
     public void onPart(String channel, String sender, String login, String hostname) {
 		Channel channelInfo = botManager.getChannel(channel);
 		
-		if(channelInfo == null || !channelInfo.getAnnounceJoinParts())
+		if(channelInfo == null || !channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
 			return;
 		
 		sendMessage(channel, "> " + sender + " left the room.");
