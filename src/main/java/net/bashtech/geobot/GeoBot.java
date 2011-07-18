@@ -133,6 +133,8 @@ public class GeoBot extends PircBot {
 					isOp = true;
 				if(user.isOp())
 					isOp = true;
+				if(botManager.isAdmin(sender))
+					isOp = true;
 				if(user.getPrefix().equalsIgnoreCase("@") || user.getPrefix().equalsIgnoreCase("~") || user.getPrefix().equalsIgnoreCase("+"))
 					isRegular = true;
 			}catch(Exception e){
@@ -436,21 +438,21 @@ public class GeoBot extends PircBot {
  							this.sendMessage(channel, "> Caps filter: " + channelInfo.getFilterCaps());
  						}else if(msg[1].equalsIgnoreCase("percent")){
  							if(msg.length > 2){
- 								channelInfo.setFilterCapsLimit(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, "> Caps filter percent: " + channelInfo.getFilterCapsLimit());
+ 								channelInfo.setfilterCapsPercent(Integer.parseInt(msg[2]));
+ 	 							this.sendMessage(channel, "> Caps filter percent: " + channelInfo.getfilterCapsPercent());
  							}
  						}else if(msg[1].equalsIgnoreCase("minchars")){
  							if(msg.length > 2){
- 								channelInfo.filterCapsMinCharacters = Integer.parseInt(msg[2]);
- 	 							this.sendMessage(channel, "> Caps filter min characters: " + channelInfo.filterCapsMinCharacters);
+ 								channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
+ 	 							this.sendMessage(channel, "> Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
  							}
  						}else if(msg[1].equalsIgnoreCase("mincaps")){
  							if(msg.length > 2){
- 								channelInfo.filterCapsMinCapitals = Integer.parseInt(msg[2]);
- 	 							this.sendMessage(channel, "> Caps filter min captitals: " + channelInfo.filterCapsMinCapitals);
+ 								channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
+ 	 							this.sendMessage(channel, "> Caps filter min captitals: " + channelInfo.getfilterCapsMinCapitals());
  							}
  						}else if(msg[1].equalsIgnoreCase("status")){
- 							sendMessage(channel, "> Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.filterCapsPercent + ", minchars=" + channelInfo.filterCapsMinCharacters + ", mincaps= " + channelInfo.filterCapsMinCapitals);
+ 							sendMessage(channel, "> Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
  						}
  					}
  				}
@@ -595,6 +597,15 @@ public class GeoBot extends PircBot {
  								channelInfo.setSignKicks(false);
  								sendMessage(channel, "> Feature: Sign-kicks is off");
  							}
+						}else if(msg[1].equalsIgnoreCase("joinparts")){
+ 							//filters
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.setAnnounceJoinParts(true);
+ 								sendMessage(channel, "> Feature: Join/Part announcing is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setAnnounceJoinParts(false);
+ 								sendMessage(channel, "> Feature: Join/Part announcing is off");
+ 							}
  						}
  					}
  				}
@@ -676,7 +687,7 @@ public class GeoBot extends PircBot {
  				System.out.println("DEBUG: Message Length= " + message.length());
  				System.out.println("DEBUG: Caps percent= " + capsPercent);
  				System.out.println("DEBUG: Caps number= " + capsNumber);
-				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.filterCapsMinCharacters && capsPercent >= channelInfo.filterCapsPercent && capsNumber >= channelInfo.filterCapsMinCapitals){
+				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 					if(botManager.network.equalsIgnoreCase("jtv")){
 						this.sendMessage(channel, ".timeout " + sender + " 10");
 					}else if(botManager.network.equalsIgnoreCase("ngame")){
@@ -744,6 +755,24 @@ public class GeoBot extends PircBot {
 
 		
 	}
+	
+    public void onJoin(String channel, String sender, String login, String hostname){  	
+		Channel channelInfo = botManager.getChannel(channel);
+		
+		if(channelInfo == null || !channelInfo.getAnnounceJoinParts())
+			return;
+		
+		sendMessage(channel, "> " + sender + " entered the room.");
+    }
+
+    public void onPart(String channel, String sender, String login, String hostname) {
+		Channel channelInfo = botManager.getChannel(channel);
+		
+		if(channelInfo == null || !channelInfo.getAnnounceJoinParts())
+			return;
+		
+		sendMessage(channel, "> " + sender + " left the room.");
+    }
 	
 	private User matchUser(String nick, String channel){
 		User[] userList = this.getUsers(channel);

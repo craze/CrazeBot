@@ -19,9 +19,9 @@ public class Channel {
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	
 	private boolean filterCaps;
-	int filterCapsPercent;
-	int filterCapsMinCharacters;
-	int filterCapsMinCapitals;
+	private int filterCapsPercent;
+	private int filterCapsMinCharacters;
+	private int filterCapsMinCapitals;
 	
 	private boolean filterLinks;
 	
@@ -49,6 +49,8 @@ public class Channel {
 	private boolean enableThrow;
 	
 	private boolean signKicks;
+	
+	private boolean announceJoinParts; 
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -185,19 +187,37 @@ public class Channel {
 	public boolean getFilterCaps(){
 		return filterCaps;
 	}
+		
+	public int getfilterCapsPercent(){
+		return filterCapsPercent;
+	}
 	
+	public int getfilterCapsMinCharacters(){
+		return filterCapsMinCharacters;
+	}
+	
+	public int getfilterCapsMinCapitals(){
+		return filterCapsMinCapitals;
+	}
+		
 	public void setFilterCaps(boolean caps){
 		filterCaps = caps;
 		config.setBoolean("filterCaps", filterCaps);
 	}
 	
-	public int getFilterCapsLimit(){
-		return filterCapsPercent;
+	public void setfilterCapsPercent(int caps){
+		filterCapsPercent = caps;
+		config.setInt("filterCapsPercent", filterCapsPercent);
 	}
 	
-	public void setFilterCapsLimit(int limit){
-		filterCapsPercent = limit;
-		config.setInt("filterCapsPercent", filterCapsPercent);
+	public void setfilterCapsMinCharacters(int caps){
+		filterCapsMinCharacters = caps;
+		config.setInt("filterCapsMinCharacters", filterCapsMinCharacters);
+	}
+	
+	public void setfilterCapsMinCapitals(int caps){
+		filterCapsMinCapitals = caps;
+		config.setInt("filterCapsMinCapitals", filterCapsMinCapitals);
 	}
 	
 	public void setFilterLinks(boolean links){
@@ -207,6 +227,15 @@ public class Channel {
 	
 	public boolean getFilterLinks(){
 		return filterLinks;
+	}
+	
+	public void setAnnounceJoinParts(boolean bol){
+		announceJoinParts = bol;
+		config.setBoolean("announceJoinParts", bol);
+	}
+	
+	public boolean getAnnounceJoinParts(){
+		return announceJoinParts;
 	}
 	
 	//###################################################
@@ -545,6 +574,10 @@ public class Channel {
 			config.setInt("topicTime", 0);
 		}
 		
+		if(!config.keyExists("announceJoinParts")) {
+			config.setBoolean("announceJoinParts", false);
+		}
+		
 		
 
 		server = config.getString("server");
@@ -561,7 +594,8 @@ public class Channel {
 		filterCapsMinCharacters = Integer.parseInt(config.getString("filterCapsMinCharacters"));
 		filterCapsMinCapitals = Integer.parseInt(config.getString("filterCapsMinCapitals"));
 
-		
+		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
+
 		
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
