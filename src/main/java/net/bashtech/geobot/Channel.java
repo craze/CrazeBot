@@ -36,7 +36,6 @@ public class Channel {
 	
 	private ArrayList<String> permittedDomains = new ArrayList<String>();
 	
-	//Checks for disabled features.
 	public boolean useTopic = true;
 	public boolean useFilters = true;
 	

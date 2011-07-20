@@ -1,4 +1,4 @@
-package net.bashtech.geobot;
+package net.bashtech.geobot.JSONObjects;
 
 public class JTVStreamSummary {
 	public int average_bitrate = 0;
