@@ -613,12 +613,51 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
+ 				
  				//!leave - Ops
  				if (msg[0].equalsIgnoreCase("!leave") && isOp) {
  						sendMessage(channel, "Channel "+ channel +" parting...");
  						botManager.removeChannel(channel);
  				}
  				
+ 				
+ 				//Moderation commands - Ops
+ 				if(isOp && botManager.getInstance().network.equalsIgnoreCase("jtv")){
+ 					if(msg[0].equalsIgnoreCase("+m")){
+ 						sendMessage(channel, ".slow");
+ 					}
+ 					if(msg[0].equalsIgnoreCase("-m")){
+ 						sendMessage(channel, ".slowoff");
+ 					}
+ 					if(msg[0].equalsIgnoreCase("+f")){
+ 						sendMessage(channel, ".followers");
+ 					} 
+ 					if(msg[0].equalsIgnoreCase("-f")){
+ 						sendMessage(channel, ".followersoff");
+ 					} 
+ 					if(msg[0].equalsIgnoreCase("+s")){
+ 						sendMessage(channel, ".subscribers");
+ 					} 
+ 					if(msg[0].equalsIgnoreCase("-s")){
+ 						sendMessage(channel, ".subscribersoff");
+ 					} 
+ 					if(msg.length > 0){
+ 	 					if(msg[0].equalsIgnoreCase("+b")){
+ 	 						sendMessage(channel, ".ban " + msg[1]);
+ 	 					} 
+ 	 					if(msg[0].equalsIgnoreCase("-b")){
+ 	 						sendMessage(channel, ".unban " + msg[1]); 
+ 	 					} 
+ 	 					if(msg[0].equalsIgnoreCase("+k")){
+ 	 						sendMessage(channel, ".timeout " + msg[1]);
+ 	 					} 
+ 					}
+ 					
+ 				}
+ 				if (msg[0].equalsIgnoreCase("!leave")) {
+ 						sendMessage(channel, "Channel "+ channel +" parting...");
+ 						botManager.removeChannel(channel);
+ 				}
  				
  				
  				// *******************************************************************
