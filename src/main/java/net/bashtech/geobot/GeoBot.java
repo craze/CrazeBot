@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 import net.bashtech.geobot.JSONObjects.JTVStreamSummary;
 import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.jibble.pircbot.*;
 
 public class GeoBot extends PircBot {	
@@ -36,7 +35,6 @@ public class GeoBot extends PircBot {
 								   ".*\\.eu(\\s+|/).*",".*\\.fm(\\s+|/).*",".*\\.gov(\\s+|/).*",".*\\.info(\\s+|/).*",".*\\.io(\\s+|/).*",".*\\.jobs(\\s+|/).*",".*\\.me(\\s+|/).*",".*\\.mil(\\s+|/).*",
 			                       ".*\\.mobi(\\s+|/).*",".*\\.name(\\s+|/).*",".*\\.rn(\\s+|/).*",".*\\.tel(\\s+|/).*",".*\\.travel(\\s+|/).*",".*\\.tz(\\s+|/).*",".*\\.uk(\\s+|/).*",".*\\.us(\\s+|/).*",".*\\.be(\\s+|/).*"};*/
 	
-	ObjectMapper mapper;
 	
 	public GeoBot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
