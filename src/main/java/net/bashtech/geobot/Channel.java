@@ -50,6 +50,8 @@ public class Channel {
 	private boolean signKicks;
 	
 	private boolean announceJoinParts; 
+	
+	private String lastfm;
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -489,6 +491,19 @@ public class Channel {
 		return false;
 	}
 	
+	// #################################################
+	
+	public String getLastfm(){
+		return lastfm;
+	}
+	
+	public void setLastfm(String string){
+		lastfm = string;
+		config.setString("lastfm", lastfm);
+	}
+	
+	// #################################################
+
 	private void loadProperties(String name){
 		try {
 			config.load();
@@ -577,6 +592,9 @@ public class Channel {
 			config.setBoolean("announceJoinParts", false);
 		}
 		
+		if(!config.keyExists("lastfm")) {
+			config.setString("lastfm", "");
+		}
 		
 
 		server = config.getString("server");
@@ -595,7 +613,7 @@ public class Channel {
 
 		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
 
-		
+	
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
 		topic  = config.getString("topic");
@@ -606,6 +624,8 @@ public class Channel {
 		enableThrow = Boolean.parseBoolean(config.getString("enableThrow"));
 
 		signKicks = Boolean.parseBoolean(config.getString("signKicks"));
+		
+		lastfm = config.getString("lastfm");
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");

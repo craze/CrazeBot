@@ -13,10 +13,13 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 import com.google.gson.Gson;
 
 import net.bashtech.geobot.JSONObjects.JTVStreamSummary;
+import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jibble.pircbot.*;
 
 public class GeoBot extends PircBot {	
@@ -32,6 +35,8 @@ public class GeoBot extends PircBot {
 	/*private String[] linksMasks = {".*http://.*",".*\\.com(\\s+|/).*",".*\\.org(\\s+|/).*",".*\\.net(\\s+|/).*",".*\\.tv(\\s+|/).*",".*\\.ca(\\s+|/).*",".*\\.xxx(\\s+|/).*",".*\\.cc(\\s+|/).*",".*\\.de(\\s+|/).*",
 								   ".*\\.eu(\\s+|/).*",".*\\.fm(\\s+|/).*",".*\\.gov(\\s+|/).*",".*\\.info(\\s+|/).*",".*\\.io(\\s+|/).*",".*\\.jobs(\\s+|/).*",".*\\.me(\\s+|/).*",".*\\.mil(\\s+|/).*",
 			                       ".*\\.mobi(\\s+|/).*",".*\\.name(\\s+|/).*",".*\\.rn(\\s+|/).*",".*\\.tel(\\s+|/).*",".*\\.travel(\\s+|/).*",".*\\.tz(\\s+|/).*",".*\\.uk(\\s+|/).*",".*\\.us(\\s+|/).*",".*\\.be(\\s+|/).*"};*/
+	
+	ObjectMapper mapper;
 	
 	public GeoBot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
@@ -325,6 +330,20 @@ public class GeoBot extends PircBot {
 					//return;
 				}
 				
+				// !music - All
+				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("lastfm")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("Matched command !bitrate");
+					try {
+						sendMessage(channel, "> " + this.getLastFMLastPlayed(channelInfo));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
 				// !{botname} - All
 				if (msg[0].equalsIgnoreCase("!" + this.getNick()) && (isRegular || isOp)) {
 					System.out.println("Matched command !" + this.getNick());
@@ -609,10 +628,18 @@ public class GeoBot extends PircBot {
  								channelInfo.setAnnounceJoinParts(false);
  								sendMessage(channel, "> Feature: Join/Part announcing is off");
  							}
+						}else if(msg[1].equalsIgnoreCase("lastfm")){
+ 							//filters
+ 							if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setLastfm("");
+ 								sendMessage(channel, "> Feature: Lastfm is off.");
+ 							}else{
+ 								channelInfo.setLastfm(msg[2]);
+ 								sendMessage(channel, "> Feature: Lastfm user set to " + msg[2]);
  						}
  					}
  				}
- 				
+ 				}
  				
  				//!leave - Ops
  				if (msg[0].equalsIgnoreCase("!leave") && isOp) {
@@ -966,6 +993,34 @@ public class GeoBot extends PircBot {
 		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
 		
 		return data.average_bitrate;
+	}
+	
+	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
+		if(channelInfo.getLastfm().length() < 1)
+			return "Function not configured.";
+		
+		URL url = new URL("http://bashtech.net/app-support/geobot/lastfm.php?action=lastplayed&user=" + channelInfo.getLastfm());
+		URLConnection conn = url.openConnection();
+		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String jsonIn = "";
+		while(d.ready())
+		{
+			jsonIn = d.readLine();
+		}
+		
+//		mapper = new ObjectMapper();
+//		Map<String,Object> userData = mapper.readValue(jsonIn, Map.class);
+//		Map second = (Map) userData.get("recenttracks");
+		
+		LastFmRecentTracks data = new Gson().fromJson(jsonIn, LastFmRecentTracks.class);
+		
+		if(data.playing == true){
+			return "Listening to: " + data.title + " by " + data.artist;
+		}else{
+			return "Recently listened to: " + data.title + " by " + data.artist;
+		}
+			
 	}
 	
 	public static boolean isInteger(String str) {
