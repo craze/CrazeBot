@@ -329,10 +329,8 @@ public class GeoBot extends PircBot {
 				}
 				
 				// !music - All
-				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("lastfm")) {
-					if(!botManager.network.equalsIgnoreCase("jtv"))
-						return;
-					System.out.println("Matched command !bitrate");
+				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
+					System.out.println("Matched command !music");
 					try {
 						sendMessage(channel, "> " + this.getLastFMLastPlayed(channelInfo));
 					} catch (IOException e) {
