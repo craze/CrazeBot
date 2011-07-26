@@ -1012,9 +1012,9 @@ public class GeoBot extends PircBot {
 		LastFmRecentTracks data = new Gson().fromJson(jsonIn, LastFmRecentTracks.class);
 		
 		if(data.playing == true){
-			return "Listening to: " + data.title + " by " + data.artist;
+			return "Listening to: " + data.title + " by " + data.artist + " " + data.url;
 		}else{
-			return "Recently listened to: " + data.title + " by " + data.artist;
+			return "Recently listened to: " + data.title + " by " + data.artist + " " + data.url;
 		}
 			
 	}
