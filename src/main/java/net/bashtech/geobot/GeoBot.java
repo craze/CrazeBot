@@ -730,7 +730,7 @@ public class GeoBot extends PircBot {
  				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && isAdmin) {
  					if(msg[1].contains("#")){
  						sendMessage(channel, "Channel "+ msg[1] +" parting...");
- 						botManager.removeChannel(split(message)[1]);
+ 						botManager.removeChannel(msg[1]);
  						sendMessage(channel, "Channel "+ msg[1] +" parted.");
  					}else{
  						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
