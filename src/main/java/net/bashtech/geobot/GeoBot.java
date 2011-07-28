@@ -62,120 +62,277 @@ public class GeoBot extends PircBot {
 		
 	}
 
-	public void onPrivateMessage(String sender, String login, String hostname, String message) {
-		String[] msg = split(message.trim());
-
-		if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && botManager.isAdmin(sender)) {
-			try {
-				if(msg[1].contains("#")){
-					sendMessage(sender, "Channel "+ msg[1] +" joining...");
-					botManager.addChannel(msg[1], msg[2]);
-					sendMessage(sender, "Channel "+ msg[1] +" joined.");
-				}else{
-					sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
-				}
-				
-			} catch (NickAlreadyInUseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IrcException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && botManager.isAdmin(sender)) {
-			if(msg[1].contains("#")){
-				sendMessage(sender, "Channel "+ msg[1] +" parting...");
-				botManager.removeChannel(split(message)[1]);
-				sendMessage(sender, "Channel "+ msg[1] +" parted.");
-			}else{
-				sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
-			}
-				
-		}
-		
-		if (msg[0].equalsIgnoreCase("!rejoin") && botManager.isAdmin(sender)) {
-			sendMessage(sender, "Rejoining all channels.");
-			botManager.rejoinChannels();
-		}
-		
-		System.out.println("DEBUG: PM from " + sender + " message=" + message);
-		
-	}
+//	public void onPrivateMessage(String sender, String login, String hostname, String message) {
+//		String[] msg = split(message.trim());
+//
+//		if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && botManager.isAdmin(sender)) {
+//			try {
+//				if(msg[1].contains("#")){
+//					sendMessage(sender, "Channel "+ msg[1] +" joining...");
+//					botManager.addChannel(msg[1], msg[2]);
+//					sendMessage(sender, "Channel "+ msg[1] +" joined.");
+//				}else{
+//					sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
+//				}
+//				
+//			} catch (NickAlreadyInUseException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IrcException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && botManager.isAdmin(sender)) {
+//			if(msg[1].contains("#")){
+//				sendMessage(sender, "Channel "+ msg[1] +" parting...");
+//				botManager.removeChannel(split(message)[1]);
+//				sendMessage(sender, "Channel "+ msg[1] +" parted.");
+//			}else{
+//				sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
+//			}
+//				
+//		}
+//		
+//		if (msg[0].equalsIgnoreCase("!rejoin") && botManager.isAdmin(sender)) {
+//			sendMessage(sender, "Rejoining all channels.");
+//			botManager.rejoinChannels();
+//		}
+//		
+//		System.out.println("DEBUG: PM from " + sender + " message=" + message);
+//		
+//	}
 	
 	
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
-		System.out.println("DEBUG: " + channel + " " + sender + " " + message);
-		
-		Channel channelInfo = botManager.getChannel(channel);
-		
-		if(channelInfo == null)
-			return;
-		
-		System.out.println("DEBUG: " + message);
-
-		
-		if(sender.equalsIgnoreCase(this.getNick())){
-			System.out.println("Message from bot");
-			return;
-		}
-			
-			String[] msg = split(message.trim());
-			User user = matchUser(sender, channel);
-			if(user == null){
-				user = new User("", sender);
-			}
-			
-			
-			boolean isOp = false;
-			boolean isRegular = false;
-			try{
-				if(user.getPrefix().equalsIgnoreCase("@") || user.getPrefix().equalsIgnoreCase("~"))
-					isOp = true;
-				if(user.isOp())
-					isOp = true;
-				if(botManager.isAdmin(sender))
-					isOp = true;
-				if(user.getPrefix().equalsIgnoreCase("@") || user.getPrefix().equalsIgnoreCase("~") || user.getPrefix().equalsIgnoreCase("+"))
-					isRegular = true;
-			}catch(Exception e){
-				System.out.println("Prefix exception.");
-			}
-
-			if(channel.equalsIgnoreCase("#" + sender))
-				isOp = true;
-			
-			if(channelInfo.isRegular(sender))
-				isRegular = true;
-
+				//System.out.println("DEBUG: " + channel + " " + sender + " " + message);
 				
+				Channel channelInfo = botManager.getChannel(channel);
 				
-				if(channelInfo.isModerator(sender)){
-					isOp = true;
+				if(channelInfo == null)
+					return;
+						
+				//Ignore messages from self.
+				if(sender.equalsIgnoreCase(this.getNick())){
+					//System.out.println("Message from bot");
+					return;
 				}
 				
-				if(isOp)
-					System.out.println("User is op");
-				if(isRegular)
-					System.out.println("User is regular");
+				//Split message on spaces.
+				String[] msg = message.trim().split(" ");
 				
+				//Try to match to user in userlist.
+				User user = matchUser(sender, channel);
+				if(user == null){
+					user = new User("", sender);
+				}
+				
+				// ********************************************************************************
+				// ****************************** User Ranks **************************************
+				// ********************************************************************************
+				
+				boolean isAdmin = false;
+				boolean isOwner = false;
+				boolean isOp = false;
+				boolean isRegular = false;
+				
+				//Check user level based on IRC mode.
+				try{
+					if(user.getPrefix().equalsIgnoreCase("~"))
+						isOwner = true;
+					if(user.getPrefix().equalsIgnoreCase("@") || user.isOp())
+						isOp = true;
+					if(user.getPrefix().equalsIgnoreCase("+"))
+						isRegular = true;
+				}catch(Exception e){
+					System.out.println("Prefix exception.");
+				}
+				
+				//Check for user level based on other factors.
+				if(botManager.isAdmin(sender))
+					isAdmin = true;
+				if(channel.equalsIgnoreCase("#" + sender))
+					isOwner = true;
+				if(channelInfo.isModerator(sender))
+					isOp = true;
+				if(channelInfo.isRegular(sender))
+					isRegular = true;
+				
+				//Give users all the ranks below them
+				if(isAdmin){
+					System.out.println(sender + " is admin.");
+					isOwner = true;
+					isOp = true;
+					isRegular = true;
+				}else if(isOwner){
+					System.out.println(sender + " is owner.");
+					isOp = true;
+					isRegular = true;
+				}else if(isOp){
+					System.out.println(sender + " is op.");
+					isRegular = true;
+				}else if(isRegular){
+					System.out.println(sender + " is regular.");
+				}
+
+				// ********************************************************************************
+				// ***************************** Poll Voting **************************************
+				// ********************************************************************************
 				if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus()){
 					//Poll is open and accepting votes.
 					channelInfo.getPoll().vote(sender, msg[0]);
 					System.out.println("DEBUG: Voted.");
 				}
-				
+				// ********************************************************************************
+				// ***************************** Giveaway Voting **********************************
+				// ********************************************************************************
 				if(channelInfo.getGiveaway() != null && channelInfo.getGiveaway().getStatus()){
 					//Giveaway is open and accepting entries.
 					System.out.println("DEBUG: Attempting entry.");
 					channelInfo.getGiveaway().submitEntry(sender, msg[0]);
 				}
+				// ********************************************************************************
+				// ********************************************************************************
+				// ********************************************************************************
 				
+				
+				// ********************************************************************************
+				// ********************************* Commands *************************************
+				// ********************************************************************************
+				
+				// !time - All
+				if (msg[0].equalsIgnoreCase("!time")) {
+						System.out.println("Matched command !time");
+						String time = new java.util.Date().toString();
+						sendMessage(channel, sender + ": The time is now " + time);
+						//return;
+				}
+				
+				// !bothelp - All
+				if (msg[0].equalsIgnoreCase("!bothelp")) {
+						System.out.println("Matched command !bothelp");
+						sendMessage(channel, "> Command help is available at http://bashtech.net/wiki/Geobot#Commands");
+						//return;
+				}
+				
+				// !viewers - All
+				if (msg[0].equalsIgnoreCase("!viewers")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("Matched command !viewers");
+					try {
+						sendMessage(channel, "> " + this.getViewers(channelInfo) + " viewers.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
+				// !bitrate - All
+				if (msg[0].equalsIgnoreCase("!bitrate")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("Matched command !bitrate");
+					try {
+						sendMessage(channel, "> Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
+				// !music - All
+				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
+					System.out.println("Matched command !music");
+					try {
+						sendMessage(channel, "> " + this.getLastFMLastPlayed(channelInfo));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
+				// !{botname} - All
+				if (msg[0].equalsIgnoreCase("!" + this.getNick()) && (isRegular || isOp)) {
+					System.out.println("Matched command !" + this.getNick());
+					sendMessage(channel, "> Commands: " + channelInfo.getCommandList());
+
+					//return;
+				}
+				
+				// !throw - All
+				if((msg[0].equalsIgnoreCase("!throw") || msg[0].equalsIgnoreCase("!flip")) && (channelInfo.checkThrow() || isOp)){
+					System.out.println("Matched command !throw");
+					if(msg.length > 1){
+						String throwMessage = "";
+						for(int i=1;i<msg.length;i++){
+							throwMessage += msg[i] + " ";
+						}
+						this.sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
+					}
+				}
+				
+				// !topic
+				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
+					System.out.println("Matched command !topic");
+					if(msg.length < 2 || !isOp){
+						if(channelInfo.getTopic().equalsIgnoreCase("")){
+							sendMessage(channel, "> No topic is set.");
+						}else{
+							this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
+						}
+					}else if(msg.length > 1 && isOp){
+						if(msg[1].equalsIgnoreCase("unset")){
+							channelInfo.setTopic("");
+							sendMessage(channel, "> No topic is set.");
+						}else{
+							channelInfo.setTopic(message.substring(7));
+							this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
+							if(botManager.network.equalsIgnoreCase("ngame"))
+								this.sendMessage(channel, ".topic " + channelInfo.getTopic());
+						}
+
+					}
+					//return;
+				}
+				
+				// !command - Ops
+ 				if(msg[0].equalsIgnoreCase("!command")){
+ 					System.out.println("Matched command !command");
+					if(msg.length < 3 && isOp){
+						this.sendMessage(channel, "> !command add/delete name string");
+					}else if(msg.length > 2 && isOp){
+						if(msg[1].equalsIgnoreCase("add")){
+							String key = "!" + msg[2];
+							String value = "";
+							
+							for(int i = 3; i < msg.length; i++){
+								value = value + msg[i] + " ";
+							}
+							if(!value.contains(",,")){
+								channelInfo.setCommand(key, value);
+								this.sendMessage(channel, "> " + channelInfo.getCommand(key));
+							}else{
+								sendMessage(channel, "Command cannot contain double commas (\",,\").");
+							}
+								
+						}else if(msg[1].equalsIgnoreCase("delete")){
+							String key = "!" + msg[2];
+							channelInfo.removeCommand(key);	
+							this.sendMessage(channel, "> Command " + key + " removed.");
+
+							}
+					}
+				}
+ 				
 				// !poll - Ops
 				if(msg[0].equalsIgnoreCase("!poll") && isOp){
 					System.out.println("Matched command !poll");
@@ -284,154 +441,53 @@ public class GeoBot extends PircBot {
 						}
 					}
 				}
+	
+				// ********************************************************************************
+				// ***************************** Moderation Commands ******************************
+				// ********************************************************************************
 				
-				// !time - All
-				if (msg[0].equalsIgnoreCase("!time")) {
-						System.out.println("Matched command !time");
-						String time = new java.util.Date().toString();
-						sendMessage(channel, sender + ": The time is now " + time);
-						//return;
-				}
-				
-				// !bothelp - Ops
-				if (msg[0].equalsIgnoreCase("!bothelp") && isOp) {
-						System.out.println("Matched command !bothelp");
-						sendMessage(channel, "> Command help is available at http://bashtech.net/wiki/Geobot#Commands");
-						//return;
-				}
-				
-				// !viewers - All
-				if (msg[0].equalsIgnoreCase("!viewers")) {
-					if(!botManager.network.equalsIgnoreCase("jtv"))
-						return;
-					System.out.println("Matched command !viewers");
-					try {
-						sendMessage(channel, "> " + this.getViewers(channelInfo) + " viewers.");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					//return;
-				}
-				
-				// !bitrate - All
-				if (msg[0].equalsIgnoreCase("!bitrate")) {
-					if(!botManager.network.equalsIgnoreCase("jtv"))
-						return;
-					System.out.println("Matched command !bitrate");
-					try {
-						sendMessage(channel, "> Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					//return;
-				}
-				
-				// !music - All
-				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
-					System.out.println("Matched command !music");
-					try {
-						sendMessage(channel, "> " + this.getLastFMLastPlayed(channelInfo));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					//return;
-				}
-				
-				// !{botname} - All
-				if (msg[0].equalsIgnoreCase("!" + this.getNick()) && (isRegular || isOp)) {
-					System.out.println("Matched command !" + this.getNick());
-					sendMessage(channel, "> Commands: " + channelInfo.getCommandList());
-
-					//return;
-				}
-				
+ 				//Moderation commands - Ops
+ 				if(isOp && botManager.getInstance().network.equalsIgnoreCase("jtv")){
+ 					if(msg[0].equalsIgnoreCase("+m")){
+ 						sendMessage(channel, ".slow");
+ 					}
+ 					if(msg[0].equalsIgnoreCase("-m")){
+ 						sendMessage(channel, ".slowoff");
+ 					}
+ 					if(msg[0].equalsIgnoreCase("+f")){
+ 						sendMessage(channel, ".followers");
+ 					} 
+ 					if(msg[0].equalsIgnoreCase("-f")){
+ 						sendMessage(channel, ".followersoff");
+ 					} 
+ 					if(msg[0].equalsIgnoreCase("+s")){
+ 						sendMessage(channel, ".subscribers");
+ 					} 
+ 					if(msg[0].equalsIgnoreCase("-s")){
+ 						sendMessage(channel, ".subscribersoff");
+ 					} 
+ 					if(msg.length > 0){
+ 	 					if(msg[0].equalsIgnoreCase("+b")){
+ 	 						sendMessage(channel, ".ban " + msg[1]);
+ 	 					} 
+ 	 					if(msg[0].equalsIgnoreCase("-b")){
+ 	 						sendMessage(channel, ".unban " + msg[1]); 
+ 	 					} 
+ 	 					if(msg[0].equalsIgnoreCase("+k")){
+ 	 						sendMessage(channel, ".timeout " + msg[1]);
+ 	 					} 
+ 					}
+ 					
+ 				}
+ 				
 				// !clear - Ops
 				if(msg[0].equalsIgnoreCase("!clear") && isOp){
 					System.out.println("Matched command !clear");
 					this.sendMessage(channel, ".clear");
-					//return;
-				}
-				
-				// !throw - All
-				if(msg[0].equalsIgnoreCase("!throw") && (channelInfo.checkThrow() || isOp)){
-					System.out.println("Matched command !throw");
-//					if(msg.length > 2){
-//						String throwMessage = "";
-//						for(int i=2;i<msg.length;i++){
-//							throwMessage += msg[i] + " ";
-//						}
-//						
-//						this.sendMessage(channel, "> " + sender + " throws " + throwMessage + "at " + msg[1]);
-					if(msg.length > 1){
-						//this.sendMessage(channel, "(â•¯Â°â€¿Â°ï¼‰â•¯ï¸µ" + msg[1]);
-						String throwMessage = "";
-						for(int i=1;i<msg.length;i++){
-							throwMessage += msg[i] + " ";
-						}
-						this.sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
-					}
-					//return;
-				}
-				
-				
-				// !topic
-				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
-					System.out.println("Matched command !topic");
-					if(msg.length < 2 || !isOp){
-						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							sendMessage(channel, "> No topic is set.");
-						}else{
-							this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
-						}
-					}else if(msg.length > 1 && isOp){
-						if(msg[1].equalsIgnoreCase("unset")){
-							channelInfo.setTopic("");
-							sendMessage(channel, "> No topic is set.");
-						}else{
-							channelInfo.setTopic(message.substring(7));
-							this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
-							if(botManager.network.equalsIgnoreCase("ngame"))
-								this.sendMessage(channel, ".topic " + channelInfo.getTopic());
-						}
-
-					}
-					//return;
-				}
-				
-				// !command - Sets commands
- 				if(msg[0].equalsIgnoreCase("!command")){
- 					System.out.println("Matched command !command");
-					if(msg.length < 3 && isOp){
-						this.sendMessage(channel, "> !command add/delete name string");
-					}else if(msg.length > 2 && isOp){
-						if(msg[1].equalsIgnoreCase("add")){
-							String key = "!" + msg[2];
-							String value = "";
-							
-							for(int i = 3; i < msg.length; i++){
-								value = value + msg[i] + " ";
-							}
-							if(!value.contains(",,")){
-								channelInfo.setCommand(key, value);
-								this.sendMessage(channel, "> " + channelInfo.getCommand(key));
-							}else{
-								sendMessage(channel, "Command cannot contain double commas (\",,\").");
-							}
-								
-						}else if(msg[1].equalsIgnoreCase("delete")){
-							String key = "!" + msg[2];
-							channelInfo.removeCommand(key);	
-							this.sendMessage(channel, "> Command " + key + " removed.");
-
-							}
-					}
 				}
  				
- 				// !links - Turns on/off link filter
- 				if(msg[0].equalsIgnoreCase("!links") && isOp){
+ 				// !links - Owner
+ 				if(msg[0].equalsIgnoreCase("!links") && isOwner){
  					System.out.println("Matched command !links");
  					if(msg.length == 2){
  						if(msg[1].equalsIgnoreCase("on")){
@@ -443,9 +499,51 @@ public class GeoBot extends PircBot {
  						}
  					}
  				}
+ 				
+ 				// !permit - Allows users to post 1 link
+ 				if(msg[0].equalsIgnoreCase("!permit") && channelInfo.getFilterLinks() && channelInfo.useFilters){
+ 					System.out.println("Matched command !permit");
+ 					if(msg.length > 1 && isOp ){
+ 						if(!channelInfo.isRegular(msg[1])){
+ 							channelInfo.permitUser(msg[1]);
+ 	 						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
+ 						}else{
+ 							sendMessage(channel, "> " + msg[1] + " is a regular and does not need to be permitted.");
+ 						}
+ 					}
+ 				}
+ 				
+ 				
+ 				// !pd - Owner
+ 				if(msg[0].equalsIgnoreCase("!pd")){
+ 					System.out.println("Matched command !pd");
+ 					if(msg.length  > 2 && isOwner){
+ 						if(msg[1].equalsIgnoreCase("add")){
+ 							if(channelInfo.isDomainPermitted(msg[2])){
+ 								sendMessage(channel,"> Domain already exists. " + "(" + msg[2] + ")");
+ 							}else{
+ 								channelInfo.addPermittedDomain(msg[2]);
+ 								sendMessage(channel,"> Domain added. "+ "(" + msg[2] + ")");
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("delete")){
+ 							if(channelInfo.isDomainPermitted(msg[2])){
+ 								channelInfo.removePermittedDomain(msg[2]);
+ 								sendMessage(channel,"> Domain removed. "+ "(" + msg[2] + ")");
+ 							}else{
+ 								sendMessage(channel,"> Domain does not exist. "+ "(" + msg[2] + ")");
+ 							}
+ 						}
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
+ 						String tempList = "> Permitted domains: ";
+ 						for(String s:channelInfo.getpermittedDomains()){
+ 							tempList += s + ", ";
+ 						}
+ 						sendMessage(channel, tempList);
+ 					}
+ 				}
 				
- 				// !caps - Turns on/off caps filter and sets limit.
- 				if(msg[0].equalsIgnoreCase("!caps") && isOp){
+ 				// !caps - Owner
+ 				if(msg[0].equalsIgnoreCase("!caps") && isOwner){
  					System.out.println("Matched command !caps");
  					if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
@@ -475,10 +573,10 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				// !regular - Add regulars
+ 				// !regular - Owner
  				if(msg[0].equalsIgnoreCase("!regular")){
  					System.out.println("Matched command !regular");
- 					if(msg.length  > 2 && isOp){
+ 					if(msg.length  > 2 && isOwner){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isRegular(msg[2])){
  								sendMessage(channel,"> User already exists." + "(" + msg[2] + ")");
@@ -494,7 +592,7 @@ public class GeoBot extends PircBot {
  								sendMessage(channel,"> User does not exist. " + "(" + msg[2] + ")");
  							}
  						}
- 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
  						String tempList = "> Regulars: ";
  						for(String s:channelInfo.getRegulars()){
  							tempList += s + ", ";
@@ -503,10 +601,10 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				// !mod - Add moderators
+ 				// !mod - Owner
  				if(msg[0].equalsIgnoreCase("!mod")){
  					System.out.println("Matched command !mod");
- 					if(msg.length  > 2 && isOp){
+ 					if(msg.length  > 2 && isOwner){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isModerator(msg[2])){
  								sendMessage(channel,"> User already exists. " + "(" + msg[2] + ")");
@@ -522,7 +620,7 @@ public class GeoBot extends PircBot {
  								sendMessage(channel,"> User does not exist. "+ "(" + msg[2] + ")");
  							}
  						}
- 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
  						String tempList = "> Moderators: ";
  						for(String s:channelInfo.getModerators()){
  							tempList += s + ", ";
@@ -531,51 +629,10 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				// !permit - Allows users to post 1 link
- 				if(msg[0].equalsIgnoreCase("!permit") && channelInfo.getFilterLinks() && channelInfo.useFilters){
- 					System.out.println("Matched command !permit");
- 					if(msg.length > 1 && isOp ){
- 						if(!channelInfo.isRegular(msg[1])){
- 							channelInfo.permitUser(msg[1]);
- 	 						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
- 						}else{
- 							sendMessage(channel, "> " + msg[1] + " is a regular and does not need to be permitted.");
- 						}
- 					}
- 				}
- 				
- 				// !pd - Add permitted domain
- 				if(msg[0].equalsIgnoreCase("!pd")){
- 					System.out.println("Matched command !pd");
- 					if(msg.length  > 2 && isOp){
- 						if(msg[1].equalsIgnoreCase("add")){
- 							if(channelInfo.isDomainPermitted(msg[2])){
- 								sendMessage(channel,"> Domain already exists. " + "(" + msg[2] + ")");
- 							}else{
- 								channelInfo.addPermittedDomain(msg[2]);
- 								sendMessage(channel,"> Domain added. "+ "(" + msg[2] + ")");
- 							}
- 						}else if(msg[1].equalsIgnoreCase("delete")){
- 							if(channelInfo.isDomainPermitted(msg[2])){
- 								channelInfo.removePermittedDomain(msg[2]);
- 								sendMessage(channel,"> Domain removed. "+ "(" + msg[2] + ")");
- 							}else{
- 								sendMessage(channel,"> Domain does not exist. "+ "(" + msg[2] + ")");
- 							}
- 						}
- 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOp){
- 						String tempList = "> Permitted domains: ";
- 						for(String s:channelInfo.getpermittedDomains()){
- 							tempList += s + ", ";
- 						}
- 						sendMessage(channel, tempList);
- 					}
- 				}
- 				
- 				// !set - Allows you to turn off features of the bot.
+ 				// !set - Owner
  				if(msg[0].equalsIgnoreCase("!set")){
  					System.out.println("Matched command !set");
- 					if(msg.length > 0 && isOp){
+ 					if(msg.length > 0 && isOwner){
  						if(msg.length == 1){
  							//Display current settings
  						}else if(msg[1].equalsIgnoreCase("topic")){
@@ -632,60 +689,23 @@ public class GeoBot extends PircBot {
  							}else{
  								channelInfo.setLastfm(msg[2]);
  								sendMessage(channel, "> Feature: Lastfm user set to " + msg[2]);
- 						}
+ 							}
+						}
  					}
  				}
- 				}
  				
- 				//!leave - Ops
- 				if (msg[0].equalsIgnoreCase("!leave") && isOp) {
+ 				//!leave - Owner
+ 				if ((msg[0].equalsIgnoreCase("!leave") || msg[0].equalsIgnoreCase("!remove")) && isOwner) {
  						sendMessage(channel, "Channel "+ channel +" parting...");
  						botManager.removeChannel(channel);
  				}
  				
  				
- 				//Moderation commands - Ops
- 				if(isOp && botManager.getInstance().network.equalsIgnoreCase("jtv")){
- 					if(msg[0].equalsIgnoreCase("+m")){
- 						sendMessage(channel, ".slow");
- 					}
- 					if(msg[0].equalsIgnoreCase("-m")){
- 						sendMessage(channel, ".slowoff");
- 					}
- 					if(msg[0].equalsIgnoreCase("+f")){
- 						sendMessage(channel, ".followers");
- 					} 
- 					if(msg[0].equalsIgnoreCase("-f")){
- 						sendMessage(channel, ".followersoff");
- 					} 
- 					if(msg[0].equalsIgnoreCase("+s")){
- 						sendMessage(channel, ".subscribers");
- 					} 
- 					if(msg[0].equalsIgnoreCase("-s")){
- 						sendMessage(channel, ".subscribersoff");
- 					} 
- 					if(msg.length > 0){
- 	 					if(msg[0].equalsIgnoreCase("+b")){
- 	 						sendMessage(channel, ".ban " + msg[1]);
- 	 					} 
- 	 					if(msg[0].equalsIgnoreCase("-b")){
- 	 						sendMessage(channel, ".unban " + msg[1]); 
- 	 					} 
- 	 					if(msg[0].equalsIgnoreCase("+k")){
- 	 						sendMessage(channel, ".timeout " + msg[1]);
- 	 					} 
- 					}
- 					
- 				}
- 				if (msg[0].equalsIgnoreCase("!leave")) {
- 						sendMessage(channel, "Channel "+ channel +" parting...");
- 						botManager.removeChannel(channel);
- 				}
+				// ********************************************************************************
+				// **************************** Administration Commands ***************************
+				// ********************************************************************************
  				
- 				
- 				// *******************************************************************
- 				
- 				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && botManager.isAdmin(sender)) {
+ 				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && isAdmin) {
  					try {
  						if(msg[1].contains("#")){
  							sendMessage(channel, "Channel "+ msg[1] +" joining...");
@@ -707,7 +727,7 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && botManager.isAdmin(sender)) {
+ 				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && isAdmin) {
  					if(msg[1].contains("#")){
  						sendMessage(channel, "Channel "+ msg[1] +" parting...");
  						botManager.removeChannel(split(message)[1]);
@@ -718,30 +738,34 @@ public class GeoBot extends PircBot {
  						
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && botManager.isAdmin(sender)) {
+ 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && isAdmin) {
  					sendMessage(channel, "Rejoining all channels.");
  					botManager.rejoinChannels();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-softreconnect") && botManager.isAdmin(sender)) {
+ 				if (msg[0].equalsIgnoreCase("!bm-softreconnect") && isAdmin) {
  					sendMessage(channel, "Reconnecting all servers.");
  					botManager.reconnectAllBotsSoft();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && botManager.isAdmin(sender)) {
+ 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
  					sendMessage(channel, "Reconnecting all servers.");
  					botManager.reconnectAllBotsHard();
  				}
  				
- 				// *******************************************************************
-
+				// ********************************************************************************
+				// ***************************** Info/Catch-all Command ***************************
+				// ********************************************************************************
  				
- 				//Command catch all
 				if(message.trim().substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
 					System.out.println("Matched command " + message.trim());
 					sendMessage(channel, "> " + channelInfo.getCommand(message));
 				}
  				
+				// ********************************************************************************
+				// ********************************** Filters *************************************
+				// ********************************************************************************
+				
 				//Filter feature check
  				if(!channelInfo.useFilters)
  					return;
@@ -913,10 +937,6 @@ public class GeoBot extends PircBot {
 
 		
 		return false;
-	}
-	
-	private String[] split(String s){
-		return s.split(" ");
 	}
 	
 //	public Channel getChannel(){
