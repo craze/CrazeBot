@@ -879,7 +879,7 @@ public class GeoBot extends PircBot {
 		
 		sendMessage(channel, "> " + sender + " left the room.");
     }
-	
+    	
 	private User matchUser(String nick, String channel){
 		User[] userList = this.getUsers(channel);
 		

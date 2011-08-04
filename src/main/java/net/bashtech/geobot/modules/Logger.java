@@ -80,6 +80,9 @@ public class Logger implements BotModule {
 	@Override
 	public void onPart(String channel, String sender, String login,
 			String hostname) {
+        append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has left " + channel,channel);
+
 	}
+
 
 }
