@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.bashtech.geobot.modules.BotModule;
+import net.bashtech.geobot.modules.Logger;
+
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 
@@ -31,12 +34,15 @@ public class BotManager {
 	private Timer pjTimer;
 	
 	private PropertiesFile config;
+	
+	private Set<BotModule> modules;
 
 	public BotManager(){
 		BotManager.setInstance(this);
 		botList = new HashMap<String,GeoBot>();
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
+		modules = new HashSet<BotModule>();
 		
 		loadGlobalProfile();
 		
@@ -57,10 +63,7 @@ public class BotManager {
 				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 			}
 		}
-		
-		//rejoinChannels();
-
-		
+			
 		
 		
 		Timer reconnectTimer = new Timer();
@@ -68,6 +71,9 @@ public class BotManager {
 		System.out.println("Reconnect timer scheduled.");
 		
 		this.autoPartandRejoin();
+		
+		// Load modules
+		this.registerModule(new Logger());
 	}
 	
 	private synchronized void loadGlobalProfile(){
@@ -294,6 +300,13 @@ public class BotManager {
 		return instance;
 	}
 	
+	public void registerModule(BotModule module){
+		modules.add(module);
+	}
+	
+	public Set<BotModule> getModules(){
+		return modules;
+	}
 	
 	
 }

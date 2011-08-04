@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 
 import net.bashtech.geobot.JSONObjects.JTVStreamSummary;
 import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
+import net.bashtech.geobot.modules.BotModule;
 
 import org.jibble.pircbot.*;
 
@@ -110,6 +111,12 @@ public class GeoBot extends PircBot {
 	
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
+				//Call modules
+				for(BotModule b:BotManager.getInstance().getModules()){
+					b.onMessage(channel, sender, login, hostname, message);
+				}
+		
+		
 				//System.out.println("DEBUG: " + channel + " " + sender + " " + message);
 				
 				Channel channelInfo = botManager.getChannel(channel);
@@ -845,7 +852,12 @@ public class GeoBot extends PircBot {
 		
 	}
 	
-    public void onJoin(String channel, String sender, String login, String hostname){  	
+    public void onJoin(String channel, String sender, String login, String hostname){ 
+		//Call modules
+		for(BotModule b:BotManager.getInstance().getModules()){
+			b.onJoin(channel, sender, login, hostname);
+		}
+		
 		Channel channelInfo = botManager.getChannel(channel);
 		
 		if(channelInfo == null || !channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
@@ -855,6 +867,11 @@ public class GeoBot extends PircBot {
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {
+		//Call modules
+		for(BotModule b:BotManager.getInstance().getModules()){
+			b.onPart(channel, sender, login, hostname);
+		}
+		
 		Channel channelInfo = botManager.getChannel(channel);
 		
 		if(channelInfo == null || !channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
