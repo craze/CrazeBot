@@ -74,13 +74,13 @@ public class Logger implements BotModule {
 	@Override
 	public void onJoin(String channel, String sender, String login,
 			String hostname) {
-        append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has joined " + channel,channel);
+        //append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has joined " + channel,channel);
 	}
 
 	@Override
 	public void onPart(String channel, String sender, String login,
 			String hostname) {
-        append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has left " + channel,channel);
+        //append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has left " + channel,channel);
 
 	}
 

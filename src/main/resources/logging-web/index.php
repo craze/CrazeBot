@@ -68,18 +68,9 @@
     }
     else {
        
-    $path = "logs";
-    $ignore = array('.', '..' ); 
-    // Directories to ignore when listing output. Many hosts 
-    // will deny PHP access to the cgi-bin. 
-
-    $dh = @opendir( $path ); 
-    // Open the directory to the handle $dh 
      
 getDirectory("logs");
-     
-    closedir( $dh ); 
-    // Close the directory handle 
+ 
 
 ?>
 <?php
