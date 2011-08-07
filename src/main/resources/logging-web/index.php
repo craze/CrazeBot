@@ -2,38 +2,43 @@
 
     include("header.inc.php");
     
-    function getDirectory( $path = '.', $level = 0 ){ 
+    $channels = array();
+    
 
-    $ignore = array( 'cgi-bin', '.', '..' ); 
-    // Directories to ignore when listing output. Many hosts 
-    // will deny PHP access to the cgi-bin. 
+// ***********************************************
+// **************** Index channels ***************
+// ***********************************************
+    $path = "logs";
+
+    $ignore = array('.', '..' ); 
 
     $dh = @opendir( $path ); 
-    // Open the directory to the handle $dh 
      
     while( false !== ( $file = readdir( $dh ) ) ){ 
-    // Loop through the directory 
      
         if( !in_array( $file, $ignore ) ){ 
-        // Check that this file is not to be ignored 
-             
-            $spaces = str_repeat( '&nbsp;', ( $level * 4 ) ); 
-            // Just to add spacing to the list, to better 
-            // show the directory tree. 
-             
-            if( is_dir( "$path/$file" ) ){ 
-            // Its a directory, so we need to keep reading down... 
-                echo "<strong>$spaces #$file</strong><br />"; 
-                getDirectory( "$path/$file", ($level+1) );
-                echo "<br />\n";
-                // Re-call this same function but on a new directory. 
-                // this is what makes function recursive. 
-             
-            } else { 
-                $printname = substr($file,0, strlen($file) -4);
-                echo "$spaces <a href = \"index.php?log=$path/$file\">$printname</a><br />"; 
-                // Just print out the filename 
-             
+
+            if( is_dir( "$path/$file" ) ){
+            
+                $dh2 = @opendir( "$path/$file" ); 
+                
+                unset($logs);
+                $logs = array();
+                while( false !== ( $file2 = readdir( $dh2 ) ) ){
+                
+                    if( !in_array( $file2, $ignore ) ){ 
+                    
+                        $logs[] = $file2;
+                        //var_dump($logs);
+                        
+                    }
+                    
+                }
+                natsort($logs);
+                $channels[$file] = $logs;
+                
+                closedir( $dh2 );
+                
             } 
          
         } 
@@ -42,9 +47,8 @@
      
     closedir( $dh ); 
     // Close the directory handle 
-
-} 
-
+    
+    ksort($channels);
 
     $log = $_GET['log'];
     if (isset($log)) {
@@ -61,7 +65,7 @@
     <p>
     
 <?php
-        readfile($log);
+        @readfile($log) or die("Log not found.");
 ?>
     </p>
 <?php
@@ -69,7 +73,20 @@
     else {
        
      
-getDirectory("logs");
+foreach($channels as $channelName => $logArray){
+
+    if(isset($_GET['channel']) && $channelName != $_GET['channel'])
+        continue;
+        
+    echo "<strong><a href = \"index.php?channel=$channelName\">#{$channelName}</a></strong><br />\n";
+    echo "<ul>\n";
+    foreach($logArray as $logName){
+        $printname = substr($logName,0, strlen($logName) -4);
+        echo "<li><a href = \"index.php?log=$path/$channelName/$logName\">$printname</a></li>"; 
+    }
+    echo "</ul>\n";
+
+}
  
 
 ?>
