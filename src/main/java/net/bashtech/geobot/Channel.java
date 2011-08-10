@@ -55,6 +55,7 @@ public class Channel {
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
+		server = null;
 		loadProperties(name);
 	}
 	
@@ -511,13 +512,21 @@ public class Channel {
 			e.printStackTrace();
 		}
 		
-		//System.out.println("DEBUG: Setting server " + server);
-		if(!config.keyExists("server") || server != null) {
+		if(server == null || server.length() < 1){
+			if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
+				server = name.substring(1) + ".jtvirc.com";
+			}else{
+				server = BotManager.getInstance().server;
+			}
+		}
+
+		System.out.println("DEBUG: Setting server " + server);
+		if(!config.keyExists("server")) {
 			config.setString("server", server);	
 		}
 		
 		if(!config.keyExists("port")) {
-			config.setString("port", "6667");
+			config.setString("port", "" + BotManager.getInstance().port);
 		}
 		
 		if(!config.keyExists("channel")) {
@@ -581,7 +590,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("signKicks")) {
-			config.setBoolean("signKicks", true);
+			config.setBoolean("signKicks", false);
 		}
 		
 		if(!config.keyExists("topicTime")) {

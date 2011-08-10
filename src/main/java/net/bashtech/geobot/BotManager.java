@@ -24,7 +24,7 @@ public class BotManager {
 	int port;
 	String password;
 	String network;
-	
+	boolean publicJoin;
 	
 	Map<String,GeoBot> botList;
 	Map<String,Channel> channelList;
@@ -36,6 +36,8 @@ public class BotManager {
 	private PropertiesFile config;
 	
 	private Set<BotModule> modules;
+	
+	
 
 	public BotManager(){
 		BotManager.setInstance(this);
@@ -111,12 +113,20 @@ public class BotManager {
 			config.setString("network", "jtv");
 		}
 		
+		if(!config.keyExists("publicJoin")) {
+			config.setBoolean("publicJoin", false);
+		}
+		
+		
+		
 		nick = config.getString("nick");
 		server = config.getString("server");
 		network = config.getString("network");
 		port = Integer.parseInt(config.getString("port"));
 		
 		password = config.getString("password");
+		
+		publicJoin = config.getBoolean("publicJoin");
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -150,30 +160,31 @@ public class BotManager {
 			return false;
 	}
 	
-	public void addChannel(String name, String server2) throws NickAlreadyInUseException, IOException, IrcException{
+	public boolean addChannel(String name, String server2){
 		if(channelList.containsKey(name.toLowerCase())){
 			System.out.println("INFO: Already in channel " + name);
-			return;
+			return false;
 		}
 		Channel tempChan = new Channel(name,server2);
 		
 		channelList.put(name, tempChan);
 
 		
-		if(botList.containsKey(server2)){
+		if(botList.containsKey(tempChan.getServer())){
 			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " NO CREATE.");
-			botList.get(server2).joinChannel(tempChan.getChannel());
+			botList.get(tempChan.getServer()).joinChannel(tempChan.getChannel());
 			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 
 		}else{
 			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " CREATE");
-			botList.put(server2, new GeoBot(this,tempChan.getServer(), tempChan.getPort()));
-			botList.get(server2).joinChannel(tempChan.getChannel());
+			botList.put(tempChan.getServer(), new GeoBot(this,tempChan.getServer(), tempChan.getPort()));
+			botList.get(tempChan.getServer()).joinChannel(tempChan.getChannel());
 			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 		}
 		
 		
 		writeChannelList();
+		return true;
 	}
 
 	public void removeChannel(String name){
@@ -193,6 +204,29 @@ public class BotManager {
 		
 		
 		writeChannelList();
+	}
+	
+	public boolean rejoinChannel(String name){
+		if(!channelList.containsKey(name.toLowerCase())){
+			System.out.println("INFO: Not in channel " + name);
+			return false;
+		}
+		
+		Channel tempChan = channelList.get(name.toLowerCase());
+		
+		if(botList.containsKey(tempChan.getServer())){
+			GeoBot tempBot = botList.get(tempChan.getServer());
+			tempBot.partChannel(name);		
+			try {
+				Thread.currentThread().sleep(20000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			tempBot.joinChannel(name);
+		}
+		
+		return true;
 	}
 	
 	public synchronized void rejoinChannels(){

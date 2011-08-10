@@ -572,7 +572,7 @@ public class GeoBot extends PircBot {
  						}else if(msg[1].equalsIgnoreCase("mincaps")){
  							if(msg.length > 2){
  								channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, "> Caps filter min captitals: " + channelInfo.getfilterCapsMinCapitals());
+ 	 							this.sendMessage(channel, "> Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
  							}
  						}else if(msg[1].equalsIgnoreCase("status")){
  							sendMessage(channel, "> Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
@@ -707,31 +707,56 @@ public class GeoBot extends PircBot {
  						botManager.removeChannel(channel);
  				}
  				
+ 				//!join
+ 				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin) {
+
+							sendMessage(channel, "Joining channel #"+ sender +".");
+							boolean joinStatus = botManager.addChannel("#" + sender, null);
+							if(joinStatus){
+								sendMessage(channel, "Channel #"+ sender +" joined.");
+							}else{
+								sendMessage(channel, "Already in channel #"+ sender +".");
+							}
+				}
+ 				
+ 				if (msg[0].equalsIgnoreCase("!rejoin") && msg.length > 1) {
+
+						if(msg[1].contains("#")){
+							sendMessage(channel, "Rejoining channel "+ msg[1] +".");
+							boolean joinStatus = botManager.rejoinChannel(msg[1]);
+							if(joinStatus){
+								sendMessage(channel, "Channel "+ msg[1] +" rejoined.");
+							}else{
+								sendMessage(channel, "Bot is not assigned to channel "+ msg[1] +"."); 							
+							}
+							
+						}else{
+							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+						}
+						
+
+				}
  				
 				// ********************************************************************************
 				// **************************** Administration Commands ***************************
 				// ********************************************************************************
  				
  				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && isAdmin) {
- 					try {
+
  						if(msg[1].contains("#")){
- 							sendMessage(channel, "Channel "+ msg[1] +" joining...");
- 							botManager.addChannel(msg[1], msg[2]);
- 							sendMessage(channel, "Channel "+ msg[1] +" joined.");
+ 							sendMessage(channel, "Joining channel "+ msg[1] +".");
+ 							boolean joinStatus = botManager.addChannel(msg[1], (msg.length == 3 ? msg[2] : null));
+ 							if(joinStatus){
+ 								sendMessage(channel, "Channel "+ msg[1] +" joined.");
+ 							}else{
+ 								sendMessage(channel, "Already in channel "+ msg[1] +"."); 							
+ 							}
+ 							
  						}else{
  							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
  						}
  						
- 					} catch (NickAlreadyInUseException e) {
- 						// TODO Auto-generated catch block
- 						e.printStackTrace();
- 					} catch (IOException e) {
- 						// TODO Auto-generated catch block
- 						e.printStackTrace();
- 					} catch (IrcException e) {
- 						// TODO Auto-generated catch block
- 						e.printStackTrace();
- 					}
+ 
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && isAdmin) {
