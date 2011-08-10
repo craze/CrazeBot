@@ -764,9 +764,9 @@ public class GeoBot extends PircBot {
 				// ***************************** Info/Catch-all Command ***************************
 				// ********************************************************************************
  				
-				if(message.trim().substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(message).equalsIgnoreCase("invalid")){
-					System.out.println("Matched command " + message.trim());
-					sendMessage(channel, "> " + channelInfo.getCommand(message));
+				if(msg[0].substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(msg[0]).equalsIgnoreCase("invalid")){
+					System.out.println("Matched command " + msg[0]);
+					sendMessage(channel, "> " + channelInfo.getCommand(msg[0]));
 				}
  				
 				// ********************************************************************************

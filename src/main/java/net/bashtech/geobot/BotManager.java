@@ -152,7 +152,7 @@ public class BotManager {
 	
 	public void addChannel(String name, String server2) throws NickAlreadyInUseException, IOException, IrcException{
 		if(channelList.containsKey(name.toLowerCase())){
-			System.out.println("INFO: All ready in channel " + name);
+			System.out.println("INFO: Already in channel " + name);
 			return;
 		}
 		Channel tempChan = new Channel(name,server2);
