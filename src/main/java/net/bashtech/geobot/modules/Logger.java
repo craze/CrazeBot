@@ -53,7 +53,7 @@ public class Logger implements BotModule {
         		chanenlDir.mkdir();
         	}
             File file = new File(chanenlDir.toString(), date + ".log");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true),"UTF-8"));
             String entry = "<span class=\"irc-date\">[" + time + "]</span> <span class=\"" + color + "\">" + line + "</span><br />";
             writer.write(entry);
             writer.newLine();

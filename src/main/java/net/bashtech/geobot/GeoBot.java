@@ -701,6 +701,7 @@ public class GeoBot extends PircBot {
  					}
  				}
  				
+ 				
  				//!leave - Owner
  				if ((msg[0].equalsIgnoreCase("!leave") || msg[0].equalsIgnoreCase("!remove")) && isOwner) {
  						sendMessage(channel, "Channel "+ channel +" parting...");
