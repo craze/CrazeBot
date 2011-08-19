@@ -482,7 +482,14 @@ public class GeoBot extends PircBot {
  	 					} 
  	 					if(msg[0].equalsIgnoreCase("+k")){
  	 						sendMessage(channel, ".timeout " + msg[1]);
- 	 					} 
+ 	 					}
+ 	 					if(msg[0].equalsIgnoreCase("+p")){
+ 	 						sendMessage(channel, ".timeout " + msg[1] + " 10");
+ 	 					}
+ 	 					if(msg[0].equalsIgnoreCase("+pp")){
+ 	 						sendMessage(channel, ".ban " + msg[1]);
+ 	 						sendMessage(channel, ".unban " + msg[1]);
+ 	 					}
  					}
  					
  				}
@@ -720,9 +727,9 @@ public class GeoBot extends PircBot {
 							}
 				}
  				
- 				if (msg[0].equalsIgnoreCase("!rejoin") && msg.length > 1) {
-
-						if(msg[1].contains("#")){
+ 				if (msg[0].equalsIgnoreCase("!rejoin")) {
+ 					if(msg.length > 1 && isAdmin){
+ 						if(msg[1].contains("#")){
 							sendMessage(channel, "Rejoining channel "+ msg[1] +".");
 							boolean joinStatus = botManager.rejoinChannel(msg[1]);
 							if(joinStatus){
@@ -734,6 +741,16 @@ public class GeoBot extends PircBot {
 						}else{
 							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
 						}
+ 					}else{
+						sendMessage(channel, "Rejoining channel #"+ sender +".");
+						boolean joinStatus = botManager.rejoinChannel("#"+sender);
+						if(joinStatus){
+							sendMessage(channel, "Channel #"+ sender +" rejoined.");
+						}else{
+							sendMessage(channel, "Bot is not assigned to channel #"+ sender +"."); 							
+						}
+ 					}
+						
 						
 
 				}
