@@ -27,9 +27,11 @@ public class ReconnectTimer extends TimerTask{
 		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{	
 			Bot b = entry.getValue();
-			if(!b.isConnected() || b.checkStalePing()){
+			if(!b.isConnected() || (b.checkStalePing() && BotManager.getInstance().monitorPings)){
 				try {
 					System.out.println("INFO: Attempting to reconnet to " + b.getServer() + "...\n");
+					b.disconnect();
+					Thread.currentThread().sleep(20000);
 					b.reconnect();
 				} catch (NickAlreadyInUseException e) {
 					// TODO Auto-generated catch block
@@ -38,6 +40,9 @@ public class ReconnectTimer extends TimerTask{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IrcException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

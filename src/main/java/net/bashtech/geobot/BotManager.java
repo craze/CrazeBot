@@ -139,7 +139,7 @@ public class BotManager {
 		publicJoin = config.getBoolean("publicJoin");
 		
 		monitorPings = config.getBoolean("monitorPings");
-		pingInterval = Integer.parseInt(config.getString("pingInterval"));
+		pingInterval = config.getInt("pingInterval");
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);

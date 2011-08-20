@@ -1136,12 +1136,13 @@ public class Bot extends PircBot {
 	}
 	
 	public boolean checkStalePing(){
-		if(lastPing == -1 || !BotManager.getInstance().monitorPings)
+		if(lastPing == -1)
 			return false;
 		
 		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
 		
 		if(difference > BotManager.getInstance().pingInterval){
+			System.out.println("DEBUG: Ping is stale. Difference=" + difference);
 			return true;
 		}
 		
