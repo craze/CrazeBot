@@ -932,6 +932,7 @@ public class Bot extends PircBot {
     protected void onServerPing(String response) {
 		super.onServerPing(response);
 		System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
+		lastPing = (int) (System.currentTimeMillis()/1000);
 	}
     	
 	private User matchUser(String nick, String channel){
