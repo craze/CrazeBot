@@ -1142,7 +1142,7 @@ public class Bot extends PircBot {
 		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
 		
 		if(difference > BotManager.getInstance().pingInterval){
-			System.out.println("DEBUG: Ping is stale. Difference=" + difference);
+			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference=" + difference);
 			return true;
 		}
 		

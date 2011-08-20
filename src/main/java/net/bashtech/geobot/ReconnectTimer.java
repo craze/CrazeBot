@@ -32,7 +32,8 @@ public class ReconnectTimer extends TimerTask{
 					System.out.println("INFO: Attempting to reconnet to " + b.getServer() + "...\n");
 					b.disconnect();
 					Thread.currentThread().sleep(20000);
-					b.reconnect();
+					if(!b.isConnected())
+						b.reconnect();
 				} catch (NickAlreadyInUseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
