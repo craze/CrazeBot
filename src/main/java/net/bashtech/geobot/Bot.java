@@ -873,7 +873,7 @@ public class Bot extends PircBot {
 	@Override
 	public void onDisconnect(){
 		//pjTimer.cancel();
-
+		lastPing = -1;
 		try {
 			System.out.println("Internal reconnection: " + this.getServer());
 			String[] channels = this.getChannels();
@@ -1143,6 +1143,7 @@ public class Bot extends PircBot {
 		
 		if(difference > BotManager.getInstance().pingInterval){
 			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference=" + difference);
+			lastPing = -1;
 			return true;
 		}
 		
