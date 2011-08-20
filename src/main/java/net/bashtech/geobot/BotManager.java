@@ -26,7 +26,10 @@ public class BotManager {
 	String network;
 	boolean publicJoin;
 	
-	Map<String,GeoBot> botList;
+	boolean monitorPings;
+	int pingInterval;
+	
+	Map<String,Bot> botList;
 	Map<String,Channel> channelList;
 	
 	Set<String> admins;
@@ -41,14 +44,14 @@ public class BotManager {
 
 	public BotManager(){
 		BotManager.setInstance(this);
-		botList = new HashMap<String,GeoBot>();
+		botList = new HashMap<String,Bot>();
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
 		
 		loadGlobalProfile();
 		
-		botList.put(server, new GeoBot(this, server, port));
+		botList.put(server, new Bot(this, server, port));
 		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
@@ -60,7 +63,7 @@ public class BotManager {
 
 			}else{
 				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel() + " CREATE");
-				botList.put(entry.getValue().getServer(), new GeoBot(this, entry.getValue().getServer(), entry.getValue().getPort()));
+				botList.put(entry.getValue().getServer(), new Bot(this, entry.getValue().getServer(), entry.getValue().getPort()));
 				botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
 				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 			}
@@ -117,6 +120,13 @@ public class BotManager {
 			config.setBoolean("publicJoin", false);
 		}
 		
+		if(!config.keyExists("monitorPings")) {
+			config.setBoolean("monitorPings", false);
+		}
+		
+		if(!config.keyExists("pingInterval")) {
+			config.setInt("pingInterval", 350);
+		}
 		
 		
 		nick = config.getString("nick");
@@ -127,6 +137,9 @@ public class BotManager {
 		password = config.getString("password");
 		
 		publicJoin = config.getBoolean("publicJoin");
+		
+		monitorPings = config.getBoolean("monitorPings");
+		pingInterval = Integer.parseInt(config.getString("pingInterval"));
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -177,7 +190,7 @@ public class BotManager {
 
 		}else{
 			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " CREATE");
-			botList.put(tempChan.getServer(), new GeoBot(this,tempChan.getServer(), tempChan.getPort()));
+			botList.put(tempChan.getServer(), new Bot(this,tempChan.getServer(), tempChan.getPort()));
 			botList.get(tempChan.getServer()).joinChannel(tempChan.getChannel());
 			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 		}
@@ -196,7 +209,7 @@ public class BotManager {
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
 		if(botList.containsKey(tempChan.getServer())){
-			GeoBot tempBot = botList.get(tempChan.getServer());
+			Bot tempBot = botList.get(tempChan.getServer());
 			tempBot.partChannel(name);
 		}
 		
@@ -215,7 +228,7 @@ public class BotManager {
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
 		if(botList.containsKey(tempChan.getServer())){
-			GeoBot tempBot = botList.get(tempChan.getServer());
+			Bot tempBot = botList.get(tempChan.getServer());
 			tempBot.partChannel(name);		
 			try {
 				Thread.currentThread().sleep(20000);
@@ -246,9 +259,9 @@ public class BotManager {
 	
 	
 	public synchronized void reconnectAllBotsSoft(){
-		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{
-			GeoBot temp = entry.getValue();
+			Bot temp = entry.getValue();
 			System.out.println("INFO: Disconnecting " + temp.getServer());
 			temp.disconnect();
 			System.out.println("INFO: " + temp.getServer() + " disconnected.");
@@ -257,9 +270,9 @@ public class BotManager {
 	
 	@SuppressWarnings("static-access")
 	public synchronized void reconnectAllBotsHard(){
-		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{
-			GeoBot temp = entry.getValue();
+			Bot temp = entry.getValue();
 			System.out.println("INFO: Disconnecting " + temp.getServer());
 			temp.disconnect();
 			System.out.println("INFO: " + temp.getServer() + " disconnected.");
@@ -272,9 +285,9 @@ public class BotManager {
 			e1.printStackTrace();
 		}
 		System.out.println("DEBUG: Done waiting. Kappa");
-		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{
-			GeoBot temp = entry.getValue();
+			Bot temp = entry.getValue();
 			
 			if(temp.isConnected())
 				continue;

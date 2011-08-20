@@ -11,9 +11,9 @@ import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 
 public class ReconnectTimer extends TimerTask{
-	private Map<String,GeoBot> botList;
+	private Map<String,Bot> botList;
 	
-	public ReconnectTimer(Map<String, GeoBot> botList2)
+	public ReconnectTimer(Map<String, Bot> botList2)
 	{
 		botList = botList2;
 	}
@@ -24,10 +24,10 @@ public class ReconnectTimer extends TimerTask{
 		System.out.println("Reconnect timer running...");
 
 		
-		for (Map.Entry<String, GeoBot> entry : botList.entrySet())
+		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{	
-			GeoBot b = entry.getValue();
-			if(!b.isConnected()){
+			Bot b = entry.getValue();
+			if(!b.isConnected() || b.checkStalePing()){
 				try {
 					System.out.println("INFO: Attempting to reconnet to " + b.getServer() + "...\n");
 					b.reconnect();

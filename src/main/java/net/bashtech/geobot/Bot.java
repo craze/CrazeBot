@@ -22,9 +22,10 @@ import net.bashtech.geobot.modules.BotModule;
 
 import org.jibble.pircbot.*;
 
-public class GeoBot extends PircBot {	
+public class Bot extends PircBot {	
 	//private Timer pjTimer;
 	
+
 	private BotManager botManager;
 	
 	//private Map<String,Long> previousCommands = new HashMap<String,Long>();
@@ -37,7 +38,9 @@ public class GeoBot extends PircBot {
 			                       ".*\\.mobi(\\s+|/).*",".*\\.name(\\s+|/).*",".*\\.rn(\\s+|/).*",".*\\.tel(\\s+|/).*",".*\\.travel(\\s+|/).*",".*\\.tz(\\s+|/).*",".*\\.uk(\\s+|/).*",".*\\.us(\\s+|/).*",".*\\.be(\\s+|/).*"};*/
 	
 	
-	public GeoBot(BotManager bm, String server, int port){
+	private int lastPing = -1;
+	
+	public Bot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
 		botManager = bm;
 		
@@ -922,6 +925,14 @@ public class GeoBot extends PircBot {
 		
 		sendMessage(channel, "> " + sender + " left the room.");
     }
+    
+    
+    
+	@Override
+    protected void onServerPing(String response) {
+		super.onServerPing(response);
+		System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
+	}
     	
 	private User matchUser(String nick, String channel){
 		User[] userList = this.getUsers(channel);
@@ -1012,9 +1023,9 @@ public class GeoBot extends PircBot {
 	       {
 	        public void run() {
 				if(botManager.network.equalsIgnoreCase("jtv"))
-		        	GeoBot.this.unBan(channel,name + "!*@*.*");
+		        	Bot.this.unBan(channel,name + "!*@*.*");
 				else
-					GeoBot.this.unBan(channel,name);
+					Bot.this.unBan(channel,name);
 	        }
 	      },delay);
 
@@ -1123,6 +1134,19 @@ public class GeoBot extends PircBot {
         return true;
 	}
 	
+	public boolean checkStalePing(){
+		if(lastPing == -1 || !BotManager.getInstance().monitorPings)
+			return false;
+		
+		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
+		
+		if(difference > BotManager.getInstance().pingInterval){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	private class giveawayTimer extends TimerTask{
 		private Channel channelInfo;
 		
@@ -1134,7 +1158,7 @@ public class GeoBot extends PircBot {
 			if(channelInfo.getGiveaway() != null){
 				if(channelInfo.getGiveaway().getStatus()){
 					channelInfo.getGiveaway().setStatus(false);
-					GeoBot.this.sendMessage(channelInfo.getChannel(), "> Giveaway over.");
+					Bot.this.sendMessage(channelInfo.getChannel(), "> Giveaway over.");
 //					String[] results = channelInfo.getGiveaway().getResults();
 //					for(int c=0;c<results.length;c++){
 //						sendMessage(GeoBot.this.channelInfo.getChannel(), results[c]);
