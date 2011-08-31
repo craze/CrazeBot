@@ -929,7 +929,7 @@ public class Bot extends PircBot {
     
     
 	@Override
-    protected void onServerPing(String response) {
+    public void onServerPing(String response) {
 		super.onServerPing(response);
 		System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
 		lastPing = (int) (System.currentTimeMillis()/1000);
@@ -948,6 +948,14 @@ public class Bot extends PircBot {
 	}
 	
 //#################################################################################
+	
+    public void log(String line) {
+    	super.log(line);
+    	
+    	if(BotManager.getInstance().useGUI){
+    		BotManager.getInstance().getGUI().log(line);
+    	}
+    }
 	
 	private int getCapsNumber(String s){
 		int caps = 0;

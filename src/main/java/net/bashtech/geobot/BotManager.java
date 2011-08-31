@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
 import net.bashtech.geobot.modules.Logger;
 
@@ -28,7 +29,10 @@ public class BotManager {
 	
 	boolean monitorPings;
 	int pingInterval;
-		
+	
+	boolean useGUI;
+	BotGUI gui;
+	
 	Map<String,Bot> botList;
 	Map<String,Channel> channelList;
 	
@@ -50,6 +54,10 @@ public class BotManager {
 		modules = new HashSet<BotModule>();
 		
 		loadGlobalProfile();
+		
+		if(useGUI){
+			gui = new BotGUI();
+		}
 		
 		botList.put(server, new Bot(this, server, port));
 		
@@ -128,6 +136,9 @@ public class BotManager {
 			config.setInt("pingInterval", 350);
 		}
 		
+		if(!config.keyExists("useGUI")) {
+			config.setBoolean("useGUI", false);
+		}
 		
 		nick = config.getString("nick");
 		server = config.getString("server");
@@ -136,10 +147,12 @@ public class BotManager {
 		
 		password = config.getString("password");
 		
-		publicJoin = config.getBoolean("publicJoin");
+		useGUI = config.getBoolean("useGUI");
 		
 		monitorPings = config.getBoolean("monitorPings");
 		pingInterval = config.getInt("pingInterval");
+
+		publicJoin = config.getBoolean("publicJoin");
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -153,6 +166,10 @@ public class BotManager {
 			if(s.length() > 1){
 				admins.add(s.toLowerCase());
 			}
+		}
+		
+		if(server.length() < 1){
+			System.exit(1);
 		}
 	}
 	
@@ -353,6 +370,10 @@ public class BotManager {
 	
 	public Set<BotModule> getModules(){
 		return modules;
+	}
+	
+	public BotGUI getGUI(){
+		return gui;
 	}
 	
 	
