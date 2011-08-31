@@ -28,7 +28,7 @@ public class BotManager {
 	
 	boolean monitorPings;
 	int pingInterval;
-	
+		
 	Map<String,Bot> botList;
 	Map<String,Channel> channelList;
 	

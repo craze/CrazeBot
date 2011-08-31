@@ -334,7 +334,7 @@ public class Bot extends PircBot {
 								sendMessage(channel, "Command cannot contain double commas (\",,\").");
 							}
 								
-						}else if(msg[1].equalsIgnoreCase("delete")){
+						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
 							String key = "!" + msg[2];
 							channelInfo.removeCommand(key);	
 							this.sendMessage(channel, "> Command " + key + " removed.");
@@ -542,7 +542,7 @@ public class Bot extends PircBot {
  								channelInfo.addPermittedDomain(msg[2]);
  								sendMessage(channel,"> Domain added. "+ "(" + msg[2] + ")");
  							}
- 						}else if(msg[1].equalsIgnoreCase("delete")){
+ 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
  							if(channelInfo.isDomainPermitted(msg[2])){
  								channelInfo.removePermittedDomain(msg[2]);
  								sendMessage(channel,"> Domain removed. "+ "(" + msg[2] + ")");
@@ -601,7 +601,7 @@ public class Bot extends PircBot {
  								channelInfo.addRegular(msg[2]);
  								sendMessage(channel,"> User added. " + "(" + msg[2] + ")");
  							}
- 						}else if(msg[1].equalsIgnoreCase("delete")){
+ 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
  							if(channelInfo.isRegular(msg[2])){
  								channelInfo.removeRegular(msg[2]);
  								sendMessage(channel,"> User removed." + "(" + msg[2] + ")");
@@ -629,7 +629,7 @@ public class Bot extends PircBot {
  								channelInfo.addModerator(msg[2]);
  								sendMessage(channel,"> User added. "+ "(" + msg[2] + ")");
  							}
- 						}else if(msg[1].equalsIgnoreCase("delete")){
+ 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
  							if(channelInfo.isModerator(msg[2])){
  								channelInfo.removeModerator(msg[2]);
  								sendMessage(channel,"> User removed. "+ "(" + msg[2] + ")");
