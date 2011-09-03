@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 
 import net.bashtech.geobot.JSONObjects.JTVStreamSummary;
 import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
+import net.bashtech.geobot.JSONObjects.SteamData;
 import net.bashtech.geobot.modules.BotModule;
 
 import org.jibble.pircbot.*;
@@ -263,6 +264,21 @@ public class Bot extends PircBot {
 					System.out.println("Matched command !music");
 					try {
 						sendMessage(channel, "> " + this.getLastFMLastPlayed(channelInfo));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//return;
+				}
+				
+				// !steam - All
+				if (msg[0].equalsIgnoreCase("!steam")) {
+					System.out.println("Matched command !steam");
+					try {
+						if(channelInfo.getSteam().length() > 1){
+							SteamData data = this.getSteamData(channelInfo);
+							sendMessage(channel, "> Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
+						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -707,6 +723,15 @@ public class Bot extends PircBot {
  								channelInfo.setLastfm(msg[2]);
  								sendMessage(channel, "> Feature: Lastfm user set to " + msg[2]);
  							}
+						}else if(msg[1].equalsIgnoreCase("steam")){
+ 							//filters
+ 							if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.setSteam("");
+ 								sendMessage(channel, "> Feature: Steam is off.");
+ 							}else{
+ 								channelInfo.setSteam(msg[2]);
+ 								sendMessage(channel, "> Feature: Steam id set to " + msg[2]);
+ 							}
 						}
  					}
  				}
@@ -1128,6 +1153,22 @@ public class Bot extends PircBot {
 			return "Recently listened to: " + data.title + " by " + data.artist + " " + data.url;
 		}
 			
+	}
+	
+	private SteamData getSteamData(Channel channelInfo) throws IOException{
+		URL url = new URL("http://bashtech.net/app-support/geobot/steam.php?user=" + channelInfo.getSteam());
+		URLConnection conn = url.openConnection();
+		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String jsonIn = "";
+		while(d.ready())
+		{
+			jsonIn = d.readLine();
+		}
+		
+		SteamData data = new Gson().fromJson(jsonIn, SteamData.class);
+		
+		return data;
 	}
 	
 	public static boolean isInteger(String str) {

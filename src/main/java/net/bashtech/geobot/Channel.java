@@ -52,6 +52,8 @@ public class Channel {
 	private boolean announceJoinParts; 
 	
 	private String lastfm;
+	
+	private String steamID;
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -504,6 +506,18 @@ public class Channel {
 	}
 	
 	// #################################################
+	
+	
+	public String getSteam(){
+		return steamID;
+	}
+	
+	public void setSteam(String string){
+		steamID = string;
+		config.setString("steamID", steamID);
+	}
+	
+	// #################################################
 
 	private void loadProperties(String name){
 		try {
@@ -605,6 +619,10 @@ public class Channel {
 			config.setString("lastfm", "");
 		}
 		
+		if(!config.keyExists("steamID")) {
+			config.setString("steamID", "");
+		}
+		
 
 		server = config.getString("server");
 		
@@ -635,6 +653,9 @@ public class Channel {
 		signKicks = Boolean.parseBoolean(config.getString("signKicks"));
 		
 		lastfm = config.getString("lastfm");
+		
+		steamID = config.getString("steamID");
+
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");
