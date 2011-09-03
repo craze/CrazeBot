@@ -10,6 +10,7 @@ public class Logger implements BotModule {
 	
 	//Make these customizable later.
 	
+
 	String outDir = "logs";
 	
 	// ****************************
@@ -82,6 +83,12 @@ public class Logger implements BotModule {
 			String hostname) {
         //append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has left " + channel,channel);
 
+	}
+	
+	@Override
+	public void onSelfMessage(String channel, String sender, String message) {
+		append(BLACK, "<" + sender + "> " + message,channel);
+		
 	}
 
 

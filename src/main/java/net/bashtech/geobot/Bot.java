@@ -929,6 +929,17 @@ public class Bot extends PircBot {
     
     
 	@Override
+	protected boolean onMessageSend(String target, String message) {
+		
+		//Call modules
+		for(BotModule b:BotManager.getInstance().getModules()){
+			b.onSelfMessage(target, this.getNick(), message);
+		}
+		
+		return super.onMessageSend(target, message);
+	}
+
+	@Override
     public void onServerPing(String response) {
 		super.onServerPing(response);
 		System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
