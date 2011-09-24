@@ -494,20 +494,20 @@ public class Bot extends PircBot {
  					} 
  					if(msg.length > 0){
  	 					if(msg[0].equalsIgnoreCase("+b")){
- 	 						sendMessage(channel, ".ban " + msg[1]);
+ 	 						sendMessage(channel, ".ban " + msg[1].toLowerCase());
  	 					} 
  	 					if(msg[0].equalsIgnoreCase("-b")){
- 	 						sendMessage(channel, ".unban " + msg[1]); 
+ 	 						sendMessage(channel, ".unban " + msg[1].toLowerCase()); 
  	 					} 
  	 					if(msg[0].equalsIgnoreCase("+k")){
- 	 						sendMessage(channel, ".timeout " + msg[1]);
+ 	 						sendMessage(channel, ".timeout " + msg[1].toLowerCase());
  	 					}
  	 					if(msg[0].equalsIgnoreCase("+p")){
- 	 						sendMessage(channel, ".timeout " + msg[1] + " 10");
+ 	 						sendMessage(channel, ".timeout " + msg[1].toLowerCase() + " 10");
  	 					}
  	 					if(msg[0].equalsIgnoreCase("+pp")){
- 	 						sendMessage(channel, ".ban " + msg[1]);
- 	 						sendMessage(channel, ".unban " + msg[1]);
+ 	 						sendMessage(channel, ".ban " + msg[1].toLowerCase());
+ 	 						sendMessage(channel, ".unban " + msg[1].toLowerCase());
  	 					}
  					}
  					
