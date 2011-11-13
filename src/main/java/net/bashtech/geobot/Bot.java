@@ -462,8 +462,13 @@ public class Bot extends PircBot {
 								int randIndex = rand.nextInt(userList.length);
 								sendMessage(channel,"> Random user: " + userList[randIndex].getNick());
 							}
-//						}else if(msg[1].equalsIgnoreCase("number")){
-//							
+						}else if(msg[1].equalsIgnoreCase("coin")){
+							Random rand = new Random();
+							boolean coin = rand.nextBoolean();
+							if(coin == true)
+								sendMessage(channel,"> Heads!");
+							else
+								sendMessage(channel,"> Tails!");
 						}
 					}
 				}
