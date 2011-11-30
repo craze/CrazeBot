@@ -116,10 +116,7 @@ public class Bot extends PircBot {
 	
 	@Override
 	protected void onAction(String sender, String login, String hostname, String target, String action) {
-		// TODO Auto-generated method stub
-		//super.onAction(sender, login, hostname, target, action);
 		this.onMessage(target, sender, login, hostname, action);
-		System.out.println("DEBUG: Sender: " + sender + " Login: " + login + " Hostname: " + hostname + " Target: "  + target + " Action: " + action);
 	}
 
 	
