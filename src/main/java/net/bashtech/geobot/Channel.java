@@ -54,6 +54,8 @@ public class Channel {
 	private String lastfm;
 	
 	private String steamID;
+	
+	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -588,7 +590,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("useTopic")) {
-			config.setBoolean("useTopic", false);
+			config.setBoolean("useTopic", true);
 		}
 		
 		if(!config.keyExists("useFilters")) {
@@ -610,6 +612,10 @@ public class Channel {
 		if(!config.keyExists("topicTime")) {
 			config.setInt("topicTime", 0);
 		}
+		
+		if(!config.keyExists("mode")) {
+			config.setInt("mode", 2);
+		} 
 		
 		if(!config.keyExists("announceJoinParts")) {
 			config.setBoolean("announceJoinParts", false);
@@ -655,6 +661,8 @@ public class Channel {
 		lastfm = config.getString("lastfm");
 		
 		steamID = config.getString("steamID");
+		
+		setMode(config.getInt("mode"));
 
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
@@ -697,9 +705,16 @@ public class Channel {
 				}
 			}
 		}
+	
+	}
 
+	public void setMode(int mode) {
+		this.mode = mode;
+		config.setInt("mode", this.mode);
+	}
 
-		
+	public int getMode() {
+		return mode;
 	}
 
 }

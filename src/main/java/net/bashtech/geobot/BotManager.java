@@ -190,7 +190,7 @@ public class BotManager {
 			return false;
 	}
 	
-	public boolean addChannel(String name, String server2){
+	public boolean addChannel(String name, String server2, int mode){
 		if(channelList.containsKey(name.toLowerCase())){
 			System.out.println("INFO: Already in channel " + name);
 			return false;
