@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.bashtech</groupId>
 	<artifactId>GeoBot</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<name>GeoBot</name>
 	<url>http://bashtech.net/wiki/Geobot</url>
     <repositories>
@@ -17,6 +17,7 @@
             <enabled>true</enabled>
           </releases>
         </repository>
+        
         <repository>
   			<id>codehaus</id>
   			<url>http://repository.codehaus.org/org/codehaus</url>

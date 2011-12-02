@@ -8,20 +8,29 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 
 import com.google.gson.Gson;
-
 import net.bashtech.geobot.JSONObjects.JTVStreamSummary;
 import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
 import net.bashtech.geobot.JSONObjects.SteamData;
 import net.bashtech.geobot.modules.BotModule;
 
 import org.jibble.pircbot.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class Bot extends PircBot {	
 	//private Timer pjTimer;
@@ -47,7 +56,7 @@ public class Bot extends PircBot {
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
-		this.setVersion("1.0");
+		this.setVersion("1.1");
 		
 		this.setVerbose(true);
 		try {
@@ -303,6 +312,22 @@ public class Bot extends PircBot {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					//return;
+				}
+				
+				// !game - All
+				if (msg[0].equalsIgnoreCase("!game")) {
+					System.out.println("Matched command !game");
+					
+					String game = this.getGame(channelInfo);
+					
+					if(game.length() > 0){
+						sendMessage(channel, "> Current game: " + game);
+					}else{
+						sendMessage(channel, "> Unable to query TwitchTV or channel is not in gaming category.");
+
+					}
+					
 					//return;
 				}
 				
@@ -1209,6 +1234,65 @@ public class Bot extends PircBot {
 		
 		return data;
 	}
+	
+	private String getMetaInfo(String key, Channel channelInfo) throws IllegalArgumentException, IOException, SAXException, ParserConfigurationException{
+		URL feedSource = new URL("http://twitch.tv/meta/" + channelInfo.getChannel().substring(1)+ ".xml");
+		URLConnection uc = feedSource.openConnection();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(uc.getInputStream());
+		doc.getDocumentElement().normalize();
+
+		NodeList nList = doc.getElementsByTagName("meta");
+ 
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+ 
+		   Node nNode = nList.item(temp);
+		   if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+ 
+		      Element eElement = (Element) nNode;
+ 
+		      return getTagValue(key, eElement);
+ 
+		   }
+		}
+		
+		return "";
+
+	}
+	
+	private String getGame(Channel channelInfo){
+		String game = "";
+		try {
+			game =  getMetaInfo("meta_game", channelInfo);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			return game;
+		}
+	
+		
+
+	}
+	
+	private static String getTagValue(String sTag, Element eElement) {
+		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
+	 
+	    Node nValue = (Node) nlList.item(0);
+	 
+		return nValue.getNodeValue();
+	  }
+
 	
 	public static boolean isInteger(String str) {
         if (str == null) {
