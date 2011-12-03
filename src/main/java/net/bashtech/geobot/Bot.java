@@ -3,13 +3,8 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -325,6 +320,22 @@ public class Bot extends PircBot {
 						sendMessage(channel, "> Current game: " + game);
 					}else{
 						sendMessage(channel, "> Unable to query TwitchTV or channel is not in gaming category.");
+
+					}
+					
+					//return;
+				}
+				
+				// !status - All
+				if (msg[0].equalsIgnoreCase("!status")) {
+					System.out.println("Matched command !game");
+					
+					String status = this.getStatus(channelInfo);
+					
+					if(status.length() > 0){
+						sendMessage(channel, "> Current status: " + status);
+					}else{
+						sendMessage(channel, "> Unable to query TwitchTV API.");
 
 					}
 					
@@ -1265,24 +1276,26 @@ public class Bot extends PircBot {
 		String game = "";
 		try {
 			game =  getMetaInfo("meta_game", channelInfo);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			return game;
 		}
 	
-		
-
+	}
+	
+	private String getStatus(Channel channelInfo){
+		String game = "";
+		try {
+			game =  getMetaInfo("status", channelInfo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			return game;
+		}
+	
 	}
 	
 	private static String getTagValue(String sTag, Element eElement) {
