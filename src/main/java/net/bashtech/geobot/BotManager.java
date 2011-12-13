@@ -1,6 +1,7 @@
 package net.bashtech.geobot;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

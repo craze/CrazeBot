@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;
@@ -53,7 +54,7 @@ public class Bot extends PircBot {
 		this.setLogin("GeoBot");
 		this.setVersion("1.1");
 		
-		this.setVerbose(true);
+		//this.setVerbose(true);
 		try {
 			this.connect(server, port, bm.password);
 		} catch (NickAlreadyInUseException e) {
@@ -574,7 +575,7 @@ public class Bot extends PircBot {
  					
  				}
  				
-				// !clear - Ops
+				// !clear - Opshey
 				if(msg[0].equalsIgnoreCase("!clear") && isOp){
 					System.out.println("Matched command !clear");
 					this.sendMessage(channel, ".clear");
@@ -1338,7 +1339,7 @@ public class Bot extends PircBot {
 		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
 		
 		if(difference > BotManager.getInstance().pingInterval){
-			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference=" + difference);
+			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference= " + difference);
 			lastPing = -1;
 			return true;
 		}
