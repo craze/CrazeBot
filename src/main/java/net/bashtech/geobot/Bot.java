@@ -39,6 +39,7 @@ public class Bot extends PircBot {
 	private String[] linksMasks = {".*http://.*",".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*",
 			".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*"};
 	
+	
 	/*private String[] linksMasks = {".*http://.*",".*\\.com(\\s+|/).*",".*\\.org(\\s+|/).*",".*\\.net(\\s+|/).*",".*\\.tv(\\s+|/).*",".*\\.ca(\\s+|/).*",".*\\.xxx(\\s+|/).*",".*\\.cc(\\s+|/).*",".*\\.de(\\s+|/).*",
 								   ".*\\.eu(\\s+|/).*",".*\\.fm(\\s+|/).*",".*\\.gov(\\s+|/).*",".*\\.info(\\s+|/).*",".*\\.io(\\s+|/).*",".*\\.jobs(\\s+|/).*",".*\\.me(\\s+|/).*",".*\\.mil(\\s+|/).*",
 			                       ".*\\.mobi(\\s+|/).*",".*\\.name(\\s+|/).*",".*\\.rn(\\s+|/).*",".*\\.tel(\\s+|/).*",".*\\.travel(\\s+|/).*",".*\\.tz(\\s+|/).*",".*\\.uk(\\s+|/).*",".*\\.us(\\s+|/).*",".*\\.be(\\s+|/).*"};*/
@@ -125,6 +126,7 @@ public class Bot extends PircBot {
 	}
 
 	
+	@SuppressWarnings({ "static-access", "static-access" })
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
 				//Call modules
@@ -252,7 +254,7 @@ public class Bot extends PircBot {
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!bothelp")) {
 						System.out.println("Matched command !bothelp");
-						sendMessage(channel, "> Command help is available at http://bashtech.net/wiki/Geobot#Commands");
+						sendMessage(channel, channelInfo.getBullet() + " Command help is available at http://bashtech.net/wiki/Geobot#Commands");
 						//return;
 				}
 				
@@ -262,7 +264,7 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("Matched command !viewers");
 					try {
-						sendMessage(channel, "> " + this.getViewers(channelInfo) + " viewers.");
+						sendMessage(channel, channelInfo.getBullet() + " " + this.getViewers(channelInfo) + " viewers.");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -276,7 +278,7 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("Matched command !bitrate");
 					try {
-						sendMessage(channel, "> Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
+						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -288,7 +290,7 @@ public class Bot extends PircBot {
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
 					System.out.println("Matched command !music");
 					try {
-						sendMessage(channel, "> " + this.getLastFMLastPlayed(channelInfo));
+						sendMessage(channel, channelInfo.getBullet() + " " + this.getLastFMLastPlayed(channelInfo));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -302,7 +304,7 @@ public class Bot extends PircBot {
 					try {
 						if(channelInfo.getSteam().length() > 1){
 							SteamData data = this.getSteamData(channelInfo);
-							sendMessage(channel, "> Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
+							sendMessage(channel, channelInfo.getBullet() + " Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -318,9 +320,9 @@ public class Bot extends PircBot {
 					String game = this.getGame(channelInfo);
 					
 					if(game.length() > 0){
-						sendMessage(channel, "> Current game: " + game);
+						sendMessage(channel, channelInfo.getBullet() + " Current game: " + game);
 					}else{
-						sendMessage(channel, "> Unable to query TwitchTV or channel is not in gaming category.");
+						sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV or channel is not in gaming category.");
 
 					}
 					
@@ -334,9 +336,9 @@ public class Bot extends PircBot {
 					String status = this.getStatus(channelInfo);
 					
 					if(status.length() > 0){
-						sendMessage(channel, "> Current status: " + status);
+						sendMessage(channel, channelInfo.getBullet() + " Current status: " + status);
 					}else{
-						sendMessage(channel, "> Unable to query TwitchTV API.");
+						sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
 
 					}
 					
@@ -346,7 +348,7 @@ public class Bot extends PircBot {
 				// !{botname} - All
 				if (msg[0].equalsIgnoreCase("!" + this.getNick()) && (isRegular || isOp)) {
 					System.out.println("Matched command !" + this.getNick());
-					sendMessage(channel, "> Commands: " + channelInfo.getCommandList());
+					sendMessage(channel, channelInfo.getBullet() + " Commands: " + channelInfo.getCommandList());
 
 					//return;
 				}
@@ -368,17 +370,17 @@ public class Bot extends PircBot {
 					System.out.println("Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							sendMessage(channel, "> No topic is set.");
+							sendMessage(channel, channelInfo.getBullet() + " No topic is set.");
 						}else{
-							this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
+							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
 					}else if(msg.length > 1 && isOp){
 						if(msg[1].equalsIgnoreCase("unset")){
 							channelInfo.setTopic("");
-							sendMessage(channel, "> No topic is set.");
+							sendMessage(channel, channelInfo.getBullet() + " No topic is set.");
 						}else{
 							channelInfo.setTopic(message.substring(7));
-							this.sendMessage(channel, "> Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
+							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 							if(botManager.network.equalsIgnoreCase("ngame"))
 								this.sendMessage(channel, ".topic " + channelInfo.getTopic());
 						}
@@ -391,7 +393,7 @@ public class Bot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!command")){
  					System.out.println("Matched command !command");
 					if(msg.length < 3 && isOp){
-						this.sendMessage(channel, "> !command add/delete name string");
+						this.sendMessage(channel, channelInfo.getBullet() + " !command add/delete name string");
 					}else if(msg.length > 2 && isOp){
 						if(msg[1].equalsIgnoreCase("add")){
 							String key = "!" + msg[2];
@@ -402,15 +404,15 @@ public class Bot extends PircBot {
 							}
 							if(!value.contains(",,")){
 								channelInfo.setCommand(key, value);
-								this.sendMessage(channel, "> " + channelInfo.getCommand(key));
+								this.sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(key));
 							}else{
-								sendMessage(channel, "Command cannot contain double commas (\",,\").");
+								sendMessage(channel, channelInfo.getBullet() + " Command cannot contain double commas (\",,\").");
 							}
 								
 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
 							String key = "!" + msg[2];
 							channelInfo.removeCommand(key);	
-							this.sendMessage(channel, "> Command " + key + " removed.");
+							this.sendMessage(channel, channelInfo.getBullet() + " Command " + key + " removed.");
 
 							}
 					}
@@ -428,23 +430,23 @@ public class Bot extends PircBot {
 								oc++;
 							}
 							channelInfo.setPoll(new Poll(options));
-							sendMessage(channel,"> Poll created. Do '!poll start' to start voting.");
+							sendMessage(channel, channelInfo.getBullet() + " Poll created. Do '!poll start' to start voting.");
 						}else if(msg[1].equalsIgnoreCase("start")){
 							if(channelInfo.getPoll() != null){
 								if(channelInfo.getPoll().getStatus()){
-									sendMessage(channel, "> Poll is alreay running.");
+									sendMessage(channel, channelInfo.getBullet() + " Poll is alreay running.");
 								}else{
 									channelInfo.getPoll().setStatus(true);
-									sendMessage(channel, "> Poll started.");
+									sendMessage(channel, channelInfo.getBullet() + " Poll started.");
 								}
 							}
 						}else if(msg[1].equalsIgnoreCase("stop")){ 
 							if(channelInfo.getPoll() != null){
 								if(channelInfo.getPoll().getStatus()){
 									channelInfo.getPoll().setStatus(false);
-									sendMessage(channel, "> Poll stopped.");
+									sendMessage(channel, channelInfo.getBullet() + " Poll stopped.");
 								}else{
-									sendMessage(channel, "> Poll is not running.");
+									sendMessage(channel, channelInfo.getBullet() + " Poll is not running.");
 								}
 							}
 						}else if(msg[1].equalsIgnoreCase("results")){
@@ -472,26 +474,26 @@ public class Bot extends PircBot {
 							if(msg.length > 3 && channelInfo.getGiveaway().isInteger(msg[3])){
 								this.startGaTimer(Integer.parseInt(msg[3]),channelInfo);
 							}else{
-								sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
+								sendMessage(channel,channelInfo.getBullet() + " Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 							}
 							//sendMessage(channel,"> Giveaway created. Do '!giveaway start' to start." + " Range 1-" + channelInfo.getGiveaway().getMax() + ".");
 							
 						}else if(msg[1].equalsIgnoreCase("start")){
 							if(channelInfo.getGiveaway() != null){
 								if(channelInfo.getGiveaway().getStatus()){
-									sendMessage(channel, "> Giveaway is alreay running.");
+									sendMessage(channel, channelInfo.getBullet() + " Giveaway is alreay running.");
 								}else{
 									channelInfo.getGiveaway().setStatus(true);
-									sendMessage(channel, "> Giveaway started.");
+									sendMessage(channel, channelInfo.getBullet() + " Giveaway started.");
 								}
 							}
 						}else if(msg[1].equalsIgnoreCase("stop")){ 
 							if(channelInfo.getGiveaway() != null){
 								if(channelInfo.getGiveaway().getStatus()){
 									channelInfo.getGiveaway().setStatus(false);
-									sendMessage(channel, "> Giveaway stopped.");
+									sendMessage(channel, channelInfo.getBullet() + " Giveaway stopped.");
 								}else{
-									sendMessage(channel, "> Giveaway is not running.");
+									sendMessage(channel, channelInfo.getBullet() + " Giveaway is not running.");
 								}
 							}
 						}else if(msg[1].equalsIgnoreCase("results")){
@@ -501,7 +503,7 @@ public class Bot extends PircBot {
 									sendMessage(channel, results[c]);
 								}
 							}else{
-								sendMessage(channel, "> No giveaway in memory.");
+								sendMessage(channel, channelInfo.getBullet() + " No giveaway in memory.");
 							}
 						
 					   }
@@ -517,15 +519,15 @@ public class Bot extends PircBot {
 							if(userList.length > 0){
 								Random rand = new Random();
 								int randIndex = rand.nextInt(userList.length);
-								sendMessage(channel,"> Random user: " + userList[randIndex].getNick());
+								sendMessage(channel,channelInfo.getBullet() + " Random user: " + userList[randIndex].getNick());
 							}
 						}else if(msg[1].equalsIgnoreCase("coin")){
 							Random rand = new Random();
 							boolean coin = rand.nextBoolean();
 							if(coin == true)
-								sendMessage(channel,"> Heads!");
+								sendMessage(channel,channelInfo.getBullet() + " Heads!");
 							else
-								sendMessage(channel,"> Tails!");
+								sendMessage(channel,channelInfo.getBullet() + " Tails!");
 						}
 					}
 				}
@@ -587,10 +589,10 @@ public class Bot extends PircBot {
  					if(msg.length == 2){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterLinks(true);
- 							this.sendMessage(channel, "> Link filter: " + channelInfo.getFilterLinks());
+ 							this.sendMessage(channel, channelInfo.getBullet() + " Link filter: " + channelInfo.getFilterLinks());
  						}else if(msg[1].equalsIgnoreCase("off")){
  							channelInfo.setFilterLinks(false);
- 							this.sendMessage(channel, "> Link filter: " + channelInfo.getFilterLinks());
+ 							this.sendMessage(channel, channelInfo.getBullet() + " Link filter: " + channelInfo.getFilterLinks());
  						}
  					}
  				}
@@ -601,9 +603,9 @@ public class Bot extends PircBot {
  					if(msg.length > 1 && isOp ){
  						if(!channelInfo.isRegular(msg[1])){
  							channelInfo.permitUser(msg[1]);
- 	 						sendMessage(channel, "> " + msg[1] + " may now post 1 link.");
+ 	 						sendMessage(channel, channelInfo.getBullet() + " " + msg[1] + " may now post 1 link.");
  						}else{
- 							sendMessage(channel, "> " + msg[1] + " is a regular and does not need to be permitted.");
+ 							sendMessage(channel, channelInfo.getBullet() + " " + msg[1] + " is a regular and does not need to be permitted.");
  						}
  					}
  				}
@@ -615,21 +617,21 @@ public class Bot extends PircBot {
  					if(msg.length  > 2 && isOwner){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isDomainPermitted(msg[2])){
- 								sendMessage(channel,"> Domain already exists. " + "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " Domain already exists. " + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addPermittedDomain(msg[2]);
- 								sendMessage(channel,"> Domain added. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " Domain added. "+ "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
  							if(channelInfo.isDomainPermitted(msg[2])){
  								channelInfo.removePermittedDomain(msg[2]);
- 								sendMessage(channel,"> Domain removed. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " Domain removed. "+ "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> Domain does not exist. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " Domain does not exist. "+ "(" + msg[2] + ")");
  							}
  						}
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
- 						String tempList = "> Permitted domains: ";
+ 						String tempList = channelInfo.getBullet() + " Permitted domains: ";
  						for(String s:channelInfo.getpermittedDomains()){
  							tempList += s + ", ";
  						}
@@ -643,27 +645,27 @@ public class Bot extends PircBot {
  					if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterCaps(true);
- 							this.sendMessage(channel, "> Caps filter: " + channelInfo.getFilterCaps());
+ 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter: " + channelInfo.getFilterCaps());
  						}else if(msg[1].equalsIgnoreCase("off")){
  							channelInfo.setFilterCaps(false);
- 							this.sendMessage(channel, "> Caps filter: " + channelInfo.getFilterCaps());
+ 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter: " + channelInfo.getFilterCaps());
  						}else if(msg[1].equalsIgnoreCase("percent")){
  							if(msg.length > 2){
  								channelInfo.setfilterCapsPercent(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, "> Caps filter percent: " + channelInfo.getfilterCapsPercent());
+ 	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter percent: " + channelInfo.getfilterCapsPercent());
  							}
  						}else if(msg[1].equalsIgnoreCase("minchars")){
  							if(msg.length > 2){
  								channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, "> Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
+ 	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
  							}
  						}else if(msg[1].equalsIgnoreCase("mincaps")){
  							if(msg.length > 2){
  								channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, "> Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
+ 	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
  							}
  						}else if(msg[1].equalsIgnoreCase("status")){
- 							sendMessage(channel, "> Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
+ 							sendMessage(channel, channelInfo.getBullet() + " Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
  						}
  					}
  				}
@@ -674,21 +676,21 @@ public class Bot extends PircBot {
  					if(msg.length  > 2 && isOwner){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isRegular(msg[2])){
- 								sendMessage(channel,"> User already exists." + "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User already exists." + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addRegular(msg[2]);
- 								sendMessage(channel,"> User added. " + "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User added. " + "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
  							if(channelInfo.isRegular(msg[2])){
  								channelInfo.removeRegular(msg[2]);
- 								sendMessage(channel,"> User removed." + "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User removed." + "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> User does not exist. " + "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User does not exist. " + "(" + msg[2] + ")");
  							}
  						}
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
- 						String tempList = "> Regulars: ";
+ 						String tempList = channelInfo.getBullet() + " Regulars: ";
  						for(String s:channelInfo.getRegulars()){
  							tempList += s + ", ";
  						}
@@ -702,21 +704,21 @@ public class Bot extends PircBot {
  					if(msg.length  > 2 && isOwner){
  						if(msg[1].equalsIgnoreCase("add")){
  							if(channelInfo.isModerator(msg[2])){
- 								sendMessage(channel,"> User already exists. " + "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User already exists. " + "(" + msg[2] + ")");
  							}else{
  								channelInfo.addModerator(msg[2]);
- 								sendMessage(channel,"> User added. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User added. "+ "(" + msg[2] + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
  							if(channelInfo.isModerator(msg[2])){
  								channelInfo.removeModerator(msg[2]);
- 								sendMessage(channel,"> User removed. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User removed. "+ "(" + msg[2] + ")");
  							}else{
- 								sendMessage(channel,"> User does not exist. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " User does not exist. "+ "(" + msg[2] + ")");
  							}
  						}
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
- 						String tempList = "> Moderators: ";
+ 						String tempList = channelInfo.getBullet() + " Moderators: ";
  						for(String s:channelInfo.getModerators()){
  							tempList += s + ", ";
  						}
@@ -733,72 +735,72 @@ public class Bot extends PircBot {
  						}else if(msg[1].equalsIgnoreCase("topic")){
  							if(msg[2].equalsIgnoreCase("on")){
  								channelInfo.setTopicFeature(true);
- 								sendMessage(channel, "> Feature: Topic is on");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Topic is on");
  							}else if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setTopicFeature(false);
- 								sendMessage(channel, "> Feature: Topic is off");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Topic is off");
  							}
  								
  						}else if(msg[1].equalsIgnoreCase("filters")){
  							if(msg[2].equalsIgnoreCase("on")){
  								channelInfo.setFiltersFeature(true);
- 								sendMessage(channel, "> Feature: Filters is on");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Filters is on");
  							}else if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setFiltersFeature(false);
- 								sendMessage(channel, "> Feature: Filters is off");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Filters is off");
  							}
 						}else if(msg[1].equalsIgnoreCase("throw")){
  							if(msg[2].equalsIgnoreCase("on")){
  								channelInfo.setThrow(true);
- 								sendMessage(channel, "> Feature: !throw is on");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: !throw is on");
  							}else if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setThrow(false);
- 								sendMessage(channel, "> Feature: !throw is off");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: !throw is off");
  							}
 						}else if(msg[1].equalsIgnoreCase("signkicks")){
  							if(msg[2].equalsIgnoreCase("on")){
  								channelInfo.setSignKicks(true);
- 								sendMessage(channel, "> Feature: Sign-kicks is on");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Sign-kicks is on");
  							}else if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setSignKicks(false);
- 								sendMessage(channel, "> Feature: Sign-kicks is off");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Sign-kicks is off");
  							}
 						}else if(msg[1].equalsIgnoreCase("joinparts")){
  							if(msg[2].equalsIgnoreCase("on")){
  								channelInfo.setAnnounceJoinParts(true);
- 								sendMessage(channel, "> Feature: Join/Part announcing is on");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Join/Part announcing is on");
  							}else if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setAnnounceJoinParts(false);
- 								sendMessage(channel, "> Feature: Join/Part announcing is off");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Join/Part announcing is off");
  							}
 						}else if(msg[1].equalsIgnoreCase("lastfm")){
  							if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setLastfm("");
- 								sendMessage(channel, "> Feature: Lastfm is off.");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Lastfm is off.");
  							}else{
  								channelInfo.setLastfm(msg[2]);
- 								sendMessage(channel, "> Feature: Lastfm user set to " + msg[2]);
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Lastfm user set to " + msg[2]);
  							}
 						}else if(msg[1].equalsIgnoreCase("steam")){
  							if(msg[2].equalsIgnoreCase("off")){
  								channelInfo.setSteam("");
- 								sendMessage(channel, "> Feature: Steam is off.");
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Steam is off.");
  							}else{
  								channelInfo.setSteam(msg[2]);
- 								sendMessage(channel, "> Feature: Steam id set to " + msg[2]);
+ 								sendMessage(channel, channelInfo.getBullet() + " Feature: Steam id set to " + msg[2]);
  							}
 						}else if(msg[1].equalsIgnoreCase("mode")){
 							if(msg.length < 3){
-								sendMessage(channel, "> Mode set to " + channelInfo.getMode() + "");
+								sendMessage(channel, channelInfo.getBullet() + " Mode set to " + channelInfo.getMode() + "");
 							}else if((msg[2].equalsIgnoreCase("0") || msg[2].equalsIgnoreCase("owner")) && isOwner){
  								channelInfo.setMode(0);
- 								sendMessage(channel, "> Mode set to admin/owner only.");
+ 								sendMessage(channel, channelInfo.getBullet() + " Mode set to admin/owner only.");
  							}else if(msg[2].equalsIgnoreCase("1") || msg[2].equalsIgnoreCase("mod")){
  								channelInfo.setMode(1);
- 								sendMessage(channel, "> Mode set to admin/owner/mod only.");
+ 								sendMessage(channel, channelInfo.getBullet() + " Mode set to admin/owner/mod only.");
 							}else if(msg[2].equalsIgnoreCase("2") || msg[2].equalsIgnoreCase("everyone")){
  								channelInfo.setMode(1);
- 								sendMessage(channel, "> Mode set to everyone.");
+ 								sendMessage(channel, channelInfo.getBullet() + " Mode set to everyone.");
  							}
 						}
  					}
@@ -809,12 +811,12 @@ public class Bot extends PircBot {
  				if (msg[0].equalsIgnoreCase("!modchan") && isOp) {
  						if(channelInfo.getMode() == 2){
  							channelInfo.setMode(1);
- 							sendMessage(channel, "> Mode set to admin/owner/mod only.");
+ 							sendMessage(channel, channelInfo.getBullet() + " Mode set to admin/owner/mod only.");
  						}else if(channelInfo.getMode() == 1){
  							channelInfo.setMode(2);
- 							sendMessage(channel, "> Mode set to everyone.");
+ 							sendMessage(channel, channelInfo.getBullet() + " Mode set to everyone.");
  						}else{
- 							sendMessage(channel, "> Mode can only be changed by bot admin.");
+ 							sendMessage(channel, channelInfo.getBullet() + " Mode can only be changed by bot admin.");
  						}
  				}
  				
@@ -822,36 +824,36 @@ public class Bot extends PircBot {
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin) {
 
-							sendMessage(channel, "Joining channel #"+ sender +".");
+							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
 							boolean joinStatus = botManager.addChannel("#" + sender, null, 2);
 							if(joinStatus){
-								sendMessage(channel, "Channel #"+ sender +" joined.");
+								sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" joined.");
 							}else{
-								sendMessage(channel, "Already in channel #"+ sender +".");
+								sendMessage(channel, channelInfo.getBullet() + " Already in channel #"+ sender +".");
 							}
 				}
  				
  				if (msg[0].equalsIgnoreCase("!rejoin")) {
  					if(msg.length > 1 && isAdmin){
  						if(msg[1].contains("#")){
-							sendMessage(channel, "Rejoining channel "+ msg[1] +".");
+							sendMessage(channel, channelInfo.getBullet() + " Rejoining channel "+ msg[1] +".");
 							boolean joinStatus = botManager.rejoinChannel(msg[1]);
 							if(joinStatus){
-								sendMessage(channel, "Channel "+ msg[1] +" rejoined.");
+								sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" rejoined.");
 							}else{
-								sendMessage(channel, "Bot is not assigned to channel "+ msg[1] +"."); 							
+								sendMessage(channel, channelInfo.getBullet() + " Bot is not assigned to channel "+ msg[1] +"."); 							
 							}
 							
 						}else{
-							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+							sendMessage(channel, channelInfo.getBullet() + " Invalid channel format. Must be in format #channelname.");
 						}
  					}else{
 						sendMessage(channel, "Rejoining channel #"+ sender +".");
 						boolean joinStatus = botManager.rejoinChannel("#"+sender);
 						if(joinStatus){
-							sendMessage(channel, "Channel #"+ sender +" rejoined.");
+							sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" rejoined.");
 						}else{
-							sendMessage(channel, "Bot is not assigned to channel #"+ sender +"."); 							
+							sendMessage(channel, channelInfo.getBullet() + " Bot is not assigned to channel #"+ sender +"."); 							
 						}
  					}
 						
@@ -866,16 +868,16 @@ public class Bot extends PircBot {
  				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && isAdmin) {
 
  						if(msg[1].contains("#")){
- 							sendMessage(channel, "Joining channel "+ msg[1] +".");
+ 							sendMessage(channel, channelInfo.getBullet() + " Joining channel "+ msg[1] +".");
  							boolean joinStatus = botManager.addChannel(msg[1], (msg.length == 3 ? msg[2] : null),0);
  							if(joinStatus){
- 								sendMessage(channel, "Channel "+ msg[1] +" joined.");
+ 								sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" joined.");
  							}else{
- 								sendMessage(channel, "Already in channel "+ msg[1] +"."); 							
+ 								sendMessage(channel, channelInfo.getBullet() + " Already in channel "+ msg[1] +"."); 							
  							}
  							
  						}else{
- 							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+ 							sendMessage(channel, channelInfo.getBullet() + " Invalid channel format. Must be in format #channelname.");
  						}
  						
  
@@ -883,27 +885,27 @@ public class Bot extends PircBot {
  				
  				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && isAdmin) {
  					if(msg[1].contains("#")){
- 						sendMessage(channel, "Channel "+ msg[1] +" parting...");
+ 						sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" parting...");
  						botManager.removeChannel(msg[1]);
- 						sendMessage(channel, "Channel "+ msg[1] +" parted.");
+ 						sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" parted.");
  					}else{
- 						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
+ 						sendMessage(channel, channelInfo.getBullet() + " Invalid channel format. Must be in format #channelname.");
  					}
  						
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-rejoin") && isAdmin) {
- 					sendMessage(channel, "Rejoining all channels.");
+ 					sendMessage(channel, channelInfo.getBullet() + " Rejoining all channels.");
  					botManager.rejoinChannels();
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-softreconnect") && isAdmin) {
- 					sendMessage(channel, "Reconnecting all servers.");
+ 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
  					botManager.reconnectAllBotsSoft();
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
- 					sendMessage(channel, "Reconnecting all servers.");
+ 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
  					botManager.reconnectAllBotsHard();
  				}
  				
@@ -913,7 +915,7 @@ public class Bot extends PircBot {
  				
 				if(msg[0].substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(msg[0]).equalsIgnoreCase("invalid")){
 					System.out.println("Matched command " + msg[0]);
-					sendMessage(channel, "> " + channelInfo.getCommand(msg[0]));
+					sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(msg[0]));
 				}
  				
 				// ********************************************************************************
@@ -941,7 +943,7 @@ public class Bot extends PircBot {
 						tenSecondUnban(channel, sender);
 					}
 					if(channelInfo.checkSignKicks())
-						sendMessage(channel, "> " + sender + ", please don't shout or talk in all caps. (10 sec. timeout)");
+						sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't shout or talk in all caps. (10 sec. timeout)");
 				}
 				
 				// Link filter
@@ -961,7 +963,7 @@ public class Bot extends PircBot {
 						}
 						
 						if(channelInfo.checkSignKicks())
-							sendMessage(channel, "> " + sender + ", please ask a moderator before posting links. (10 sec. timeout)");
+							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please ask a moderator before posting links. (10 sec. timeout)");
 					}
 					
 				}

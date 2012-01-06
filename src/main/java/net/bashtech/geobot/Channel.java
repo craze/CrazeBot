@@ -56,6 +56,10 @@ public class Channel {
 	private String steamID;
 	
 	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone
+	
+	private int bulletInt;
+	private char bullet[] = {'>','+', '-', '~'};
+
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -715,6 +719,31 @@ public class Channel {
 
 	public int getMode() {
 		return mode;
+	}
+	
+	public char getBullet(){
+		char rt;
+		switch(bulletInt){
+			case 0:
+				rt = bullet[bulletInt];
+				bulletInt++;
+				return rt;
+			case 1:
+				rt = bullet[bulletInt];
+				bulletInt++;
+				return rt;
+			case 2:
+				rt = bullet[bulletInt];
+				bulletInt++;
+				return rt;
+			case 3:
+				rt = bullet[bulletInt];
+				bulletInt = 0;
+				return rt;
+		}
+		
+		return '>';
+			
 	}
 
 }
