@@ -55,7 +55,7 @@ public class Bot extends PircBot {
 		this.setLogin("GeoBot");
 		this.setVersion("1.1");
 		
-		//this.setVerbose(true);
+		this.setVerbose(true);
 		try {
 			this.connect(server, port, bm.password);
 		} catch (NickAlreadyInUseException e) {
