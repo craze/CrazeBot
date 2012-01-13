@@ -53,7 +53,7 @@ public class Bot extends PircBot {
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
-		this.setVersion("1.1");
+		this.setVersion("1.2");
 		
 		this.setVerbose(true);
 		try {
