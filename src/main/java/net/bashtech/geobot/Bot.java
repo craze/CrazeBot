@@ -272,19 +272,19 @@ public class Bot extends PircBot {
 					//return;
 				}
 				
-				// !bitrate - All
-				if (msg[0].equalsIgnoreCase("!bitrate")) {
-					if(!botManager.network.equalsIgnoreCase("jtv"))
-						return;
-					System.out.println("Matched command !bitrate");
-					try {
-						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					//return;
-				}
+//				// !bitrate - All
+//				if (msg[0].equalsIgnoreCase("!bitrate")) {
+//					if(!botManager.network.equalsIgnoreCase("jtv"))
+//						return;
+//					System.out.println("Matched command !bitrate");
+//					try {
+//						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					//return;
+//				}
 				
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
@@ -1189,21 +1189,21 @@ public class Bot extends PircBot {
 		return data.viewers_count;
 	}
 	
-	private int getBitRate(Channel channelInfo) throws IOException{
-		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
-		URLConnection conn = url.openConnection();
-		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-		String jsonIn = "";
-		while(d.ready())
-		{
-			jsonIn = d.readLine();
-		}
-		
-		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
-		
-		return data.average_bitrate;
-	}
+//	private int getBitRate(Channel channelInfo) throws IOException{
+//		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
+//		URLConnection conn = url.openConnection();
+//		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+//		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+//		String jsonIn = "";
+//		while(d.ready())
+//		{
+//			jsonIn = d.readLine();
+//		}
+//		
+//		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
+//		
+//		return data.average_bitrate;
+//	}
 	
 	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
 		if(channelInfo.getLastfm().length() < 1)
