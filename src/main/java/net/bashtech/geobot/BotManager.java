@@ -377,5 +377,19 @@ public class BotManager {
 		return gui;
 	}
 	
+	public void sendGlobal(String message, String sender){
+
+		System.out.println("INFO: Sending global message: " + message);
+		for (Map.Entry<String, Bot> entry : botList.entrySet())
+		{	
+			Bot tempbot = (Bot)entry.getValue();
+
+			for(String channel: tempbot.getChannels()){
+				String globalMsg = "> Global: " + message + " (from " + sender + " to " + channel + ")";
+				tempbot.sendMessage(channel, globalMsg);
+			}
+		}
+	}
+	
 	
 }

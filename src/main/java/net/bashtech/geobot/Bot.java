@@ -909,6 +909,10 @@ public class Bot extends PircBot {
  					botManager.reconnectAllBotsHard();
  				}
  				
+ 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
+ 					botManager.sendGlobal(message.substring(11), sender);
+ 				}
+ 				
 				// ********************************************************************************
 				// ***************************** Info/Catch-all Command ***************************
 				// ********************************************************************************
