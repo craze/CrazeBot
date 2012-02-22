@@ -436,7 +436,7 @@ public abstract class PircBot implements ReplyConstants {
      * 
      * @param target
      * @param message
-     * @return 
+     * @return
      */
     protected boolean onMessageSend(String target, String message){
     	return true;

@@ -9,6 +9,8 @@ import java.net.URLConnection;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,9 +38,9 @@ public class Bot extends PircBot {
 	
 	//private Map<String,Long> previousCommands = new HashMap<String,Long>();
 	
-	private String[] linksMasks = {".*http://.*",".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*",
-			".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*"};
-	
+	//private String[] linksMasks = {".*http://.*",".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*",
+			//".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*"};
+	private Pattern[] linkPatterns;
 	
 	/*private String[] linksMasks = {".*http://.*",".*\\.com(\\s+|/).*",".*\\.org(\\s+|/).*",".*\\.net(\\s+|/).*",".*\\.tv(\\s+|/).*",".*\\.ca(\\s+|/).*",".*\\.xxx(\\s+|/).*",".*\\.cc(\\s+|/).*",".*\\.de(\\s+|/).*",
 								   ".*\\.eu(\\s+|/).*",".*\\.fm(\\s+|/).*",".*\\.gov(\\s+|/).*",".*\\.info(\\s+|/).*",".*\\.io(\\s+|/).*",".*\\.jobs(\\s+|/).*",".*\\.me(\\s+|/).*",".*\\.mil(\\s+|/).*",
@@ -50,6 +52,11 @@ public class Bot extends PircBot {
 	public Bot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
 		botManager = bm;
+		
+		linkPatterns = new Pattern[3];
+		linkPatterns[0] = Pattern.compile(".*http://.*");
+		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*");
+		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
@@ -1124,9 +1131,11 @@ public class Bot extends PircBot {
 	private boolean containsLink(String message, Channel ch){
 		String [] splitMessage  = message.toLowerCase().split(" ");
 		for(String m: splitMessage){
-			for(String mask: linksMasks){
-				if(m.matches(mask)){
-					System.out.println("DEBUG: Link match on " + mask);
+			for(Pattern pattern: linkPatterns){
+				//System.out.println("Checking " + m + " against " + pattern.pattern());
+				Matcher match = pattern.matcher(m);
+				if(match.matches()){
+					System.out.println("DEBUG: Link match on " + pattern.pattern());
 					if(!ch.checkPermittedDomain(m))
 						return true;	
 				}
