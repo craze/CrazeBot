@@ -35,17 +35,13 @@ public class ReconnectTimer extends TimerTask{
 					if(!b.isConnected())
 						b.reconnect();
 				} catch (NickAlreadyInUseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Nickname already in use - " + b.getNick() + " " + b.getServer());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Unable to connect to server - " + b.getNick() + " " + b.getServer());
 				} catch (IrcException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Error connecting to server - " + b.getNick() + " " + b.getServer());
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Threading execption occured - " + b.getNick() + " " + b.getServer());
 				}
 			}else{
 				System.out.println("INFO: " + b.getServer() + " is connected.");

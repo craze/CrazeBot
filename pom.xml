@@ -88,4 +88,12 @@
 		<url>http://bashtech.net/</url>
 		<name>Bashore Technologies</name>
 	</organization>
+	<issueManagement>
+		<system>Redmine</system>
+		<url>http://6alpha.bashtech.net/redmine/projects/geobot</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://6alpha.bashtech.net:8080/job/GeoBot/</url>
+	</ciManagement>
 </project>

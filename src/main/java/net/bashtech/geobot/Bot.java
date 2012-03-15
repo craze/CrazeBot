@@ -66,74 +66,22 @@ public class Bot extends PircBot {
 		try {
 			this.connect(server, port, bm.password);
 		} catch (NickAlreadyInUseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Nickname already in use - " + this.getNick() + " " + this.getServer());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Unable to connect to server - " + this.getNick() + " " + this.getServer());
 		} catch (IrcException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
 		
 		//autoPartandRejoin();
 		
 	}
-
-//	public void onPrivateMessage(String sender, String login, String hostname, String message) {
-//		String[] msg = split(message.trim());
-//
-//		if (msg[0].equalsIgnoreCase("!join") && msg.length > 1 && botManager.isAdmin(sender)) {
-//			try {
-//				if(msg[1].contains("#")){
-//					sendMessage(sender, "Channel "+ msg[1] +" joining...");
-//					botManager.addChannel(msg[1], msg[2]);
-//					sendMessage(sender, "Channel "+ msg[1] +" joined.");
-//				}else{
-//					sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
-//				}
-//				
-//			} catch (NickAlreadyInUseException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IrcException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		if (msg[0].equalsIgnoreCase("!leave") && msg.length > 1 && botManager.isAdmin(sender)) {
-//			if(msg[1].contains("#")){
-//				sendMessage(sender, "Channel "+ msg[1] +" parting...");
-//				botManager.removeChannel(split(message)[1]);
-//				sendMessage(sender, "Channel "+ msg[1] +" parted.");
-//			}else{
-//				sendMessage(sender, "Invalid channel format. Must be in format #channelname.");
-//			}
-//				
-//		}
-//		
-//		if (msg[0].equalsIgnoreCase("!rejoin") && botManager.isAdmin(sender)) {
-//			sendMessage(sender, "Rejoining all channels.");
-//			botManager.rejoinChannels();
-//		}
-//		
-//		System.out.println("DEBUG: PM from " + sender + " message=" + message);
-//		
-//	}
-	
-	
 	
 	@Override
 	protected void onAction(String sender, String login, String hostname, String target, String action) {
 		this.onMessage(target, sender, login, hostname, action);
 	}
 
-	
-	@SuppressWarnings({ "static-access", "static-access" })
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
 				//Call modules
@@ -996,19 +944,12 @@ public class Bot extends PircBot {
 				this.joinChannel(channels[i]);
 			}
 		} catch (NickAlreadyInUseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Nickname already in use - " + this.getNick() + " " + this.getServer());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Unable to connect to server - " + this.getNick() + " " + this.getServer());
 		} catch (IrcException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
-		
-
-		
-
 		
 	}
 	
