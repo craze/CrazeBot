@@ -2,6 +2,7 @@ package net.bashtech.geobot;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ public class BotManager {
 			gui = new BotGUI();
 		}
 		
-		botList.put(server, new Bot(this, server, port));
+		botList.put(getGlobalServer(), new Bot(this, getGlobalServer(), port));
 		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
@@ -88,6 +89,19 @@ public class BotManager {
 		
 		// Load modules
 		this.registerModule(new Logger());
+	}
+	
+	public String getGlobalServer() {
+		InetAddress ip;
+		
+		try {
+			ip = InetAddress.getByName(server);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return server;
+		}
+		
+		return ip.getHostAddress();
 	}
 	
 	private synchronized void loadGlobalProfile(){

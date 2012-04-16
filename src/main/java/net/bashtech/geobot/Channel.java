@@ -1,5 +1,7 @@
 package net.bashtech.geobot;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,7 +79,16 @@ public class Channel {
 
 	
 	public String getServer() {
-		return server;
+		InetAddress ip;
+		
+		try {
+			ip = InetAddress.getByName(server);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return server;
+		}
+		
+		return ip.getHostAddress();
 	}
 
 	public int getPort() {
