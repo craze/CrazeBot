@@ -61,22 +61,13 @@ public class BotManager {
 			gui = new BotGUI();
 		}
 		
-		botList.put(getGlobalServer(), new Bot(this, getGlobalServer(), port));
+		botList.put(server, new Bot(this, server, port));
 		
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
-			System.out.println("DEBUG: Checking for bot on server " + entry.getValue().getServer());
-			if(botList.containsKey(entry.getValue().getServer())){
-				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel() + " NO CREATE.");
-				botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
-				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
-
-			}else{
-				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel() + " CREATE");
-				botList.put(entry.getValue().getServer(), new Bot(this, entry.getValue().getServer(), entry.getValue().getPort()));
-				botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
-				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
-			}
+			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
+			botList.get(server).joinChannel(entry.getValue().getChannel());
+			System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 		}
 			
 		
@@ -91,19 +82,7 @@ public class BotManager {
 		this.registerModule(new Logger());
 	}
 	
-	public String getGlobalServer() {
-		InetAddress ip;
-		
-		try {
-			ip = InetAddress.getByName(server);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return server;
-		}
-		
-		return ip.getHostAddress();
-	}
-	
+
 	private synchronized void loadGlobalProfile(){
 		config = new PropertiesFile("global.properties");
 		try {
@@ -205,29 +184,19 @@ public class BotManager {
 			return false;
 	}
 	
-	public boolean addChannel(String name, String server2, int mode){
+	public boolean addChannel(String name, int mode){
 		if(channelList.containsKey(name.toLowerCase())){
 			System.out.println("INFO: Already in channel " + name);
 			return false;
 		}
-		Channel tempChan = new Channel(name,server2);
+		Channel tempChan = new Channel(name);
 		
 		channelList.put(name, tempChan);
 
-		
-		if(botList.containsKey(tempChan.getServer())){
-			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " NO CREATE.");
-			botList.get(tempChan.getServer()).joinChannel(tempChan.getChannel());
-			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
+		System.out.println("DEBUG: Joining channel " + tempChan.getChannel());
+		botList.get(server).joinChannel(tempChan.getChannel());
+		System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 
-		}else{
-			System.out.println("DEBUG: Joining channel " + tempChan.getChannel() + " CREATE");
-			botList.put(tempChan.getServer(), new Bot(this,tempChan.getServer(), tempChan.getPort()));
-			botList.get(tempChan.getServer()).joinChannel(tempChan.getChannel());
-			System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
-		}
-		
-		
 		writeChannelList();
 		return true;
 	}
@@ -240,13 +209,10 @@ public class BotManager {
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		if(botList.containsKey(tempChan.getServer())){
-			Bot tempBot = botList.get(tempChan.getServer());
-			tempBot.partChannel(name);
-		}
+		Bot tempBot = botList.get(server);
+		tempBot.partChannel(name);
 		
 		channelList.remove(name.toLowerCase());
-		
 		
 		writeChannelList();
 	}
@@ -259,17 +225,15 @@ public class BotManager {
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		if(botList.containsKey(tempChan.getServer())){
-			Bot tempBot = botList.get(tempChan.getServer());
-			tempBot.partChannel(name);		
-			try {
-				Thread.currentThread().sleep(20000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			tempBot.joinChannel(name);
+		Bot tempBot = botList.get(server);
+		tempBot.partChannel(name);		
+		try {
+			Thread.currentThread().sleep(20000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		tempBot.joinChannel(name);
 		
 		return true;
 	}
@@ -282,9 +246,9 @@ public class BotManager {
 				continue;
 			
 			System.out.println("INFO: Parting channel " + entry.getValue().getChannel());
-			botList.get(entry.getValue().getServer()).partChannel(entry.getValue().getChannel());
+			botList.get(server).partChannel(entry.getValue().getChannel());
 			System.out.println("INFO: Joining channel " + entry.getValue().getChannel());
-			botList.get(entry.getValue().getServer()).joinChannel(entry.getValue().getChannel());
+			botList.get(server).joinChannel(entry.getValue().getChannel());
 		}
 
 	}

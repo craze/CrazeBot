@@ -14,9 +14,7 @@ import java.util.Set;
 public class Channel {
 	public PropertiesFile config;
 	
-	private String server;
 	private String channel;
-	private int port = 6667;
 	
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	
@@ -65,35 +63,9 @@ public class Channel {
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
-		server = null;
-		loadProperties(name);
-	}
-	
-	public Channel(String name, String server2){
-		config = new PropertiesFile(name+".properties");
-		server = server2;
 		loadProperties(name);
 	}
 
-	//#############################################################
-
-	
-	public String getServer() {
-		InetAddress ip;
-		
-		try {
-			ip = InetAddress.getByName(server);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return server;
-		}
-		
-		return ip.getHostAddress();
-	}
-
-	public int getPort() {
-		return port;
-	}
 
 	public String getChannel() {
 		return channel;
@@ -542,24 +514,7 @@ public class Channel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		if(server == null || server.length() < 1){
-			if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
-				server = name.substring(1) + ".jtvirc.com";
-			}else{
-				server = BotManager.getInstance().server;
-			}
-		}
 
-		System.out.println("DEBUG: Setting server " + server);
-		if(!config.keyExists("server")) {
-			config.setString("server", server);	
-		}
-		
-		if(!config.keyExists("port")) {
-			config.setString("port", "" + BotManager.getInstance().port);
-		}
-		
 		if(!config.keyExists("channel")) {
 			config.setString("channel", name);
 		}
@@ -644,15 +599,7 @@ public class Channel {
 			config.setString("steamID", "");
 		}
 		
-
-		server = config.getString("server");
-		
-		if(server == null || server.equalsIgnoreCase("")){
-			server = BotManager.getInstance().server;
-		}
-		
 		channel = config.getString("channel");
-		port = Integer.parseInt(config.getString("port"));
 		
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -661,7 +608,6 @@ public class Channel {
 
 		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
 
-	
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		
 		topic  = config.getString("topic");
@@ -678,7 +624,6 @@ public class Channel {
 		steamID = config.getString("steamID");
 		
 		setMode(config.getInt("mode"));
-
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");

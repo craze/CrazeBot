@@ -784,7 +784,7 @@ public class Bot extends PircBot {
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin) {
 
 							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
-							boolean joinStatus = botManager.addChannel("#" + sender, null, 2);
+							boolean joinStatus = botManager.addChannel("#" + sender, 2);
 							if(joinStatus){
 								sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" joined.");
 							}else{
@@ -828,7 +828,7 @@ public class Bot extends PircBot {
 
  						if(msg[1].contains("#")){
  							sendMessage(channel, channelInfo.getBullet() + " Joining channel "+ msg[1] +".");
- 							boolean joinStatus = botManager.addChannel(msg[1], (msg.length == 3 ? msg[2] : null),0);
+ 							boolean joinStatus = botManager.addChannel(msg[1],0);
  							if(joinStatus){
  								sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" joined.");
  							}else{
