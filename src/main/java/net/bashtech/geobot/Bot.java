@@ -521,6 +521,10 @@ public class Bot extends PircBot {
  	 					if(msg[0].equalsIgnoreCase("+k")){
  	 						sendMessage(channel, ".timeout " + msg[1].toLowerCase());
  	 					}
+ 	 					if(msg[0].equalsIgnoreCase("+tk")){
+ 	 						sendMessage(channel, ".ban " + msg[1].toLowerCase());
+ 	 						this.tmiFakeTimeoutUnban(channel, msg[1].toLowerCase());
+ 	 					}
  	 					if(msg[0].equalsIgnoreCase("+p")){
  	 						sendMessage(channel, ".timeout " + msg[1].toLowerCase() + " 10");
  	 					}
@@ -1086,10 +1090,19 @@ public class Bot extends PircBot {
 		
 		return false;
 	}
-	
-//	public Channel getChannel(){
-//		return channelInfo;
-//	}
+	private void tmiFakeTimeoutUnban(final String channel, final String name){
+		Timer timer = new Timer();
+		
+		int delay = 300000;
+		
+		timer.schedule(new TimerTask()
+	       {
+	        public void run() {
+	        	Bot.this.sendMessage(channel, ".unban " + name);
+	        }
+	      },delay);
+
+	}
 	
 	private void tenSecondUnban(final String channel, final String name){
 		Timer timer = new Timer();
@@ -1109,7 +1122,6 @@ public class Bot extends PircBot {
 	}
 	
 	private void startGaTimer(int seconds, Channel channelInfo){
-
 		
 		if(channelInfo.getGiveaway() != null){
 			channelInfo.getGiveaway().setTimer(new Timer());
@@ -1172,11 +1184,7 @@ public class Bot extends PircBot {
 		{
 			jsonIn = d.readLine();
 		}
-		
-//		mapper = new ObjectMapper();
-//		Map<String,Object> userData = mapper.readValue(jsonIn, Map.class);
-//		Map second = (Map) userData.get("recenttracks");
-		
+			
 		LastFmRecentTracks data = new Gson().fromJson(jsonIn, LastFmRecentTracks.class);
 		
 		if(data.playing == true){
