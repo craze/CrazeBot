@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -782,6 +783,12 @@ public class Bot extends PircBot {
  				
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin) {
+ 					
+ 							if(!this.getIP(sender + ".jtvirc.com").equalsIgnoreCase("199.9.250.142")){
+ 								sendMessage(channel, "Sorry, public join is only available for channels using TMI.");
+ 								return;
+ 							}
+ 								
 
 							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
 							boolean joinStatus = botManager.addChannel("#" + sender, 2);
@@ -1330,6 +1337,19 @@ public class Bot extends PircBot {
 				}
 			}
         }
+	}
+	
+	public String getIP(String server) {
+		InetAddress ip;
+		
+		try {
+			ip = InetAddress.getByName(server);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return server;
+		}
+		
+		return ip.getHostAddress();
 	}
 
 }
