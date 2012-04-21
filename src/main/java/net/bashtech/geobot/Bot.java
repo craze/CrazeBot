@@ -7,7 +7,9 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -50,6 +52,8 @@ public class Bot extends PircBot {
 	
 	private int lastPing = -1;
 	
+	private Set<String> tmiServers;
+	
 	public Bot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
 		botManager = bm;
@@ -58,6 +62,11 @@ public class Bot extends PircBot {
 		linkPatterns[0] = Pattern.compile(".*http://.*");
 		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*");
 		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
+		
+		tmiServers = new HashSet<String>();
+		tmiServers.add("199.9.250.142");
+		tmiServers.add("199.9.250.146");
+		tmiServers.add("199.9.250.147");
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
@@ -783,8 +792,8 @@ public class Bot extends PircBot {
  				
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin) {
- 					
- 							if(!this.getIP(sender + ".jtvirc.com").equalsIgnoreCase("199.9.250.142")){
+ 							
+ 							if(!tmiServers.contains(this.getIP(sender + ".jtvirc.com"))){
  								sendMessage(channel, "Sorry, public join is only available for channels using TMI.");
  								return;
  							}
