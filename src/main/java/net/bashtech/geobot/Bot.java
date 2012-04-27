@@ -34,21 +34,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Bot extends PircBot {	
-	//private Timer pjTimer;
-	
 
 	private BotManager botManager;
 	
 	//private Map<String,Long> previousCommands = new HashMap<String,Long>();
 	
-	//private String[] linksMasks = {".*http://.*",".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*",
-			//".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*"};
 	private Pattern[] linkPatterns;
-	
-	/*private String[] linksMasks = {".*http://.*",".*\\.com(\\s+|/).*",".*\\.org(\\s+|/).*",".*\\.net(\\s+|/).*",".*\\.tv(\\s+|/).*",".*\\.ca(\\s+|/).*",".*\\.xxx(\\s+|/).*",".*\\.cc(\\s+|/).*",".*\\.de(\\s+|/).*",
-								   ".*\\.eu(\\s+|/).*",".*\\.fm(\\s+|/).*",".*\\.gov(\\s+|/).*",".*\\.info(\\s+|/).*",".*\\.io(\\s+|/).*",".*\\.jobs(\\s+|/).*",".*\\.me(\\s+|/).*",".*\\.mil(\\s+|/).*",
-			                       ".*\\.mobi(\\s+|/).*",".*\\.name(\\s+|/).*",".*\\.rn(\\s+|/).*",".*\\.tel(\\s+|/).*",".*\\.travel(\\s+|/).*",".*\\.tz(\\s+|/).*",".*\\.uk(\\s+|/).*",".*\\.us(\\s+|/).*",".*\\.be(\\s+|/).*"};*/
-	
 	
 	private int lastPing = -1;
 	
@@ -607,6 +598,34 @@ public class Bot extends PircBot {
  						sendMessage(channel, tempList);
  					}
  				}
+ 				
+ 				// !offensive - Owner
+ 				if(msg[0].equalsIgnoreCase("!offensive")){
+ 					System.out.println("Matched command !offensive");
+ 					if(msg.length  > 2 && isOwner){
+ 						if(msg[1].equalsIgnoreCase("add")){
+ 							if(channelInfo.isOffensive(msg[2])){
+ 								sendMessage(channel,channelInfo.getBullet() + " Word already exists. " + "(" + msg[2] + ")");
+ 							}else{
+ 								channelInfo.addOffensive(msg[2]);
+ 								sendMessage(channel,channelInfo.getBullet() + " Word added. "+ "(" + msg[2] + ")");
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
+ 							if(channelInfo.isOffensive(msg[2])){
+ 								channelInfo.removeOffensive(msg[2]);
+ 								sendMessage(channel,channelInfo.getBullet() + " Word removed. "+ "(" + msg[2] + ")");
+ 							}else{
+ 								sendMessage(channel,channelInfo.getBullet() + " Word does not exist. "+ "(" + msg[2] + ")");
+ 							}
+ 						}
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
+ 						String tempList = channelInfo.getBullet() + " Offsenive words: ";
+ 						for(String s:channelInfo.getOffensive()){
+ 							tempList += s + ", ";
+ 						}
+ 						sendMessage(channel, tempList);
+ 					}
+ 				}
 				
  				// !caps - Owner
  				if(msg[0].equalsIgnoreCase("!caps") && isOwner){
@@ -770,6 +789,14 @@ public class Bot extends PircBot {
 							}else if(msg[2].equalsIgnoreCase("2") || msg[2].equalsIgnoreCase("everyone")){
  								channelInfo.setMode(1);
  								sendMessage(channel, channelInfo.getBullet() + " Mode set to everyone.");
+ 							}
+						}else if(msg[1].equalsIgnoreCase("offensive")){
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.filterOffensive = true;
+ 								sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.filterOffensive = false;
+ 								sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is off");
  							}
 						}
  					}
@@ -946,9 +973,14 @@ public class Bot extends PircBot {
 					}
 					
 				}
+				
+				//Offensive filter
+				if(!isOp && channelInfo.filterOffensive){
+					if(channelInfo.isOffensive(message)){
+						this.sendMessage(channel, ".timeout " + sender + " 10");
+					}
+				}
 
-			
-			
 	}
 
 

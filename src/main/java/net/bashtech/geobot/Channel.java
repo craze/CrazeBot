@@ -7,8 +7,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Channel {
@@ -24,6 +28,8 @@ public class Channel {
 	private int filterCapsMinCapitals;
 	
 	private boolean filterLinks;
+	
+	boolean filterOffensive;
 	
 	private String topic;
 	private int topicTime;
@@ -60,6 +66,8 @@ public class Channel {
 	private int bulletInt;
 	private char bullet[] = {'>','+', '-', '~'};
 
+	private Set<String> offensiveWords = new HashSet<String>();
+	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -360,10 +368,6 @@ public class Channel {
 	
 	//###################################################
 	
-//	public boolean isPermittedDomain(String name){		
-//
-//	}
-	
 	public void addPermittedDomain(String name){
 		synchronized (permittedDomains) {
 			permittedDomains.add(name.toLowerCase());
@@ -413,6 +417,73 @@ public class Channel {
 	public ArrayList<String> getpermittedDomains(){
 		return permittedDomains;
 	}
+	// #################################################
+	
+	public void addOffensive(String word){
+		synchronized (offensiveWords) { 
+			offensiveWords.add(word.toLowerCase());
+		}
+		
+		synchronized (offensiveWordsRegex) {
+			String line = ".*" + Pattern.quote(word.toLowerCase()) + ".*";
+			Pattern tempP = Pattern.compile(line);
+			offensiveWordsRegex.add(tempP);
+		}
+		
+		String offensiveWordsString = "";
+		
+		
+		synchronized (offensiveWords) { 
+			for(String s:offensiveWords){
+				offensiveWordsString += s + ",";
+			}
+		}
+		
+		config.setString("offensiveWords", offensiveWordsString);
+	}
+	
+	public void removeOffensive(String word){
+		synchronized (offensiveWords) { 
+			if(offensiveWords.contains(word.toLowerCase()))
+				offensiveWords.remove(word.toLowerCase());
+		}		
+		String offensiveWordsString = "";
+		
+		synchronized (offensiveWords) { 
+			for(String s:offensiveWords){
+				offensiveWordsString += s + ",";
+			}
+		}
+		
+		config.setString("regulars", offensiveWordsString);
+		
+		synchronized (offensiveWordsRegex) {
+			offensiveWordsRegex.clear();
+			
+			for(String w:offensiveWords){
+				String line = ".*" + Pattern.quote(w.toLowerCase()) + ".*";
+				Pattern tempP = Pattern.compile(line);
+				offensiveWordsRegex.add(tempP);
+			}
+		}
+	}
+	
+	public boolean isOffensive(String word){
+
+		for(Pattern reg:offensiveWordsRegex){
+			Matcher match = reg.matcher(word.toLowerCase());
+			if(match.matches()){
+				System.out.println("Matched: " + reg.toString());
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Set<String> getOffensive(){
+		return offensiveWords;
+	}
+	
 	// ##################################################
 	
 	public void setTopicFeature(boolean setting){
@@ -523,6 +594,10 @@ public class Channel {
 			config.setBoolean("filterCaps", false);
 		}
 		
+		if(!config.keyExists("filterOffensive")) {
+			config.setBoolean("filterOffensive", false);
+		}
+		
 		if(!config.keyExists("filterCapsPercent")) {
 			config.setInt("filterCapsPercent", 50);
 		}
@@ -609,6 +684,7 @@ public class Channel {
 		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
 
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
+		filterOffensive = Boolean.parseBoolean(config.getString("filterOffensive"));
 		
 		topic  = config.getString("topic");
 		topicTime = config.getInt("topicTime");
@@ -664,6 +740,24 @@ public class Channel {
 					
 				}
 			}
+		}
+		
+		String[] offensiveWordsRaw = config.getString("offensiveWords").split(",");
+
+		synchronized (offensiveWords) {
+			synchronized (offensiveWordsRegex) {
+				for(int i = 0; i < offensiveWordsRaw.length; i++){
+					if(offensiveWordsRaw[i].length() > 1){
+						String w = offensiveWordsRaw[i].toLowerCase();
+						offensiveWords.add(w);
+						String line = ".*" + Pattern.quote(w) + ".*";
+						System.out.println("Adding: " + line);
+						Pattern tempP = Pattern.compile(line);
+						offensiveWordsRegex.add(tempP);
+					}
+				}
+			}
+			
 		}
 	
 	}
