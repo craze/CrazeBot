@@ -337,8 +337,6 @@ public class Bot extends PircBot {
 						}else{
 							channelInfo.setTopic(message.substring(7));
 							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
-							if(botManager.network.equalsIgnoreCase("ngame"))
-								this.sendMessage(channel, ".topic " + channelInfo.getTopic());
 						}
 
 					}
@@ -604,18 +602,22 @@ public class Bot extends PircBot {
  					System.out.println("Matched command !offensive");
  					if(msg.length  > 2 && isOwner){
  						if(msg[1].equalsIgnoreCase("add")){
- 							if(channelInfo.isOffensive(msg[2])){
- 								sendMessage(channel,channelInfo.getBullet() + " Word already exists. " + "(" + msg[2] + ")");
+ 							String phrase = fuseArray(msg, 2);
+ 							if(phrase.contains(",,")){
+ 								sendMessage(channel,channelInfo.getBullet() + " Cannot contain double commas (,,)");
+ 							}else if(channelInfo.isOffensive(fuseArray(msg, 2))){
+ 								sendMessage(channel,channelInfo.getBullet() + " Word already exists. " + "(" + phrase + ")");
  							}else{
- 								channelInfo.addOffensive(msg[2]);
- 								sendMessage(channel,channelInfo.getBullet() + " Word added. "+ "(" + msg[2] + ")");
+ 								channelInfo.addOffensive(phrase);
+ 								sendMessage(channel,channelInfo.getBullet() + " Word added. "+ "(" + phrase + ")");
  							}
  						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
- 							if(channelInfo.isOffensive(msg[2])){
- 								channelInfo.removeOffensive(msg[2]);
- 								sendMessage(channel,channelInfo.getBullet() + " Word removed. "+ "(" + msg[2] + ")");
+ 							String phrase = fuseArray(msg, 2);
+ 							if(channelInfo.isOffensive(phrase)){
+ 								channelInfo.removeOffensive(phrase);
+ 								sendMessage(channel,channelInfo.getBullet() + " Word removed. "+ "(" + phrase + ")");
  							}else{
- 								sendMessage(channel,channelInfo.getBullet() + " Word does not exist. "+ "(" + msg[2] + ")");
+ 								sendMessage(channel,channelInfo.getBullet() + " Word does not exist. "+ "(" + phrase + ")");
  							}
  						}
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
@@ -1391,6 +1393,15 @@ public class Bot extends PircBot {
 		}
 		
 		return ip.getHostAddress();
+	}
+	
+	private String fuseArray(String[] array, int start){
+		String fused = "";
+		for(int c = start; c < array.length; c++)
+			fused += array[c] + " ";
+		
+		return fused.trim();
+	
 	}
 
 }

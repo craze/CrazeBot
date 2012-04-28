@@ -435,7 +435,7 @@ public class Channel {
 		
 		synchronized (offensiveWords) { 
 			for(String s:offensiveWords){
-				offensiveWordsString += s + ",";
+				offensiveWordsString += s + ",,";
 			}
 		}
 		
@@ -446,16 +446,16 @@ public class Channel {
 		synchronized (offensiveWords) { 
 			if(offensiveWords.contains(word.toLowerCase()))
 				offensiveWords.remove(word.toLowerCase());
-		}		
-		String offensiveWordsString = "";
+		}	
 		
+		String offensiveWordsString = "";
 		synchronized (offensiveWords) { 
 			for(String s:offensiveWords){
-				offensiveWordsString += s + ",";
+				offensiveWordsString += s + ",,";
 			}
 		}
 		
-		config.setString("regulars", offensiveWordsString);
+		config.setString("offensiveWords", offensiveWordsString);
 		
 		synchronized (offensiveWordsRegex) {
 			offensiveWordsRegex.clear();
@@ -742,7 +742,7 @@ public class Channel {
 			}
 		}
 		
-		String[] offensiveWordsRaw = config.getString("offensiveWords").split(",");
+		String[] offensiveWordsRaw = config.getString("offensiveWords").split(",,");
 
 		synchronized (offensiveWords) {
 			synchronized (offensiveWordsRegex) {
