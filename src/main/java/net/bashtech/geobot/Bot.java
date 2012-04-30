@@ -215,7 +215,7 @@ public class Bot extends PircBot {
 				}
 				
 				// !viewers - All
-				if (msg[0].equalsIgnoreCase("!viewers")) {
+				if (msg[0].equalsIgnoreCase("!viewers") || msg[0].equalsIgnoreCase("!lurkers")) {
 					if(!botManager.network.equalsIgnoreCase("jtv"))
 						return;
 					System.out.println("Matched command !viewers");
