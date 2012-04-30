@@ -73,6 +73,13 @@ public class Channel {
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
 	}
+	
+	public Channel(String name, int mode){
+		config = new PropertiesFile(name+".properties");
+		loadProperties(name);
+		
+		this.setMode(0);
+	}
 
 
 	public String getChannel() {

@@ -189,7 +189,7 @@ public class BotManager {
 			System.out.println("INFO: Already in channel " + name);
 			return false;
 		}
-		Channel tempChan = new Channel(name);
+		Channel tempChan = new Channel(name, mode);
 		
 		channelList.put(name, tempChan);
 

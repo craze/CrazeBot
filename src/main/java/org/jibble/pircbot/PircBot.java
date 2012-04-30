@@ -1025,6 +1025,7 @@ public abstract class PircBot implements ReplyConstants {
         }
         else if (command.equals("PRIVMSG")) {
             // This is a private message to us.
+        	//System.out.println("DEBUG-TMI: " + line.substring(line.indexOf(" :") + 2));
             this.onPrivateMessage(sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));
         }
         else if (command.equals("JOIN")) {

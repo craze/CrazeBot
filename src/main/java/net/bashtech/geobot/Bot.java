@@ -79,12 +79,36 @@ public class Bot extends PircBot {
 	}
 	
 	@Override
+	protected void onConnect() {
+		this.sendRawLine("JTVCLIENT");
+	}
+	
+	
+
+	@Override
+	protected void onPrivateMessage(String sender, String login,
+			String hostname, String message) {
+		String[] msg = message.split(" ");
+		
+		if(msg.length > 0){
+			if(msg[0].equalsIgnoreCase("SPECIALUSER")){
+				String user = msg[1];
+				String tag = msg[2];
+			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
+				String user = msg[1];
+				String color = msg[2];
+			}
+		}
+	}
+
+	@Override
 	protected void onAction(String sender, String login, String hostname, String target, String action) {
 		this.onMessage(target, sender, login, hostname, action);
 	}
 
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
+				
 				//Call modules
 				for(BotModule b:BotManager.getInstance().getModules()){
 					b.onMessage(channel, sender, login, hostname, message);
