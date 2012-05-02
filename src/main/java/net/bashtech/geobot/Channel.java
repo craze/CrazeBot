@@ -552,7 +552,7 @@ public class Channel {
 
 			String test = ".*(\\.|^|//)" + d + "(/|$).*";
 			if(message.matches(test)){
-				System.out.println("DEBUG: Matched permitted domain: " + test);
+				//System.out.println("DEBUG: Matched permitted domain: " + test);
 				return true;
 			}
 			

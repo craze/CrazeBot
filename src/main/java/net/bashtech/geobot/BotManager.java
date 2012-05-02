@@ -159,7 +159,7 @@ public class BotManager {
 		}
 		
 		for(String s:config.getString("adminList").split(",")) {
-			System.out.println("DEBUG: Adding admin " + s);
+			//System.out.println("DEBUG: Adding admin " + s);
 			if(s.length() > 1){
 				admins.add(s.toLowerCase());
 			}
@@ -172,7 +172,7 @@ public class BotManager {
 	
 	public Channel getChannel(String channel){
 		if(channelList.containsKey(channel.toLowerCase())){
-			System.out.println("DEBUG: Matched channel");
+			//System.out.println("DEBUG: Matched channel");
 
 			return channelList.get(channel.toLowerCase());
 		}else{
@@ -206,7 +206,7 @@ public class BotManager {
 
 	public void removeChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
-			System.out.println("INFO: Not in channel " + name);
+			System.out.println("DEBUG: Not in channel " + name);
 			return;
 		}
 		
@@ -222,7 +222,7 @@ public class BotManager {
 	
 	public boolean rejoinChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
-			System.out.println("INFO: Not in channel " + name);
+			System.out.println("DEBUG: Not in channel " + name);
 			return false;
 		}
 		
@@ -242,15 +242,15 @@ public class BotManager {
 	}
 	
 	public synchronized void rejoinChannels(){
-		System.out.println("INFO: Rejoining channels");
+		System.out.println("DEBUG: Rejoining channels");
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
 			if((entry.getValue().getGiveaway() != null && entry.getValue().getGiveaway().getStatus()) || (entry.getValue().getPoll() != null && entry.getValue().getPoll().getStatus()))
 				continue;
 			
-			System.out.println("INFO: Parting channel " + entry.getValue().getChannel());
+			System.out.println("DEBUG: Parting channel " + entry.getValue().getChannel());
 			botList.get(server).partChannel(entry.getValue().getChannel());
-			System.out.println("INFO: Joining channel " + entry.getValue().getChannel());
+			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
 			botList.get(server).joinChannel(entry.getValue().getChannel());
 		}
 
@@ -261,9 +261,9 @@ public class BotManager {
 		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{
 			Bot temp = entry.getValue();
-			System.out.println("INFO: Disconnecting " + temp.getServer());
+			System.out.println("DEBUG: Disconnecting " + temp.getServer());
 			temp.disconnect();
-			System.out.println("INFO: " + temp.getServer() + " disconnected.");
+			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
 		}
 	}
 	
@@ -272,9 +272,9 @@ public class BotManager {
 		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{
 			Bot temp = entry.getValue();
-			System.out.println("INFO: Disconnecting " + temp.getServer());
+			System.out.println("DEBUG: Disconnecting " + temp.getServer());
 			temp.disconnect();
-			System.out.println("INFO: " + temp.getServer() + " disconnected.");
+			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
 		}
 		System.out.println("DEBUG: Waiting....");
 		try {
@@ -291,7 +291,7 @@ public class BotManager {
 			if(temp.isConnected())
 				continue;
 			
-			System.out.println("INFO: Reconnecting " + temp.getServer());
+			System.out.println("DEBUG: Reconnecting " + temp.getServer());
 			try {
 				temp.reconnect();
 			} catch (NickAlreadyInUseException e) {
@@ -304,7 +304,7 @@ public class BotManager {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("INFO: " + temp.getServer() + " reconnected.");
+			System.out.println("DEBUG: " + temp.getServer() + " reconnected.");
 		}
 		
 		rejoinChannels();
@@ -360,7 +360,7 @@ public class BotManager {
 	
 	public void sendGlobal(String message, String sender){
 
-		System.out.println("INFO: Sending global message: " + message);
+		//System.out.println("DEBUG: Sending global message: " + message);
 		for (Map.Entry<String, Bot> entry : botList.entrySet())
 		{	
 			Bot tempbot = (Bot)entry.getValue();

@@ -209,14 +209,14 @@ public class Bot extends PircBot {
 				if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus()){
 					//Poll is open and accepting votes.
 					channelInfo.getPoll().vote(sender, msg[0]);
-					System.out.println("DEBUG: Voted.");
+					//System.out.println("DEBUG: Voted.");
 				}
 				// ********************************************************************************
 				// ***************************** Giveaway Voting **********************************
 				// ********************************************************************************
 				if(channelInfo.getGiveaway() != null && channelInfo.getGiveaway().getStatus()){
 					//Giveaway is open and accepting entries.
-					System.out.println("DEBUG: Attempting entry.");
+					//System.out.println("DEBUG: Attempting entry.");
 					channelInfo.getGiveaway().submitEntry(sender, msg[0]);
 				}
 				// ********************************************************************************
@@ -966,9 +966,9 @@ public class Bot extends PircBot {
 				// Cap filter
  				int capsNumber = getCapsNumber(message);
  				int capsPercent = getCapsPercent(message);
- 				System.out.println("DEBUG: Message Length= " + message.length());
- 				System.out.println("DEBUG: Caps percent= " + capsPercent);
- 				System.out.println("DEBUG: Caps number= " + capsNumber);
+ 				//System.out.println("DEBUG: Message Length= " + message.length());
+ 				//System.out.println("DEBUG: Caps percent= " + capsPercent);
+ 				//System.out.println("DEBUG: Caps number= " + capsNumber);
 				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 					if(botManager.network.equalsIgnoreCase("jtv")){
 						this.sendMessage(channel, ".timeout " + sender + " 10");
@@ -1080,7 +1080,7 @@ public class Bot extends PircBot {
 	@Override
     public void onServerPing(String response) {
 		super.onServerPing(response);
-		System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
+		//System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
 		lastPing = (int) (System.currentTimeMillis()/1000);
 	}
     	
