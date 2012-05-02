@@ -46,6 +46,8 @@ public class BotManager {
 	
 	private Set<BotModule> modules;
 	
+	private Set<String> tagAdmins;
+	
 	
 
 	public BotManager(){
@@ -54,6 +56,7 @@ public class BotManager {
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
+		tagAdmins = new HashSet<String>();
 		
 		loadGlobalProfile();
 		
@@ -367,6 +370,14 @@ public class BotManager {
 				tempbot.sendMessage(channel, globalMsg);
 			}
 		}
+	}
+	
+	public boolean isTagAdmin(String name){
+		return tagAdmins.contains(name.toLowerCase());
+	}
+	
+	public void addTagAdmin(String name){
+		tagAdmins.add(name.toLowerCase());
 	}
 	
 	

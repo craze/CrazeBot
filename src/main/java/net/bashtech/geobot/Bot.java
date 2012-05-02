@@ -94,6 +94,9 @@ public class Bot extends PircBot {
 			if(msg[0].equalsIgnoreCase("SPECIALUSER")){
 				String user = msg[1];
 				String tag = msg[2];
+				
+				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
+					botManager.addTagAdmin(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
 				String color = msg[2];
@@ -160,6 +163,8 @@ public class Bot extends PircBot {
 				
 				//Check for user level based on other factors.
 				if(botManager.isAdmin(sender))
+					isAdmin = true;
+				if(botManager.isTagAdmin(sender))
 					isAdmin = true;
 				if(channel.equalsIgnoreCase("#" + sender))
 					isOwner = true;
