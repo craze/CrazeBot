@@ -684,7 +684,7 @@ public class Channel {
 		}
 		
 		if(!config.keyExists("logChat")) {
-			config.setBoolean("logChat", true);
+			config.setBoolean("logChat", false);
 		}
 		
 		channel = config.getString("channel");
