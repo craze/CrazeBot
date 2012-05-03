@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.regex.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
+
+import net.bashtech.geobot.Channel;
+
 import org.jibble.pircbot.*;
 
 public class Logger implements BotModule {
@@ -34,7 +37,8 @@ public class Logger implements BotModule {
     	}
     }
     
-    public void append(String color, String line,String channel) {
+    public void append(String color, String line,String channel) {    	
+    	
         line = Colors.removeFormattingAndColors(line);
         
         line = line.replaceAll("&", "&amp;");
@@ -42,7 +46,7 @@ public class Logger implements BotModule {
         line = line.replaceAll(">", "&gt;");
         
         Matcher matcher = urlPattern.matcher(line);
-        line = matcher.replaceAll("<a href=\"$1\">$1</a>");
+        line = matcher.replaceAll("<a href=\"$1\" rel=\"nofollow\">$1</a>");
         
                 
         try {
@@ -67,27 +71,29 @@ public class Logger implements BotModule {
     }
 
 	@Override
-	public void onMessage(String channel, String sender, String login,
+	public void onMessage(Channel channel, String sender, String login,
 			String hostname, String message) {
-        append(BLACK, "<" + sender + "> " + message,channel);
+		if(channel.logChat)
+			append(BLACK, "<" + sender + "> " + message,channel.getChannel());
 	}
 
 	@Override
-	public void onJoin(String channel, String sender, String login,
+	public void onJoin(Channel channel, String sender, String login,
 			String hostname) {
         //append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has joined " + channel,channel);
 	}
 
 	@Override
-	public void onPart(String channel, String sender, String login,
+	public void onPart(Channel channel, String sender, String login,
 			String hostname) {
         //append(GREEN, "* " + sender + " (" + login + "@" + hostname + ") has left " + channel,channel);
 
 	}
 	
 	@Override
-	public void onSelfMessage(String channel, String sender, String message) {
-		append(BLACK, "<" + sender + "> " + message,channel);
+	public void onSelfMessage(Channel channel, String sender, String message) {
+		if(channel.logChat)
+			append(BLACK, "<" + sender + "> " + message,channel.getChannel());
 		
 	}
 

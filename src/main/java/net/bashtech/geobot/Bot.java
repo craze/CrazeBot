@@ -111,19 +111,17 @@ public class Bot extends PircBot {
 
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
-				
-				//Call modules
-				for(BotModule b:BotManager.getInstance().getModules()){
-					b.onMessage(channel, sender, login, hostname, message);
-				}
-		
-		
 				//System.out.println("DEBUG: " + channel + " " + sender + " " + message);
 				
 				Channel channelInfo = botManager.getChannel(channel);
 				
 				if(channelInfo == null)
 					return;
+				
+				//Call modules
+				for(BotModule b:BotManager.getInstance().getModules()){
+					b.onMessage(channelInfo, sender, login, hostname, message);
+				}
 						
 				//Ignore messages from self.
 				if(sender.equalsIgnoreCase(this.getNick())){
@@ -829,6 +827,14 @@ public class Bot extends PircBot {
  								channelInfo.filterOffensive = false;
  								sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is off");
  							}
+						}else if(msg[1].equalsIgnoreCase("chatlogging")){
+ 							if(msg[2].equalsIgnoreCase("on")){
+ 								channelInfo.logChat = true;
+ 								sendMessage(channel, channelInfo.getBullet() + " Chat logging is on");
+ 							}else if(msg[2].equalsIgnoreCase("off")){
+ 								channelInfo.logChat = false;
+ 								sendMessage(channel, channelInfo.getBullet() + " Chat logging is off");
+ 							}
 						}
  					}
  				}
@@ -1037,28 +1043,36 @@ public class Bot extends PircBot {
 	}
 	
     public void onJoin(String channel, String sender, String login, String hostname){ 
-		//Call modules
-		for(BotModule b:BotManager.getInstance().getModules()){
-			b.onJoin(channel, sender, login, hostname);
-		}
+
 		
 		Channel channelInfo = botManager.getChannel(channel);
 		
-		if(channelInfo == null || !channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
+		if(channelInfo == null)
+			return;
+		
+		//Call modules
+		for(BotModule b:BotManager.getInstance().getModules()){
+			b.onJoin(channelInfo, sender, login, hostname);
+		}
+		
+		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
 			return;
 		
 		sendMessage(channel, "> " + sender + " entered the room.");
     }
 
-    public void onPart(String channel, String sender, String login, String hostname) {
-		//Call modules
-		for(BotModule b:BotManager.getInstance().getModules()){
-			b.onPart(channel, sender, login, hostname);
-		}
-		
+    public void onPart(String channel, String sender, String login, String hostname) {	
 		Channel channelInfo = botManager.getChannel(channel);
 		
-		if(channelInfo == null || !channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
+		if(channelInfo == null)
+			return;
+		
+		//Call modules
+		for(BotModule b:BotManager.getInstance().getModules()){
+			b.onPart(channelInfo, sender, login, hostname);
+		}
+		
+		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
 			return;
 		
 		sendMessage(channel, "> " + sender + " left the room.");
@@ -1068,12 +1082,15 @@ public class Bot extends PircBot {
     
 	@Override
 	protected boolean onMessageSend(String target, String message) {
+		Channel channelInfo = botManager.getChannel(target);
 		
-		//Call modules
-		for(BotModule b:BotManager.getInstance().getModules()){
-			b.onSelfMessage(target, this.getNick(), message);
+		if(channelInfo != null){
+			//Call modules
+			for(BotModule b:BotManager.getInstance().getModules()){
+				b.onSelfMessage(channelInfo, this.getNick(), message);
+			}
 		}
-		
+	
 		return super.onMessageSend(target, message);
 	}
 

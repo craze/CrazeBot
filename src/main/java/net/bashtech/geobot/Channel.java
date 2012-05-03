@@ -68,6 +68,8 @@ public class Channel {
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
+	
+	public boolean logChat;
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
@@ -681,6 +683,10 @@ public class Channel {
 			config.setString("steamID", "");
 		}
 		
+		if(!config.keyExists("logChat")) {
+			config.setBoolean("logChat", true);
+		}
+		
 		channel = config.getString("channel");
 		
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
@@ -705,6 +711,8 @@ public class Channel {
 		lastfm = config.getString("lastfm");
 		
 		steamID = config.getString("steamID");
+		
+		logChat = Boolean.parseBoolean(config.getString("logChat"));
 		
 		setMode(config.getInt("mode"));
 		
