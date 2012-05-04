@@ -37,8 +37,6 @@ public class Bot extends PircBot {
 
 	private BotManager botManager;
 	
-	//private Map<String,Long> previousCommands = new HashMap<String,Long>();
-	
 	private Pattern[] linkPatterns;
 	
 	private int lastPing = -1;
@@ -73,13 +71,11 @@ public class Bot extends PircBot {
 		} catch (IrcException e) {
 			System.out.println("Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
-		
-		//autoPartandRejoin();
-		
 	}
 	
 	@Override
 	protected void onConnect() {
+		//Force TMI to send USERCOLOR AND SPECIALUSER messages.
 		this.sendRawLine("JTVCLIENT");
 	}
 	
@@ -119,7 +115,7 @@ public class Bot extends PircBot {
 					return;
 				
 				//Call modules
-				for(BotModule b:BotManager.getInstance().getModules()){
+				for(BotModule b:botManager.getModules()){
 					b.onMessage(channelInfo, sender, login, hostname, message);
 				}
 						
@@ -164,7 +160,7 @@ public class Bot extends PircBot {
 					isAdmin = true;
 				if(botManager.isTagAdmin(sender))
 					isAdmin = true;
-				if(channel.equalsIgnoreCase("#" + sender))
+				if(botManager.network.equalsIgnoreCase("jtv") && channel.equalsIgnoreCase("#" + sender))
 					isOwner = true;
 				if(channelInfo.isModerator(sender))
 					isOp = true;
@@ -518,7 +514,7 @@ public class Bot extends PircBot {
 				// ********************************************************************************
 				
  				//Moderation commands - Ops
- 				if(isOp && botManager.getInstance().network.equalsIgnoreCase("jtv")){
+ 				if(isOp && botManager.network.equalsIgnoreCase("jtv")){
  					if(msg[0].equalsIgnoreCase("+m")){
  						sendMessage(channel, ".slow");
  					}
@@ -547,10 +543,6 @@ public class Bot extends PircBot {
  	 					if(msg[0].equalsIgnoreCase("+k")){
  	 						sendMessage(channel, ".timeout " + msg[1].toLowerCase());
  	 					}
- 	 					if(msg[0].equalsIgnoreCase("+tk")){
- 	 						sendMessage(channel, ".ban " + msg[1].toLowerCase());
- 	 						this.tmiFakeTimeoutUnban(channel, msg[1].toLowerCase());
- 	 					}
  	 					if(msg[0].equalsIgnoreCase("+p")){
  	 						sendMessage(channel, ".timeout " + msg[1].toLowerCase() + " 10");
  	 					}
@@ -562,7 +554,7 @@ public class Bot extends PircBot {
  					
  				}
  				
-				// !clear - Opshey
+				// !clear - Ops
 				if(msg[0].equalsIgnoreCase("!clear") && isOp){
 					System.out.println("Matched command !clear");
 					this.sendMessage(channel, ".clear");
@@ -855,13 +847,12 @@ public class Bot extends PircBot {
  				
  				
  				//!join
- 				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin) {
+ 				if (msg[0].equalsIgnoreCase("!join") && botManager.publicJoin) {
  							
  							if(!tmiServers.contains(this.getIP(sender + ".jtvirc.com"))){
  								sendMessage(channel, "Sorry, public join is only available for channels using TMI.");
  								return;
  							}
- 								
 
 							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
 							boolean joinStatus = botManager.addChannel("#" + sender, 2);
@@ -895,8 +886,6 @@ public class Bot extends PircBot {
 							sendMessage(channel, channelInfo.getBullet() + " Bot is not assigned to channel #"+ sender +"."); 							
 						}
  					}
-						
-						
 
 				}
  				
@@ -978,11 +967,8 @@ public class Bot extends PircBot {
 				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 					if(botManager.network.equalsIgnoreCase("jtv")){
 						this.sendMessage(channel, ".timeout " + sender + " 10");
-					}else if(botManager.network.equalsIgnoreCase("ngame")){
-						this.ban(channel, sender);
-						tenSecondUnban(channel, sender);
 					}else{
-						this.kick(channel, sender, "Too many caps.");
+						this.kick(channel, sender, "Too many caps");
 						tenSecondUnban(channel, sender);
 					}
 					if(channelInfo.checkSignKicks())
@@ -997,11 +983,8 @@ public class Bot extends PircBot {
 					}else{
 						if(botManager.network.equalsIgnoreCase("jtv")){
 							this.sendMessage(channel, ".timeout " + sender + " 10");
-						}else if(botManager.network.equalsIgnoreCase("ngame")){
-							this.ban(channel, sender);
-							tenSecondUnban(channel, sender);
 						}else{
-							this.kick(channel, sender, "Unauthorized link.");
+							this.kick(channel, sender, "Unauthorized link");
 							tenSecondUnban(channel, sender);
 						}
 						
@@ -1014,10 +997,13 @@ public class Bot extends PircBot {
 				//Offensive filter
 				if(!isOp && channelInfo.filterOffensive){
 					if(channelInfo.isOffensive(message)){
-						this.sendMessage(channel, ".timeout " + sender + " 10");
+						if(botManager.network.equalsIgnoreCase("jtv")){
+							this.sendMessage(channel, ".timeout " + sender + " 10");
+						}else{
+							this.kick(channel, sender, "Offensive language");
+						}
 					}
 				}
-
 	}
 
 
@@ -1051,7 +1037,7 @@ public class Bot extends PircBot {
 			return;
 		
 		//Call modules
-		for(BotModule b:BotManager.getInstance().getModules()){
+		for(BotModule b:botManager.getModules()){
 			b.onJoin(channelInfo, sender, login, hostname);
 		}
 		
@@ -1068,7 +1054,7 @@ public class Bot extends PircBot {
 			return;
 		
 		//Call modules
-		for(BotModule b:BotManager.getInstance().getModules()){
+		for(BotModule b:botManager.getModules()){
 			b.onPart(channelInfo, sender, login, hostname);
 		}
 		
@@ -1086,7 +1072,7 @@ public class Bot extends PircBot {
 		
 		if(channelInfo != null){
 			//Call modules
-			for(BotModule b:BotManager.getInstance().getModules()){
+			for(BotModule b:botManager.getModules()){
 				b.onSelfMessage(channelInfo, this.getNick(), message);
 			}
 		}
@@ -1118,8 +1104,8 @@ public class Bot extends PircBot {
     public void log(String line) {
     	super.log(line);
     	
-    	if(BotManager.getInstance().useGUI){
-    		BotManager.getInstance().getGUI().log(line);
+    	if(botManager.useGUI){
+    		botManager.getGUI().log(line);
     	}
     }
 	
@@ -1185,19 +1171,6 @@ public class Bot extends PircBot {
 
 		
 		return false;
-	}
-	private void tmiFakeTimeoutUnban(final String channel, final String name){
-		Timer timer = new Timer();
-		
-		int delay = 300000;
-		
-		timer.schedule(new TimerTask()
-	       {
-	        public void run() {
-	        	Bot.this.sendMessage(channel, ".unban " + name);
-	        }
-	      },delay);
-
 	}
 	
 	private void tenSecondUnban(final String channel, final String name){
@@ -1340,10 +1313,9 @@ public class Bot extends PircBot {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
-			return game;
 		}
 	
+		return game;
 	}
 	
 	private String getStatus(Channel channelInfo){
@@ -1353,10 +1325,9 @@ public class Bot extends PircBot {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
-			return game;
 		}
-	
+		
+		return game;
 	}
 	
 	private static String getTagValue(String sTag, Element eElement) {
@@ -1398,7 +1369,7 @@ public class Bot extends PircBot {
 		
 		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
 		
-		if(difference > BotManager.getInstance().pingInterval){
+		if(difference > botManager.pingInterval){
 			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference= " + difference);
 			lastPing = -1;
 			return true;
@@ -1419,10 +1390,6 @@ public class Bot extends PircBot {
 				if(channelInfo.getGiveaway().getStatus()){
 					channelInfo.getGiveaway().setStatus(false);
 					Bot.this.sendMessage(channelInfo.getChannel(), "> Giveaway over.");
-//					String[] results = channelInfo.getGiveaway().getResults();
-//					for(int c=0;c<results.length;c++){
-//						sendMessage(GeoBot.this.channelInfo.getChannel(), results[c]);
-//					}
 				}
 			}
         }

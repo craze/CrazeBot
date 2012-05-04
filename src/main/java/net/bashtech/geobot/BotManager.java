@@ -72,9 +72,7 @@ public class BotManager {
 			botList.get(server).joinChannel(entry.getValue().getChannel());
 			System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 		}
-			
-		
-		
+
 		Timer reconnectTimer = new Timer();
 		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
 		System.out.println("Reconnect timer scheduled.");
@@ -192,9 +190,9 @@ public class BotManager {
 			System.out.println("INFO: Already in channel " + name);
 			return false;
 		}
-		Channel tempChan = new Channel(name, mode);
+		Channel tempChan = new Channel(name.toLowerCase(), mode);
 		
-		channelList.put(name, tempChan);
+		channelList.put(name.toLowerCase(), tempChan);
 
 		System.out.println("DEBUG: Joining channel " + tempChan.getChannel());
 		botList.get(server).joinChannel(tempChan.getChannel());
@@ -213,7 +211,7 @@ public class BotManager {
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
 		Bot tempBot = botList.get(server);
-		tempBot.partChannel(name);
+		tempBot.partChannel(name.toLowerCase());
 		
 		channelList.remove(name.toLowerCase());
 		
@@ -366,6 +364,9 @@ public class BotManager {
 			Bot tempbot = (Bot)entry.getValue();
 
 			for(String channel: tempbot.getChannels()){
+				if(channelList.get(channel).getMode() == 0)
+					continue;
+				
 				String globalMsg = "> Global: " + message + " (from " + sender + " to " + channel + ")";
 				tempbot.sendMessage(channel, globalMsg);
 			}
