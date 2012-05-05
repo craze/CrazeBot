@@ -210,7 +210,7 @@ public class Bot extends PircBot {
 				// ********************************************************************************
 				if(channelInfo.getGiveaway() != null && channelInfo.getGiveaway().getStatus()){
 					//Giveaway is open and accepting entries.
-					//System.out.println("DEBUG: Attempting entry.");
+					System.out.println("DEBUG: Attempting entry.");
 					channelInfo.getGiveaway().submitEntry(sender, msg[0]);
 				}
 				// ********************************************************************************
@@ -808,7 +808,7 @@ public class Bot extends PircBot {
  								channelInfo.setMode(1);
  								sendMessage(channel, channelInfo.getBullet() + " Mode set to admin/owner/mod only.");
 							}else if(msg[2].equalsIgnoreCase("2") || msg[2].equalsIgnoreCase("everyone")){
- 								channelInfo.setMode(1);
+ 								channelInfo.setMode(2);
  								sendMessage(channel, channelInfo.getBullet() + " Mode set to everyone.");
  							}
 						}else if(msg[1].equalsIgnoreCase("offensive")){
