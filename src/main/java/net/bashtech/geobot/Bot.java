@@ -619,14 +619,16 @@ public class Bot extends PircBot {
  				// !offensive - Owner
  				if(msg[0].equalsIgnoreCase("!offensive")){
  					System.out.println("Matched command !offensive");
- 					if(msg.length  > 2 && isOwner){
+ 					if(msg.length > 1 && isOwner){
  						if(msg[1].equalsIgnoreCase("on")){
 							channelInfo.setFilterOffensive(true);
 							sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is on");
  						}else if(msg[1].equalsIgnoreCase("off")){
 							channelInfo.setFilterOffensive(false);
 							sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is off");
- 						}else if(msg[1].equalsIgnoreCase("add")){
+ 						}
+ 					}else if(msg.length  > 2 && isOwner){
+ 						if(msg[1].equalsIgnoreCase("add")){
  							String phrase = fuseArray(msg, 2);
  							if(phrase.contains(",,")){
  								sendMessage(channel,channelInfo.getBullet() + " Cannot contain double commas (,,)");
