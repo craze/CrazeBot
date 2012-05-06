@@ -145,7 +145,9 @@ public abstract class PircBot implements ReplyConstants {
         	socket =  new Socket(hostname, port);
         }else{
         	InetAddress localAddr = InetAddress.getByName(BotManager.getInstance().getLocalAddress());
-        	socket =  new Socket(hostname, port, localAddr, 52012);
+        	int bindPort = this.findUnusedPort("localhost");
+        	System.out.println("Attempting to bind to " + localAddr.toString() + ":" + bindPort);
+        	socket =  new Socket(hostname, port, localAddr, bindPort);
         }
 
         this.log("*** Connected to server " + this.getServer() +".");
@@ -3094,6 +3096,22 @@ public abstract class PircBot implements ReplyConstants {
                 // just in case ...
                 newUser = new User("", nick);
                 users.put(newUser, newUser);
+            }
+        }
+    }
+    
+    private int findUnusedPort(String hostname) throws IOException {
+        while (true) {
+            int port = (int) (65536 * Math.random());
+            try {
+                Socket s = new Socket(hostname, port);
+                s.close();
+            } catch (ConnectException e) {
+                return port;
+            } catch (IOException e) {
+                if (e.getMessage().contains("refused"))
+                    return port;
+                throw e;
             }
         }
     }
