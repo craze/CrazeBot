@@ -327,7 +327,11 @@ public class BotManager {
 		
 		pjTimer = new Timer();
 		
-		int delay = 1800000;
+		//int delay = 1800000;
+		int delay = 3600000;
+		
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
+			entry.getValue().clearWarnings();
 		
 		pjTimer.scheduleAtFixedRate(new TimerTask()
 	       {

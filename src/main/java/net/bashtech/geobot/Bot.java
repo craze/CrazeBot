@@ -43,6 +43,10 @@ public class Bot extends PircBot {
 	
 	private Set<String> tmiServers;
 	
+	int[] warningTODuration = {10, 30, 60, 600};
+	String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
+	
+	
 	public Bot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
 		botManager = bm;
@@ -56,6 +60,7 @@ public class Bot extends PircBot {
 		tmiServers.add("199.9.250.142");
 		tmiServers.add("199.9.250.146");
 		tmiServers.add("199.9.250.147");
+		
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
@@ -965,31 +970,39 @@ public class Bot extends PircBot {
  				//System.out.println("DEBUG: Caps percent= " + capsPercent);
  				//System.out.println("DEBUG: Caps number= " + capsNumber);
 				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
+					int warningCount = 0;
 					if(botManager.network.equalsIgnoreCase("jtv")){
-						this.sendMessage(channel, ".timeout " + sender + " 10");
+						channelInfo.incWarningCount(sender, FilterType.CAPS);
+						warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
+						System.out.println("Updated warning count: " + warningCount);
+						
+						this.sendMessage(channel, ".timeout " + sender + " " + getWarningTODuration(warningCount));
 					}else{
 						this.kick(channel, sender, "Too many caps");
-						tenSecondUnban(channel, sender);
 					}
 					if(channelInfo.checkSignKicks())
-						sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't shout or talk in all caps. (10 sec. timeout)");
+						sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
 				}
 				
 				// Link filter
 				if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message,channelInfo) ){
 					boolean result = channelInfo.linkPermissionCheck(sender);
+					int warningCount = 0;
 					if(result){
 						sendMessage(channel, "> Link permitted. (" + sender + ")" );
 					}else{
 						if(botManager.network.equalsIgnoreCase("jtv")){
-							this.sendMessage(channel, ".timeout " + sender + " 10");
+							channelInfo.incWarningCount(sender, FilterType.LINK);
+							warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
+							System.out.println("Updated warning count: " + warningCount);
+							
+							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
 						}else{
 							this.kick(channel, sender, "Unauthorized link");
-							tenSecondUnban(channel, sender);
 						}
 						
 						if(channelInfo.checkSignKicks())
-							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please ask a moderator before posting links. (10 sec. timeout)");
+							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
 					}
 					
 				}
@@ -997,8 +1010,12 @@ public class Bot extends PircBot {
 				//Offensive filter
 				if(!isOp && channelInfo.filterOffensive){
 					if(channelInfo.isOffensive(message)){
+						int warningCount = 0;
 						if(botManager.network.equalsIgnoreCase("jtv")){
-							this.sendMessage(channel, ".timeout " + sender + " 10");
+							channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
+							warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
+							
+							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
 						}else{
 							this.kick(channel, sender, "Offensive language");
 						}
@@ -1171,6 +1188,20 @@ public class Bot extends PircBot {
 
 		
 		return false;
+	}
+	
+	private String getWarningText(int count){
+		if(count > 4)
+			return warningText[3];
+		else
+			return warningText[count-1];	
+	}
+	
+	private int getWarningTODuration(int count){
+		if(count > 4)
+			return warningTODuration[3];
+		else
+			return warningTODuration[count-1];
 	}
 	
 	private void tenSecondUnban(final String channel, final String name){

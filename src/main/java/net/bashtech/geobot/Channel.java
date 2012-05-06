@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -68,12 +69,17 @@ public class Channel {
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
+
+	Map<String,EnumMap<FilterType, Integer>> warningCount;
+	Map<String, Long> warningTime;
 	
 	public boolean logChat;
 		
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
+		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
+		warningTime = new HashMap<String, Long>();
 	}
 	
 	public Channel(String name, int mode){
@@ -81,6 +87,9 @@ public class Channel {
 		loadProperties(name);
 		
 		this.setMode(0);
+		
+		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
+		warningTime = new HashMap<String, Long>();
 	}
 
 
@@ -587,6 +596,45 @@ public class Channel {
 	}
 	
 	// #################################################
+	
+	public int getWarningCount(String name, FilterType type){
+		if(warningCount.containsKey(name.toLowerCase()) && warningCount.get(name.toLowerCase()).containsKey(type))
+			return warningCount.get(name.toLowerCase()).get(type);
+		else
+			return 0;
+	}
+	
+	public void incWarningCount(String name, FilterType type){
+		synchronized (warningCount) {
+			if(warningCount.containsKey(name.toLowerCase())){
+				if(warningCount.get(name.toLowerCase()).containsKey(type)){
+					warningCount.get(name.toLowerCase()).put(type,  warningCount.get(name.toLowerCase()).get(type) + 1);
+					warningTime.put(name.toLowerCase(), getTime());
+				}else{
+					warningCount.get(name.toLowerCase()).put(type, 1);
+					warningTime.put(name.toLowerCase(), getTime());
+				}
+			}else{
+				warningCount.put(name.toLowerCase(), new EnumMap<FilterType, Integer>(FilterType.class));
+				warningCount.get(name.toLowerCase()).put(type, 1);
+				warningTime.put(name.toLowerCase(), getTime());
+			}
+		}
+	}
+	
+	public void clearWarnings(){
+		synchronized (warningTime) {
+			synchronized (warningCount) {
+				for (Map.Entry<String, Long> entry : warningTime.entrySet()){
+					if((getTime() - entry.getValue()) > 3600){
+						warningCount.remove(entry.getKey());
+						warningTime.remove(entry.getKey());
+					}
+				}	
+			}
+		}
+
+	}
 
 	private void loadProperties(String name){
 		try {
@@ -809,6 +857,10 @@ public class Channel {
 		
 		return '>';
 			
+	}
+	
+	private long getTime(){
+		return (System.currentTimeMillis() / 1000L);
 	}
 
 }
