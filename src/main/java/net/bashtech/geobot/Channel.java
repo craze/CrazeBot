@@ -27,10 +27,10 @@ public class Channel {
 	private int filterCapsPercent;
 	private int filterCapsMinCharacters;
 	private int filterCapsMinCapitals;
-	
 	private boolean filterLinks;
-	
-	boolean filterOffensive;
+	private boolean filterOffensive;
+	private boolean filterEmotes;
+	private int filterEmotesMax;
 	
 	private String topic;
 	private int topicTime;
@@ -203,6 +203,8 @@ public class Channel {
 		return returnString;
 	}
 	
+	//#####################################################
+	
 	public boolean getFilterCaps(){
 		return filterCaps;
 	}
@@ -246,6 +248,33 @@ public class Channel {
 	
 	public boolean getFilterLinks(){
 		return filterLinks;
+	}
+	
+	public void setFilterOffensive(boolean option){
+		filterOffensive = option;
+		config.setBoolean("filterOffensive", option);
+	}
+	
+	public boolean getFilterOffensive(){
+		return filterOffensive;
+	}
+	
+	public void setFilterEmotes(boolean option){
+		filterEmotes = option;
+		config.setBoolean("filterEmotes", option);
+	}
+	
+	public boolean getFilterEmotes(){
+		return filterEmotes;
+	}
+	
+	public void setFilterEmotesMax(int option){
+		filterEmotesMax = option;
+		config.setInt("filterOffensive", option);
+	}
+	
+	public int getFilterEmotesMax(){
+		return filterEmotesMax;
 	}
 	
 	public void setAnnounceJoinParts(boolean bol){
@@ -646,120 +675,97 @@ public class Channel {
 		if(!config.keyExists("channel")) {
 			config.setString("channel", name);
 		}
-		
 		if(!config.keyExists("filterCaps")) {
 			config.setBoolean("filterCaps", false);
 		}
-		
 		if(!config.keyExists("filterOffensive")) {
 			config.setBoolean("filterOffensive", false);
 		}
-		
 		if(!config.keyExists("filterCapsPercent")) {
 			config.setInt("filterCapsPercent", 50);
 		}
-		
 		if(!config.keyExists("filterCapsMinCharacters")) {
 			config.setInt("filterCapsMinCharacters", 0);
 		}
-		
 		if(!config.keyExists("filterCapsMinCapitals")) {
 			config.setInt("filterCapsMinCapitals", 6);
 		}
-		
 		if(!config.keyExists("filterLinks")) {
 			config.setBoolean("filterLinks", false);
 		}
-		
+		if(!config.keyExists("filterEmotes")) {
+			config.setBoolean("filterEmotes", false);
+		}
+		if(!config.keyExists("filterEmotesMax")) {
+			config.setInt("filterEmotesMax", 4);
+		}
 		if(!config.keyExists("topic")) {
 			config.setString("topic", "");
 		}
-		
 		if(!config.keyExists("commandsKey")) {
 			config.setString("commandsKey", "");
 		}
-		
 		if(!config.keyExists("commandsValue")) {
 			config.setString("commandsValue", "");
 		}
-		
 		if(!config.keyExists("regulars")) {
 			config.setString("regulars", "");
 		}
-		
 		if(!config.keyExists("moderators")) {
 			config.setString("moderators", "");
 		}
-		
 		if(!config.keyExists("useTopic")) {
 			config.setBoolean("useTopic", true);
 		}
-		
 		if(!config.keyExists("useFilters")) {
 			config.setBoolean("useFilters", false);
 		}
-		
 		if(!config.keyExists("enableThrow")) {
 			config.setBoolean("enableThrow", true);
 		}
-		
 		if(!config.keyExists("permittedDomains")) {
 			config.setString("permittedDomains", "");
 		}
-		
 		if(!config.keyExists("signKicks")) {
 			config.setBoolean("signKicks", false);
 		}
-		
 		if(!config.keyExists("topicTime")) {
 			config.setInt("topicTime", 0);
 		}
-		
 		if(!config.keyExists("mode")) {
 			config.setInt("mode", 2);
 		} 
-		
 		if(!config.keyExists("announceJoinParts")) {
 			config.setBoolean("announceJoinParts", false);
 		}
-		
 		if(!config.keyExists("lastfm")) {
 			config.setString("lastfm", "");
 		}
-		
 		if(!config.keyExists("steamID")) {
 			config.setString("steamID", "");
 		}
-		
 		if(!config.keyExists("logChat")) {
 			config.setBoolean("logChat", false);
 		}
 		
 		channel = config.getString("channel");
-		
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
 		filterCapsMinCharacters = Integer.parseInt(config.getString("filterCapsMinCharacters"));
 		filterCapsMinCapitals = Integer.parseInt(config.getString("filterCapsMinCapitals"));
-
-		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
-
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		filterOffensive = Boolean.parseBoolean(config.getString("filterOffensive"));
-		
+		filterEmotes = Boolean.parseBoolean(config.getString("filterEmotes"));
+		filterEmotesMax = Integer.parseInt(config.getString("filterEmotesMax"));
+		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
 		topic  = config.getString("topic");
 		topicTime = config.getInt("topicTime");
-		
 		useTopic = Boolean.parseBoolean(config.getString("useTopic"));
 		useFilters = Boolean.parseBoolean(config.getString("useFilters"));
 		enableThrow = Boolean.parseBoolean(config.getString("enableThrow"));
-
 		signKicks = Boolean.parseBoolean(config.getString("signKicks"));
-		
 		lastfm = config.getString("lastfm");
-		
 		steamID = config.getString("steamID");
-		
 		logChat = Boolean.parseBoolean(config.getString("logChat"));
 		
 		setMode(config.getInt("mode"));
@@ -774,7 +780,6 @@ public class Channel {
 		}
 		
 		String[] regularsRaw = config.getString("regulars").split(",");
-		
 		synchronized (regulars) {
 			for(int i = 0; i < regularsRaw.length; i++){
 				if(regularsRaw[i].length() > 1){
@@ -784,7 +789,6 @@ public class Channel {
 		}
 		
 		String[] moderatorsRaw = config.getString("moderators").split(",");
-		
 		synchronized (moderators) {
 			for(int i = 0; i < moderatorsRaw.length; i++){
 				if(moderatorsRaw[i].length() > 1){
@@ -794,7 +798,6 @@ public class Channel {
 		}
 		
 		String[] domainsRaw = config.getString("permittedDomains").split(",");
-		
 		synchronized (permittedDomains) {
 			for(int i = 0; i < domainsRaw.length; i++){
 				if(domainsRaw[i].length() > 1){
@@ -806,7 +809,6 @@ public class Channel {
 		}
 		
 		String[] offensiveWordsRaw = config.getString("offensiveWords").split(",,");
-
 		synchronized (offensiveWords) {
 			synchronized (offensiveWordsRegex) {
 				for(int i = 0; i < offensiveWordsRaw.length; i++){

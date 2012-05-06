@@ -1,5 +1,7 @@
 package net.bashtech.geobot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -7,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,25 +32,18 @@ public class BotManager {
 	String network;
 	String localAddress;
 	boolean publicJoin;
-	
 	boolean monitorPings;
 	int pingInterval;
-	
 	boolean useGUI;
 	BotGUI gui;
-	
 	Map<String,Bot> botList;
 	Map<String,Channel> channelList;
-	
 	Set<String> admins;
-	
 	private Timer pjTimer;
-	
 	private PropertiesFile config;
-	
 	private Set<BotModule> modules;
-	
 	private Set<String> tagAdmins;
+	Set<String> emoteSet;
 	
 
 	public BotManager(){
@@ -57,6 +53,7 @@ public class BotManager {
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
 		tagAdmins = new HashSet<String>();
+		emoteSet = new HashSet<String>();
 		
 		loadGlobalProfile();
 		
@@ -166,6 +163,8 @@ public class BotManager {
 				admins.add(s.toLowerCase());
 			}
 		}
+		
+		loadEmotes();
 		
 		if(server.length() < 1){
 			System.exit(1);
@@ -391,6 +390,29 @@ public class BotManager {
 	
 	public void addTagAdmin(String name){
 		tagAdmins.add(name.toLowerCase());
+	}
+	
+	private void loadEmotes(){
+		emoteSet.clear();
+		File f = new File("emotes.cfg");
+		if(!f.exists())
+			try {
+				f.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				Scanner in = new Scanner(f, "UTF-8");
+				
+				while (in.hasNextLine()){
+					emoteSet.add(in.nextLine().trim());
+			      }
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 	}
 	
 	

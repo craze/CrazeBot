@@ -36,16 +36,11 @@ import org.xml.sax.SAXException;
 public class Bot extends PircBot {	
 
 	private BotManager botManager;
-	
 	private Pattern[] linkPatterns;
-	
 	private int lastPing = -1;
-	
 	private Set<String> tmiServers;
-	
-	int[] warningTODuration = {10, 30, 60, 600};
-	String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
-	
+	private int[] warningTODuration = {10, 30, 60, 600};
+	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
 	
 	public Bot(BotManager bm, String server, int port){
 		System.out.println("DEBUG: Bot created.");
@@ -625,7 +620,13 @@ public class Bot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!offensive")){
  					System.out.println("Matched command !offensive");
  					if(msg.length  > 2 && isOwner){
- 						if(msg[1].equalsIgnoreCase("add")){
+ 						if(msg[1].equalsIgnoreCase("on")){
+							channelInfo.setFilterOffensive(true);
+							sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is on");
+ 						}else if(msg[1].equalsIgnoreCase("off")){
+							channelInfo.setFilterOffensive(false);
+							sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is off");
+ 						}else if(msg[1].equalsIgnoreCase("add")){
  							String phrase = fuseArray(msg, 2);
  							if(phrase.contains(",,")){
  								sendMessage(channel,channelInfo.getBullet() + " Cannot contain double commas (,,)");
@@ -669,17 +670,38 @@ public class Bot extends PircBot {
  	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter percent: " + channelInfo.getfilterCapsPercent());
  							}
  						}else if(msg[1].equalsIgnoreCase("minchars")){
- 							if(msg.length > 2){
+ 							if(msg.length > 2 && isInteger(msg[2])){
  								channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
  	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
  							}
  						}else if(msg[1].equalsIgnoreCase("mincaps")){
- 							if(msg.length > 2){
+ 							if(msg.length > 2 && isInteger(msg[2])){
  								channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
  	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
  							}
  						}else if(msg[1].equalsIgnoreCase("status")){
  							sendMessage(channel, channelInfo.getBullet() + " Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
+ 						}
+ 					}
+ 				}
+ 				
+ 				// !emotes - Owner
+ 				if(msg[0].equalsIgnoreCase("!emotes") && isOwner){
+ 					System.out.println("Matched command !emotes");
+ 					if(msg.length > 1){
+ 						if(msg[1].equalsIgnoreCase("on")){
+ 							channelInfo.setFilterEmotes(true);
+ 							this.sendMessage(channel, channelInfo.getBullet() + " Emotes filter: " + channelInfo.getFilterEmotes());
+ 						}else if(msg[1].equalsIgnoreCase("off")){
+ 							channelInfo.setFilterEmotes(false);
+ 							this.sendMessage(channel, channelInfo.getBullet() + " Emotes filter: " + channelInfo.getFilterEmotes());
+ 						}else if(msg[1].equalsIgnoreCase("max")){
+ 							if(msg.length > 2 && isInteger(msg[2])){
+ 								channelInfo.setFilterEmotesMax(Integer.parseInt(msg[2]));
+ 	 							this.sendMessage(channel, channelInfo.getBullet() + " Emotes filter max: " + channelInfo.getFilterEmotesMax());
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("status")){
+ 							sendMessage(channel, channelInfo.getBullet() + " Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax());
  						}
  					}
  				}
@@ -815,14 +837,6 @@ public class Bot extends PircBot {
 							}else if(msg[2].equalsIgnoreCase("2") || msg[2].equalsIgnoreCase("everyone")){
  								channelInfo.setMode(2);
  								sendMessage(channel, channelInfo.getBullet() + " Mode set to everyone.");
- 							}
-						}else if(msg[1].equalsIgnoreCase("offensive")){
- 							if(msg[2].equalsIgnoreCase("on")){
- 								channelInfo.filterOffensive = true;
- 								sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is on");
- 							}else if(msg[2].equalsIgnoreCase("off")){
- 								channelInfo.filterOffensive = false;
- 								sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is off");
  							}
 						}else if(msg[1].equalsIgnoreCase("chatlogging")){
  							if(msg[2].equalsIgnoreCase("on")){
@@ -969,7 +983,7 @@ public class Bot extends PircBot {
  				//System.out.println("DEBUG: Message Length= " + message.length());
  				//System.out.println("DEBUG: Caps percent= " + capsPercent);
  				//System.out.println("DEBUG: Caps number= " + capsNumber);
-				if(channelInfo.getFilterCaps() && !(isOp || isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
+				if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 					int warningCount = 0;
 					if(botManager.network.equalsIgnoreCase("jtv")){
 						channelInfo.incWarningCount(sender, FilterType.CAPS);
@@ -1008,7 +1022,7 @@ public class Bot extends PircBot {
 				}
 				
 				//Offensive filter
-				if(!isOp && channelInfo.filterOffensive){
+				if(!isOp && channelInfo.getFilterOffensive()){
 					if(channelInfo.isOffensive(message)){
 						int warningCount = 0;
 						if(botManager.network.equalsIgnoreCase("jtv")){
@@ -1020,6 +1034,24 @@ public class Bot extends PircBot {
 							this.kick(channel, sender, "Offensive language");
 						}
 					}
+				}
+				
+				//Emote filter
+				if(!isOp && channelInfo.getFilterEmotes()){
+					if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
+						int warningCount = 0;
+						if(botManager.network.equalsIgnoreCase("jtv")){
+							channelInfo.incWarningCount(sender, FilterType.EMOTES);
+							warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
+							
+							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+							
+							if(channelInfo.checkSignKicks())
+								sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
+						}
+						
+						
+					}	
 				}
 	}
 
@@ -1188,6 +1220,26 @@ public class Bot extends PircBot {
 
 		
 		return false;
+	}
+	
+	private int countEmotes(String message){
+		String str = message;
+		int count=0;
+		for(String findStr: botManager.emoteSet){
+			int lastIndex = 0;
+			while(lastIndex != -1){
+
+				lastIndex = str.indexOf(findStr,lastIndex);
+
+			       if( lastIndex != -1){
+			             count ++;
+			             lastIndex+=findStr.length();
+			      }	
+			}
+		}
+		System.out.println("DEBUG: Emote count " + count);
+		return count;
+		
 	}
 	
 	private String getWarningText(int count){
