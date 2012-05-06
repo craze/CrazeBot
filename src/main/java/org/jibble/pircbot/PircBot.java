@@ -18,6 +18,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import net.bashtech.geobot.BotManager;
+
 /**
  * PircBot is a Java framework for writing IRC bots quickly and easily.
  *  <p>
@@ -137,7 +139,15 @@ public abstract class PircBot implements ReplyConstants {
         this.removeAllChannels();
         
         // Connect to the server.
-        Socket socket =  new Socket(hostname, port);
+        String localAddress = BotManager.getInstance().getLocalAddress();
+        Socket socket;
+        if(localAddress.equalsIgnoreCase("")){
+        	socket =  new Socket(hostname, port);
+        }else{
+        	InetAddress localAddr = InetAddress.getByName(BotManager.getInstance().getLocalAddress());
+        	socket =  new Socket(hostname, port, localAddr, 52012);
+        }
+
         this.log("*** Connected to server " + this.getServer() +".");
         
         _inetAddress = socket.getLocalAddress();

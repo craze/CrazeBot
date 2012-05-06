@@ -27,6 +27,7 @@ public class BotManager {
 	int port;
 	String password;
 	String network;
+	String localAddress;
 	boolean publicJoin;
 	
 	boolean monitorPings;
@@ -47,7 +48,6 @@ public class BotManager {
 	private Set<BotModule> modules;
 	
 	private Set<String> tagAdmins;
-	
 	
 
 	public BotManager(){
@@ -135,11 +135,15 @@ public class BotManager {
 			config.setBoolean("useGUI", false);
 		}
 		
+		if(!config.keyExists("localAddress")) {
+			config.setString("localAddress", "");
+		}
+		
 		nick = config.getString("nick");
 		server = config.getString("server");
 		network = config.getString("network");
 		port = Integer.parseInt(config.getString("port"));
-		
+		localAddress = config.getString("localAddress");
 		password = config.getString("password");
 		
 		useGUI = config.getBoolean("useGUI");
@@ -354,6 +358,10 @@ public class BotManager {
 	
 	public BotGUI getGUI(){
 		return gui;
+	}
+	
+	public String getLocalAddress(){
+		return localAddress;
 	}
 	
 	public void sendGlobal(String message, String sender){
