@@ -1013,6 +1013,7 @@ public class Bot extends PircBot {
 							System.out.println("Updated warning count: " + warningCount);
 							
 							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 						}else{
 							this.kick(channel, sender, "Unauthorized link");
 						}
@@ -1032,6 +1033,7 @@ public class Bot extends PircBot {
 							warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
 							
 							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 						}else{
 							this.kick(channel, sender, "Offensive language");
 						}
@@ -1047,6 +1049,7 @@ public class Bot extends PircBot {
 							warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
 							
 							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 							
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
@@ -1270,6 +1273,20 @@ public class Bot extends PircBot {
 		        	Bot.this.unBan(channel,name + "!*@*.*");
 				else
 					Bot.this.unBan(channel,name);
+	        }
+	      },delay);
+
+	}
+	
+	private void secondaryTO(final String channel, final String name, final int duration){
+		Timer timer = new Timer();
+		
+		int delay = 2000;
+		
+		timer.schedule(new TimerTask()
+	       {
+	        public void run() {
+	        	Bot.this.sendMessage(channel,".timeout " + name + " " + duration);
 	        }
 	      },delay);
 
