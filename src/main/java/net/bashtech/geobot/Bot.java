@@ -280,16 +280,20 @@ public class Bot extends PircBot {
 				// !steam - All
 				if (msg[0].equalsIgnoreCase("!steam")) {
 					System.out.println("Matched command !steam");
-					try {
+					if(channelInfo.getSteam().length() > 1){
+						try {
 						if(channelInfo.getSteam().length() > 1){
 							SteamData data = this.getSteamData(channelInfo);
 							sendMessage(channel, channelInfo.getBullet() + " Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					}else{
+						sendMessage(channel, channelInfo.getBullet() + " Function not configured.");
 					}
-					//return;
+					
 				}
 				
 				// !game - All
