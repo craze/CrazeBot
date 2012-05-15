@@ -190,6 +190,96 @@ public class Bot extends PircBot {
  						sendMessage(channel, "Channel "+ channel +" parting...");
  						botManager.removeChannel(channel);
  				}
+ 				
+ 				
+				// ********************************************************************************
+				// ********************************** Filters *************************************
+				// ********************************************************************************
+				
+				//Filter feature check
+ 				if(channelInfo.useFilters){
+					// Cap filter
+					int capsNumber = getCapsNumber(message);
+					int capsPercent = getCapsPercent(message);
+					//System.out.println("DEBUG: Message Length= " + message.length());
+					//System.out.println("DEBUG: Caps percent= " + capsPercent);
+					//System.out.println("DEBUG: Caps number= " + capsNumber);
+					if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
+						int warningCount = 0;
+						if(botManager.network.equalsIgnoreCase("jtv")){
+							channelInfo.incWarningCount(sender, FilterType.CAPS);
+							warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
+							System.out.println("Updated warning count: " + warningCount);
+							
+							//this.sendMessage(channel, ".timeout " + sender + " " + getWarningTODuration(warningCount));
+							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+						}else{
+							this.kick(channel, sender, "Too many caps");
+						}
+						if(channelInfo.checkSignKicks())
+							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
+					}
+					
+					// Link filter
+					if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message,channelInfo) ){
+						boolean result = channelInfo.linkPermissionCheck(sender);
+						int warningCount = 0;
+						if(result){
+							sendMessage(channel, "> Link permitted. (" + sender + ")" );
+						}else{
+							if(botManager.network.equalsIgnoreCase("jtv")){
+								channelInfo.incWarningCount(sender, FilterType.LINK);
+								warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
+								System.out.println("Updated warning count: " + warningCount);
+								
+								//this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+							}else{
+								this.kick(channel, sender, "Unauthorized link");
+							}
+							
+							if(channelInfo.checkSignKicks())
+								sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
+						}
+						
+					}
+					
+					//Offensive filter
+					if(!isOp && channelInfo.getFilterOffensive()){
+						if(channelInfo.isOffensive(message)){
+							int warningCount = 0;
+							if(botManager.network.equalsIgnoreCase("jtv")){
+								channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
+								warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
+								
+								//this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+							}else{
+								this.kick(channel, sender, "Offensive language");
+							}
+						}
+					}
+					
+					//Emote filter
+					if(!isOp && channelInfo.getFilterEmotes()){
+						if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
+							int warningCount = 0;
+							if(botManager.network.equalsIgnoreCase("jtv")){
+								channelInfo.incWarningCount(sender, FilterType.EMOTES);
+								warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
+								
+								//this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
+								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+								
+								if(channelInfo.checkSignKicks())
+									sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
+							}
+							
+							
+						}	
+					}
+ 				}
+
 				
 				//Check channel mode.
 				if(channelInfo.getMode() == 0 && !isOwner)
@@ -974,94 +1064,7 @@ public class Bot extends PircBot {
 					System.out.println("Matched command " + msg[0]);
 					sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(msg[0]));
 				}
- 				
-				// ********************************************************************************
-				// ********************************** Filters *************************************
-				// ********************************************************************************
-				
-				//Filter feature check
- 				if(!channelInfo.useFilters)
- 					return;
- 				
-				// Cap filter
- 				int capsNumber = getCapsNumber(message);
- 				int capsPercent = getCapsPercent(message);
- 				//System.out.println("DEBUG: Message Length= " + message.length());
- 				//System.out.println("DEBUG: Caps percent= " + capsPercent);
- 				//System.out.println("DEBUG: Caps number= " + capsNumber);
-				if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
-					int warningCount = 0;
-					if(botManager.network.equalsIgnoreCase("jtv")){
-						channelInfo.incWarningCount(sender, FilterType.CAPS);
-						warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
-						System.out.println("Updated warning count: " + warningCount);
-						
-						this.sendMessage(channel, ".timeout " + sender + " " + getWarningTODuration(warningCount));
-					}else{
-						this.kick(channel, sender, "Too many caps");
-					}
-					if(channelInfo.checkSignKicks())
-						sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
-				}
-				
-				// Link filter
-				if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message,channelInfo) ){
-					boolean result = channelInfo.linkPermissionCheck(sender);
-					int warningCount = 0;
-					if(result){
-						sendMessage(channel, "> Link permitted. (" + sender + ")" );
-					}else{
-						if(botManager.network.equalsIgnoreCase("jtv")){
-							channelInfo.incWarningCount(sender, FilterType.LINK);
-							warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
-							System.out.println("Updated warning count: " + warningCount);
-							
-							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
-							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-						}else{
-							this.kick(channel, sender, "Unauthorized link");
-						}
-						
-						if(channelInfo.checkSignKicks())
-							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
-					}
-					
-				}
-				
-				//Offensive filter
-				if(!isOp && channelInfo.getFilterOffensive()){
-					if(channelInfo.isOffensive(message)){
-						int warningCount = 0;
-						if(botManager.network.equalsIgnoreCase("jtv")){
-							channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
-							warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
-							
-							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
-							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-						}else{
-							this.kick(channel, sender, "Offensive language");
-						}
-					}
-				}
-				
-				//Emote filter
-				if(!isOp && channelInfo.getFilterEmotes()){
-					if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
-						int warningCount = 0;
-						if(botManager.network.equalsIgnoreCase("jtv")){
-							channelInfo.incWarningCount(sender, FilterType.EMOTES);
-							warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
-							
-							this.sendMessage(channel, ".timeout " + sender + " " + this.getWarningTODuration(warningCount));
-							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-							
-							if(channelInfo.checkSignKicks())
-								sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
-						}
-						
-						
-					}	
-				}
+
 	}
 
 
@@ -1285,7 +1288,7 @@ public class Bot extends PircBot {
 	private void secondaryTO(final String channel, final String name, final int duration){
 		Timer timer = new Timer();
 		
-		int delay = 2000;
+		int delay = 1000;
 		
 		timer.schedule(new TimerTask()
 	       {
