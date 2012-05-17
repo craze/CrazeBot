@@ -85,9 +85,7 @@ public class Channel {
 	public Channel(String name, int mode){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
-		
-		this.setMode(0);
-		
+		setMode(mode);
 		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
 	}
@@ -767,8 +765,7 @@ public class Channel {
 		lastfm = config.getString("lastfm");
 		steamID = config.getString("steamID");
 		logChat = Boolean.parseBoolean(config.getString("logChat"));
-		
-		setMode(config.getInt("mode"));
+		mode = config.getInt("mode");
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");
