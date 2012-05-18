@@ -31,39 +31,24 @@ public class Channel {
 	private boolean filterOffensive;
 	private boolean filterEmotes;
 	private int filterEmotesMax;
-	
 	private String topic;
 	private int topicTime;
-	
 	private Set<String> regulars = new HashSet<String>();
-	
 	private Set<String> moderators = new HashSet<String>();
-	
+	private Set<String> owners = new HashSet<String>();
 	private Set<String> permittedUsers = new HashSet<String>();
-	
 	private ArrayList<String> permittedDomains = new ArrayList<String>();
-	
 	public boolean useTopic = true;
 	public boolean useFilters = true;
-	
 	public boolean publicCommands = true;
-	
 	private Poll currentPoll;
-	
 	private Giveaway currentGiveaway;
-	
 	private boolean enableThrow;
-	
 	private boolean signKicks;
-	
 	private boolean announceJoinParts; 
-	
 	private String lastfm;
-	
 	private String steamID;
-	
 	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone
-	
 	private int bulletInt;
 	private char bullet[] = {'>','+', '-', '~'};
 
@@ -413,6 +398,55 @@ public class Channel {
 	
 	//###################################################
 	
+	
+	public boolean isOwner(String name){		
+		synchronized (owners) { 
+			if(owners.contains(name.toLowerCase()))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public void addOwner(String name){
+		synchronized (owners) {
+			owners.add(name.toLowerCase());
+		}
+		
+		String ownersString = "";
+		
+		synchronized (owners) { 
+			for(String s:owners){
+				ownersString += s + ",";
+			}
+		}
+		
+		config.setString("owners", ownersString);
+	}
+	
+	public void removeOwner(String name){
+		synchronized (owners) {
+			if(owners.contains(name.toLowerCase()))
+				owners.remove(name.toLowerCase());
+		}
+		
+		String ownersString = "";
+		
+		synchronized (owners) { 
+			for(String s:owners){
+				ownersString += s + ",";
+			}
+		}
+		
+		config.setString("owners", ownersString);
+	}
+	
+	public Set<String> getOwners(){
+		return owners;
+	}
+	
+	//###################################################
+	
 	public void addPermittedDomain(String name){
 		synchronized (permittedDomains) {
 			permittedDomains.add(name.toLowerCase());
@@ -712,6 +746,9 @@ public class Channel {
 		if(!config.keyExists("moderators")) {
 			config.setString("moderators", "");
 		}
+		if(!config.keyExists("owners")) {
+			config.setString("owners", "");
+		}
 		if(!config.keyExists("useTopic")) {
 			config.setBoolean("useTopic", true);
 		}
@@ -790,6 +827,15 @@ public class Channel {
 			for(int i = 0; i < moderatorsRaw.length; i++){
 				if(moderatorsRaw[i].length() > 1){
 					moderators.add(moderatorsRaw[i].toLowerCase());
+				}
+			}
+		}
+		
+		String[] ownersRaw = config.getString("owners").split(",");
+		synchronized (owners) {
+			for(int i = 0; i < ownersRaw.length; i++){
+				if(ownersRaw[i].length() > 1){
+					owners.add(ownersRaw[i].toLowerCase());
 				}
 			}
 		}

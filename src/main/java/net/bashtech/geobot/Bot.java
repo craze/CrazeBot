@@ -164,6 +164,8 @@ public class Bot extends PircBot {
 					isOwner = true;
 				if(channelInfo.isModerator(sender))
 					isOp = true;
+				if(channelInfo.isOwner(sender))
+					isOwner = true;
 				if(channelInfo.isRegular(sender))
 					isRegular = true;
 				
@@ -852,6 +854,34 @@ public class Bot extends PircBot {
  					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
  						String tempList = channelInfo.getBullet() + " Moderators: ";
  						for(String s:channelInfo.getModerators()){
+ 							tempList += s + ", ";
+ 						}
+ 						sendMessage(channel, tempList);
+ 					}
+ 				}
+ 				
+ 				// !owner - Owner
+ 				if(msg[0].equalsIgnoreCase("!owner")){
+ 					System.out.println("Matched command !owner");
+ 					if(msg.length  > 2 && isOwner){
+ 						if(msg[1].equalsIgnoreCase("add")){
+ 							if(channelInfo.isOwner(msg[2])){
+ 								sendMessage(channel,channelInfo.getBullet() + " User already exists. " + "(" + msg[2] + ")");
+ 							}else{
+ 								channelInfo.addOwner(msg[2]);
+ 								sendMessage(channel,channelInfo.getBullet() + " User added. "+ "(" + msg[2] + ")");
+ 							}
+ 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
+ 							if(channelInfo.isOwner(msg[2])){
+ 								channelInfo.removeOwner(msg[2]);
+ 								sendMessage(channel,channelInfo.getBullet() + " User removed. "+ "(" + msg[2] + ")");
+ 							}else{
+ 								sendMessage(channel,channelInfo.getBullet() + " User does not exist. "+ "(" + msg[2] + ")");
+ 							}
+ 						}
+ 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
+ 						String tempList = channelInfo.getBullet() + " Owners: ";
+ 						for(String s:channelInfo.getOwners()){
  							tempList += s + ", ";
  						}
  						sendMessage(channel, tempList);
