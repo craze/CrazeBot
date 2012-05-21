@@ -198,6 +198,13 @@ public class Bot extends PircBot {
 				// ********************************** Filters *************************************
 				// ********************************************************************************
 				
+ 				//Global banned word filter
+ 				if(!isOp && this.isGlobalBannedWord(message)){
+ 					this.secondaryTO(channel, sender, 600);
+ 					System.out.println("Timed out " + sender + " for global bannded word");
+ 				}
+ 					
+ 				
 				//Filter feature check
  				if(channelInfo.useFilters){
 					// Cap filter
@@ -1282,6 +1289,18 @@ public class Bot extends PircBot {
 		System.out.println("DEBUG: Emote count " + count);
 		return count;
 		
+	}
+	
+	public boolean isGlobalBannedWord(String message){
+
+		for(Pattern reg:botManager.globalBannedWords){
+			Matcher match = reg.matcher(message.toLowerCase());
+			if(match.matches()){
+				System.out.println("Global banned word matched: " + reg.toString());
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private String getWarningText(int count){

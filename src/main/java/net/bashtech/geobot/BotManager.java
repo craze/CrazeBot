@@ -8,11 +8,14 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
@@ -43,7 +46,8 @@ public class BotManager {
 	private PropertiesFile config;
 	private Set<BotModule> modules;
 	private Set<String> tagAdmins;
-	Set<String> emoteSet;
+	List<String> emoteSet;
+	List<Pattern> globalBannedWords;
 	
 
 	public BotManager(){
@@ -53,7 +57,8 @@ public class BotManager {
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
 		tagAdmins = new HashSet<String>();
-		emoteSet = new HashSet<String>();
+		emoteSet = new LinkedList<String>();
+		globalBannedWords = new LinkedList<Pattern>();
 		
 		loadGlobalProfile();
 		
@@ -165,6 +170,7 @@ public class BotManager {
 		}
 		
 		loadEmotes();
+		loadGlobalBannedWords();
 		
 		if(server.length() < 1){
 			System.exit(1);
@@ -407,6 +413,31 @@ public class BotManager {
 				
 				while (in.hasNextLine()){
 					emoteSet.add(in.nextLine().trim());
+			      }
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	}
+	
+	private void loadGlobalBannedWords(){
+		File f = new File("globalbannedwords.cfg");
+		if(!f.exists())
+			try {
+				f.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				Scanner in = new Scanner(f, "UTF-8");
+				
+				while (in.hasNextLine()){
+					String line = ".*" + Pattern.quote(in.nextLine().trim().toLowerCase()) + ".*";
+					System.out.println(line);
+					Pattern tempP = Pattern.compile(line);
+					globalBannedWords.add(tempP);
 			      }
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
