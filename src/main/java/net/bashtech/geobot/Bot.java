@@ -201,7 +201,7 @@ public class Bot extends PircBot {
  				//Global banned word filter
  				if(!isOp && this.isGlobalBannedWord(message)){
  					this.secondaryTO(channel, sender, 600);
- 					System.out.println("Timed out " + sender + " for global bannded word");
+ 					System.out.println("Global banned word timeout: " + sender + " in " + channel + " : " + message);
  				}
  					
  				
