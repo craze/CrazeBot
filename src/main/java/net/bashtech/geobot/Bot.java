@@ -1180,6 +1180,9 @@ public class Bot extends PircBot {
     
 	@Override
 	protected boolean onMessageSend(String target, String message) {
+		if(!botManager.verboseLogging)
+			System.out.println("MESSAGE: " + target + " " + getNick() + " : " + message);
+		
 		Channel channelInfo = botManager.getChannel(target);
 		
 		if(channelInfo != null){
