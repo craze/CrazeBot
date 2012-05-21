@@ -48,6 +48,7 @@ public class BotManager {
 	private Set<String> tagAdmins;
 	List<String> emoteSet;
 	List<Pattern> globalBannedWords;
+	boolean verboseLogging;
 	
 
 	public BotManager(){
@@ -95,7 +96,7 @@ public class BotManager {
 		}
 		
 		if(!config.keyExists("nick")) {
-			config.setString("nick", "ackbot");
+			config.setString("nick", "");
 		}
 		if(!config.keyExists("server")) {
 			config.setString("server", "");
@@ -141,19 +142,21 @@ public class BotManager {
 			config.setString("localAddress", "");
 		}
 		
+		if(!config.keyExists("verboseLogging")) {
+			config.setBoolean("verboseLogging", false);
+		}
+				
 		nick = config.getString("nick");
 		server = config.getString("server");
 		network = config.getString("network");
 		port = Integer.parseInt(config.getString("port"));
 		localAddress = config.getString("localAddress");
 		password = config.getString("password");
-		
 		useGUI = config.getBoolean("useGUI");
-		
 		monitorPings = config.getBoolean("monitorPings");
 		pingInterval = config.getInt("pingInterval");
-
 		publicJoin = config.getBoolean("publicJoin");
+		verboseLogging = config.getBoolean("verboseLogging");
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -179,7 +182,6 @@ public class BotManager {
 	
 	public Channel getChannel(String channel){
 		if(channelList.containsKey(channel.toLowerCase())){
-			//System.out.println("DEBUG: Matched channel");
 
 			return channelList.get(channel.toLowerCase());
 		}else{
