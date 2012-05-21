@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
@@ -1045,6 +1046,18 @@ public class Bot extends PircBot {
 				// ********************************************************************************
 				// **************************** Administration Commands ***************************
 				// ********************************************************************************
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-channels") && isAdmin) {
+ 					sendMessage(channel, channelInfo.getBullet() + " Currently in " + botManager.channelList.size() + " channels.");
+ 					
+ 					String channelString = "";
+ 					for (Map.Entry<String, Channel> entry : botManager.channelList.entrySet())
+ 					{
+ 						channelString += entry.getValue().getChannel() + ", ";
+ 					}
+ 					
+ 					sendMessage(channel, channelInfo.getBullet() + " Chanenls: " + channelString);
+ 				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && isAdmin) {
 
