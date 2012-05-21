@@ -21,7 +21,7 @@ public class ReconnectTimer extends TimerTask{
 	@Override
 	public void run() {
 		
-		System.out.println("Reconnect timer running...");
+		//System.out.println("Reconnect timer running...");
 
 		
 		for (Map.Entry<String, Bot> entry : botList.entrySet())
@@ -44,7 +44,7 @@ public class ReconnectTimer extends TimerTask{
 					System.out.println("Threading execption occured - " + b.getNick() + " " + b.getServer());
 				}
 			}else{
-				System.out.println("INFO: " + b.getServer() + " is connected.");
+				//System.out.println("INFO: " + b.getServer() + " is connected.");
 			}
 		}
 		
