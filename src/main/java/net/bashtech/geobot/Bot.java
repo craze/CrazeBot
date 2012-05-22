@@ -1303,7 +1303,6 @@ public class Bot extends PircBot {
 			      }	
 			}
 		}
-		System.out.println("DEBUG: Emote count " + count);
 		return count;
 		
 	}
