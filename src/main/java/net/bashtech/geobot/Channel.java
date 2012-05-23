@@ -610,6 +610,15 @@ public class Channel {
 		config.setBoolean("signKicks", this.signKicks);
 	}
 	
+	public void setLogging(boolean option){
+		logChat = option;
+		config.setBoolean("logChat", option);
+	}
+	
+	public boolean getLogging(){
+		return logChat;
+	}
+	
 	// ##################################################
 	
 	public boolean checkPermittedDomain(String message){

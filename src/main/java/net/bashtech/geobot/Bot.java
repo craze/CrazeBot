@@ -972,10 +972,10 @@ public class Bot extends PircBot {
  							}
 						}else if(msg[1].equalsIgnoreCase("chatlogging")){
  							if(msg[2].equalsIgnoreCase("on")){
- 								channelInfo.logChat = true;
+ 								channelInfo.setLogging(true);
  								sendMessage(channel, channelInfo.getBullet() + " Chat logging is on");
  							}else if(msg[2].equalsIgnoreCase("off")){
- 								channelInfo.logChat = false;
+ 								channelInfo.setLogging(false);
  								sendMessage(channel, channelInfo.getBullet() + " Chat logging is off");
  							}
 						}
