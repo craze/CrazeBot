@@ -1001,11 +1001,11 @@ public class Bot extends PircBot {
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && botManager.publicJoin) {
  							System.out.println("DEBUG: Matched command !join");
- 							String serverIP = this.getIP(sender + ".jtvirc.com");
- 							if(!tmiServers.contains(serverIP)){
- 								sendMessage(channel, "Sorry, public join is only available for channels using TMI. Your server is " + serverIP + ".");
- 								return;
- 							}
+// 							String serverIP = this.getIP(sender + ".jtvirc.com");
+// 							if(!tmiServers.contains(serverIP)){
+// 								sendMessage(channel, "Sorry, public join is only available for channels using TMI. Your server is " + serverIP + ".");
+// 								return;
+// 							}
 
 							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
 							boolean joinStatus = botManager.addChannel("#" + sender, 2);
