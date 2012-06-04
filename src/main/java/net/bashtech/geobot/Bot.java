@@ -48,7 +48,7 @@ public class Bot extends PircBot {
 		
 		linkPatterns = new Pattern[3];
 		linkPatterns[0] = Pattern.compile(".*http://.*");
-		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be)(\\s+|/|$).*");
+		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in)(\\s+|/|$).*");
 		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
 		
 		tmiServers = new HashSet<String>();
