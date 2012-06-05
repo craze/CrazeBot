@@ -84,7 +84,7 @@ public class Bot extends PircBot {
 	@Override
 	protected void onPrivateMessage(String sender, String login,
 			String hostname, String message) {
-		String[] msg = message.split(" ");
+		String[] msg = message.trim().split(" ");
 		
 		if(msg.length > 0){
 			if(msg[0].equalsIgnoreCase("SPECIALUSER")){
@@ -473,14 +473,10 @@ public class Bot extends PircBot {
  					System.out.println("DEBUG: Matched command !command");
 					if(msg.length < 3 && isOp){
 						this.sendMessage(channel, channelInfo.getBullet() + " !command add/delete name string");
-					}else if(msg.length > 2 && isOp){
+					}else if(msg.length > 3 && isOp){
 						if(msg[1].equalsIgnoreCase("add")){
 							String key = "!" + msg[2];
-							String value = "";
-							
-							for(int i = 3; i < msg.length; i++){
-								value = value + msg[i] + " ";
-							}
+							String value = fuseArray(msg, 3);
 							if(!value.contains(",,")){
 								channelInfo.setCommand(key, value);
 								this.sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(key));
