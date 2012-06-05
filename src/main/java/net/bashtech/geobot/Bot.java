@@ -97,9 +97,15 @@ public class Bot extends PircBot {
 				String user = msg[1];
 				String color = msg[2];
 			}else if(msg[0].equalsIgnoreCase("CLEARCHAT")){
-				String user = msg[1];
-				if(!botManager.verboseLogging)
-					System.out.println("RAW: CLEARCHAT " + user);
+				if(msg.length > 1){
+					String user = msg[1];
+					if(!botManager.verboseLogging)
+						System.out.println("RAW: CLEARCHAT " + user);
+				}else{
+					if(!botManager.verboseLogging)
+						System.out.println("RAW: CLEARCHAT");
+				}
+
 			}
 		}
 	}
