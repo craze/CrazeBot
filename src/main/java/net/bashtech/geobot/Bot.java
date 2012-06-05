@@ -479,8 +479,8 @@ public class Bot extends PircBot {
  					System.out.println("DEBUG: Matched command !command");
 					if(msg.length < 3 && isOp){
 						this.sendMessage(channel, channelInfo.getBullet() + " !command add/delete name string");
-					}else if(msg.length > 3 && isOp){
-						if(msg[1].equalsIgnoreCase("add")){
+					}else if(msg.length > 2 && isOp){
+						if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
 							String key = "!" + msg[2];
 							String value = fuseArray(msg, 3);
 							if(!value.contains(",,")){
