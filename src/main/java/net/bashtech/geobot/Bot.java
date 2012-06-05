@@ -37,14 +37,16 @@ import org.xml.sax.SAXException;
 public class Bot extends PircBot {	
 
 	private BotManager botManager;
+	private Channel channelInfo;
 	private Pattern[] linkPatterns;
 	private int lastPing = -1;
 	private Set<String> tmiServers;
 	private int[] warningTODuration = {10, 30, 60, 600};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
 	
-	public Bot(BotManager bm, String server, int port){
+	public Bot(BotManager bm, String server, int port, Channel channel){
 		botManager = bm;
+		channelInfo = channel;
 		
 		linkPatterns = new Pattern[3];
 		linkPatterns[0] = Pattern.compile(".*http://.*");
@@ -93,6 +95,8 @@ public class Bot extends PircBot {
 				
 				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
 					botManager.addTagAdmin(user);
+				if(tag.equalsIgnoreCase("subscriber"))
+					channelInfo.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
 				String color = msg[2];
@@ -114,8 +118,7 @@ public class Bot extends PircBot {
 				if(!botManager.verboseLogging)
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
-				Channel channelInfo = botManager.getChannel(channel);
-				
+			
 				if(channelInfo == null)
 					return;
 				
@@ -169,7 +172,7 @@ public class Bot extends PircBot {
 					isOp = true;
 				if(channelInfo.isOwner(sender))
 					isOwner = true;
-				if(channelInfo.isRegular(sender))
+				if(channelInfo.isRegular(sender) || channelInfo.isSubscriber(sender))
 					isRegular = true;
 				
 				//Give users all the ranks below them
@@ -1122,6 +1125,9 @@ public class Bot extends PircBot {
 	@Override
 	public void onDisconnect(){
 		//pjTimer.cancel();
+		if(!botManager.channelList.containsKey(channelInfo.getChannel()))
+			return;
+		 
 		lastPing = -1;
 		try {
 			System.out.println("INFO: Internal reconnection: " + this.getServer());
@@ -1143,7 +1149,6 @@ public class Bot extends PircBot {
     public void onJoin(String channel, String sender, String login, String hostname){ 
 
 		
-		Channel channelInfo = botManager.getChannel(channel);
 		
 		if(channelInfo == null)
 			return;
@@ -1160,7 +1165,6 @@ public class Bot extends PircBot {
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
-		Channel channelInfo = botManager.getChannel(channel);
 		
 		if(channelInfo == null)
 			return;
@@ -1183,7 +1187,6 @@ public class Bot extends PircBot {
 		if(!botManager.verboseLogging)
 			System.out.println("MESSAGE: " + target + " " + getNick() + " : " + message);
 		
-		Channel channelInfo = botManager.getChannel(target);
 		
 		if(channelInfo != null){
 			//Call modules

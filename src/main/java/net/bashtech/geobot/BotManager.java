@@ -39,7 +39,6 @@ public class BotManager {
 	int pingInterval;
 	boolean useGUI;
 	BotGUI gui;
-	Map<String,Bot> botList;
 	Map<String,Channel> channelList;
 	Set<String> admins;
 	private Timer pjTimer;
@@ -53,7 +52,6 @@ public class BotManager {
 
 	public BotManager(){
 		BotManager.setInstance(this);
-		botList = new HashMap<String,Bot>();
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
@@ -66,18 +64,18 @@ public class BotManager {
 		if(useGUI){
 			gui = new BotGUI();
 		}
-		
-		botList.put(server, new Bot(this, server, port));
-		
+			
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
 			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
-			botList.get(server).joinChannel(entry.getValue().getChannel());
+			Bot tempBot = new Bot(this, server, port, entry.getValue());
+			tempBot.joinChannel(entry.getValue().getChannel());
+			entry.getValue().setBot(tempBot);
 			System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 		}
 
 		Timer reconnectTimer = new Timer();
-		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
+		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 		System.out.println("Reconnect timer scheduled.");
 		
 		this.autoPartandRejoin();
@@ -206,7 +204,9 @@ public class BotManager {
 		channelList.put(name.toLowerCase(), tempChan);
 
 		System.out.println("DEBUG: Joining channel " + tempChan.getChannel());
-		botList.get(server).joinChannel(tempChan.getChannel());
+		Bot tempBot = new Bot(this, server, port, tempChan);
+		tempBot.joinChannel(tempChan.getChannel());
+		tempChan.setBot(tempBot);
 		System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 
 		writeChannelList();
@@ -220,10 +220,10 @@ public class BotManager {
 		}
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
-		
-		Bot tempBot = botList.get(server);
+		Bot tempBot = tempChan.getBot();
 		tempBot.partChannel(name.toLowerCase());
-		
+		tempBot.disconnect();
+		tempBot.dispose();
 		channelList.remove(name.toLowerCase());
 		
 		writeChannelList();
@@ -235,17 +235,17 @@ public class BotManager {
 			return false;
 		}
 		
+		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		Bot tempBot = botList.get(server);
-		tempBot.partChannel(name);		
+		tempChan.getBot().partChannel(name);		
 		try {
 			Thread.currentThread().sleep(20000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		tempBot.joinChannel(name);
+		tempChan.getBot().joinChannel(name);
 		
 		return true;
 	}
@@ -258,18 +258,18 @@ public class BotManager {
 				continue;
 			
 			System.out.println("DEBUG: Parting channel " + entry.getValue().getChannel());
-			botList.get(server).partChannel(entry.getValue().getChannel());
+			entry.getValue().getBot().partChannel(entry.getValue().getChannel());
 			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
-			botList.get(server).joinChannel(entry.getValue().getChannel());
+			entry.getValue().getBot().joinChannel(entry.getValue().getChannel());
 		}
 
 	}
 	
 	
 	public synchronized void reconnectAllBotsSoft(){
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{
-			Bot temp = entry.getValue();
+			Bot temp = entry.getValue().getBot();
 			System.out.println("DEBUG: Disconnecting " + temp.getServer());
 			temp.disconnect();
 			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
@@ -278,9 +278,9 @@ public class BotManager {
 	
 	@SuppressWarnings("static-access")
 	public synchronized void reconnectAllBotsHard(){
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{
-			Bot temp = entry.getValue();
+			Bot temp = entry.getValue().getBot();
 			System.out.println("DEBUG: Disconnecting " + temp.getServer());
 			temp.disconnect();
 			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
@@ -293,9 +293,9 @@ public class BotManager {
 			e1.printStackTrace();
 		}
 		System.out.println("DEBUG: Done waiting. Kappa");
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{
-			Bot temp = entry.getValue();
+			Bot temp = entry.getValue().getBot();
 			
 			if(temp.isConnected())
 				continue;
@@ -378,9 +378,9 @@ public class BotManager {
 	public void sendGlobal(String message, String sender){
 
 		//System.out.println("DEBUG: Sending global message: " + message);
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
-			Bot tempbot = (Bot)entry.getValue();
+			Bot tempbot = (Bot)entry.getValue().getBot();
 
 			for(String channel: tempbot.getChannels()){
 				if(channelList.get(channel).getMode() == 0)

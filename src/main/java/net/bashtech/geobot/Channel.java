@@ -18,11 +18,10 @@ import java.util.regex.Pattern;
 
 public class Channel {
 	public PropertiesFile config;
+	private Bot _bot;
 	
 	private String channel;
-	
 	private HashMap<String, String> commands = new HashMap<String, String>();
-	
 	private boolean filterCaps;
 	private int filterCapsPercent;
 	private int filterCapsMinCharacters;
@@ -34,6 +33,7 @@ public class Channel {
 	private String topic;
 	private int topicTime;
 	private Set<String> regulars = new HashSet<String>();
+	private Set<String> subscribers = new HashSet<String>();
 	private Set<String> moderators = new HashSet<String>();
 	private Set<String> owners = new HashSet<String>();
 	private Set<String> permittedUsers = new HashSet<String>();
@@ -78,6 +78,14 @@ public class Channel {
 
 	public String getChannel() {
 		return channel;
+	}
+	
+	public Bot getBot() {
+		return _bot;
+	}
+	
+	public void setBot(Bot bot) {
+		_bot = bot;
 	}
 	
 	
@@ -346,6 +354,14 @@ public class Channel {
 		}
 		
 		return false;
+	}
+	
+	public boolean isSubscriber(String name){
+		return subscribers.contains(name.toLowerCase());
+	}
+	
+	public void addSubscriber(String name){
+		subscribers.add(name.toLowerCase());
 	}
 	
 	//###################################################
