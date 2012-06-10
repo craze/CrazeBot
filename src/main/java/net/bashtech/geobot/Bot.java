@@ -7,6 +7,10 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -376,7 +380,8 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("DEBUG: Matched command !uptime");
 					try {
-						sendMessage(channel, channelInfo.getBullet() + " Streaming since " + this.getStreamList("up_time", channelInfo) + " PST.");
+						String uptime = this.getStreamList("up_time", channelInfo);
+						sendMessage(channel, channelInfo.getBullet() + " Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
 					} catch (Exception e) {
 						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
 					}
@@ -1493,7 +1498,6 @@ public class Bot extends PircBot {
 		}
 		
 		return "";
-
 	}
 	
 	private String getStreamList(String key, Channel channelInfo) throws Exception{
@@ -1521,6 +1525,20 @@ public class Bot extends PircBot {
 		
 		return "";
 
+	}
+	
+	public String getTimeStreaming(String uptime){
+		DateFormat format = new SimpleDateFormat("EEE MMMM dd HH:mm:ss yyyy");
+		format.setTimeZone(java.util.TimeZone.getTimeZone("US/Pacific"));
+		try {
+			Date then = format.parse(uptime);
+			return this.getTimeTilNow(then);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return "Error getting date.";
+		
 	}
 	
 	private String getGame(Channel channelInfo){
@@ -1632,6 +1650,29 @@ public class Bot extends PircBot {
 		
 		return fused.trim();
 	
+	}
+	
+	public String getTimeTilNow(Date date){
+		long difference = (long) (System.currentTimeMillis()/1000) - (date.getTime()/1000);
+		String returnString = "";
+		
+		if(difference >= 86400){
+			int days = (int)(difference / 86400);
+			returnString += days + "d ";
+			difference -= days * 86400;
+		}
+		if(difference >= 3600){
+			int hours = (int)(difference / 3600 );
+			returnString += hours + "h ";
+			difference -= hours * 3600;
+		}
+	
+			int seconds = (int)(difference / 60 );
+			returnString += seconds + "m";
+			difference -= seconds * 60;
+		
+		
+		return returnString;
 	}
 
 }
