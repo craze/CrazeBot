@@ -7,6 +7,10 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -347,27 +351,39 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("DEBUG: Matched command !viewers");
 					try {
-						sendMessage(channel, channelInfo.getBullet() + " " + this.getViewers(channelInfo) + " viewers.");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						sendMessage(channel, channelInfo.getBullet() + " " + this.getStreamList("stream_count", channelInfo) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
+					} catch (Exception e) {
+						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
 					}
 					//return;
 				}
 				
-//				// !bitrate - All
-//				if (msg[0].equalsIgnoreCase("!bitrate")) {
-//					if(!botManager.network.equalsIgnoreCase("jtv"))
-//						return;
-//					System.out.println("DEBUG: Matched command !bitrate");
-//					try {
-//						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getBitRate(channelInfo) + " Kbps.");
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					//return;
-//				}
+				// !bitrate - All
+				if (msg[0].equalsIgnoreCase("!bitrate")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("DEBUG: Matched command !bitrate");
+					try {
+						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getStreamList("video_bitrate", channelInfo) + " Kbps.");
+					} catch (Exception e) {
+						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
+					}
+					//return;
+				}
+				
+				// !uptime - All
+				if (msg[0].equalsIgnoreCase("!uptime")) {
+					if(!botManager.network.equalsIgnoreCase("jtv"))
+						return;
+					System.out.println("DEBUG: Matched command !uptime");
+					try {
+						String uptime = this.getStreamList("up_time", channelInfo);
+						sendMessage(channel, channelInfo.getBullet() + " Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
+					} catch (Exception e) {
+						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
+					}
+					//return;
+				}
 				
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
@@ -1379,9 +1395,6 @@ public class Bot extends PircBot {
 			
 			channelInfo.getGiveaway().getTimer().schedule(new giveawayTimer(channelInfo),delay);
 		}
-		
-		
-
 	}
 
 	private int getViewers(Channel channelInfo) throws IOException{
@@ -1399,22 +1412,6 @@ public class Bot extends PircBot {
 		
 		return data.viewers_count;
 	}
-	
-//	private int getBitRate(Channel channelInfo) throws IOException{
-//		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
-//		URLConnection conn = url.openConnection();
-//		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-//		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-//		String jsonIn = "";
-//		while(d.ready())
-//		{
-//			jsonIn = d.readLine();
-//		}
-//		
-//		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
-//		
-//		return data.average_bitrate;
-//	}
 	
 	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
 		if(channelInfo.getLastfm().length() < 1)
@@ -1480,6 +1477,47 @@ public class Bot extends PircBot {
 		
 		return "";
 
+	}
+	
+	private String getStreamList(String key, Channel channelInfo) throws Exception{
+		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getChannel().substring(1));
+		URLConnection uc = feedSource.openConnection();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(uc.getInputStream());
+		doc.getDocumentElement().normalize();
+
+		NodeList nList = doc.getElementsByTagName("stream");
+		if(nList.getLength() < 1) 
+			throw new Exception();
+ 
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+ 
+		   Node nNode = nList.item(temp);
+		   if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		      Element eElement = (Element) nNode;
+		      
+		      return getTagValue(key, eElement);
+ 
+		   }
+		}
+		
+		return "";
+
+	}
+	
+	public String getTimeStreaming(String uptime){
+		DateFormat format = new SimpleDateFormat("EEE MMMM dd HH:mm:ss yyyy");
+		format.setTimeZone(java.util.TimeZone.getTimeZone("US/Pacific"));
+		try {
+			Date then = format.parse(uptime);
+			return this.getTimeTilNow(then);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return "Error getting date.";
+		
 	}
 	
 	private String getGame(Channel channelInfo){
@@ -1591,6 +1629,29 @@ public class Bot extends PircBot {
 		
 		return fused.trim();
 	
+	}
+	
+	public String getTimeTilNow(Date date){
+		long difference = (long) (System.currentTimeMillis()/1000) - (date.getTime()/1000);
+		String returnString = "";
+		
+		if(difference >= 86400){
+			int days = (int)(difference / 86400);
+			returnString += days + "d ";
+			difference -= days * 86400;
+		}
+		if(difference >= 3600){
+			int hours = (int)(difference / 3600 );
+			returnString += hours + "h ";
+			difference -= hours * 3600;
+		}
+	
+			int seconds = (int)(difference / 60 );
+			returnString += seconds + "m";
+			difference -= seconds * 60;
+		
+		
+		return returnString;
 	}
 
 }
