@@ -354,7 +354,7 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("DEBUG: Matched command !viewers");
 					try {
-						sendMessage(channel, channelInfo.getBullet() + " " + this.getStreamList("stream_count", channelInfo) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
+						sendMessage(channel, channelInfo.getBullet() + " " + this.getStreamList("channel_count", channelInfo) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
 					} catch (Exception e) {
 						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
 					}
