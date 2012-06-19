@@ -333,6 +333,12 @@ public class Bot extends PircBot {
 				// ********************************* Commands *************************************
 				// ********************************************************************************
 				
+				//Command cooldown check
+				if(!isRegular && msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
+					System.out.println("DEBUG: Command " + msg[0] + " is on cooldown.");
+					return;
+				}
+				
 				// !time - All
 				if (msg[0].equalsIgnoreCase("!time")) {
 						System.out.println("DEBUG: Matched command !time");

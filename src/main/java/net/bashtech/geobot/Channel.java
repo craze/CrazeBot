@@ -58,6 +58,8 @@ public class Channel {
 	Map<String,EnumMap<FilterType, Integer>> warningCount;
 	Map<String, Long> warningTime;
 	
+	Map<String, Long> commandCooldown;
+	
 	public boolean logChat;
 		
 	public Channel(String name){
@@ -65,14 +67,12 @@ public class Channel {
 		loadProperties(name);
 		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
+		commandCooldown = new HashMap<String, Long>();
 	}
 	
 	public Channel(String name, int mode){
-		config = new PropertiesFile(name+".properties");
-		loadProperties(name);
+		this(name);
 		setMode(mode);
-		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
-		warningTime = new HashMap<String, Long>();
 	}
 
 
@@ -720,6 +720,29 @@ public class Channel {
 			}
 		}
 
+	}
+	
+	private void registerCommandUsage(String command){
+		synchronized (commandCooldown) {
+			commandCooldown.put(command.toLowerCase(), getTime());
+		}
+	}
+	
+	public boolean onCooldown(String command){
+		command = command.toLowerCase();
+		if(commandCooldown.containsKey(command)){
+			long lastUse = commandCooldown.get(command);
+			if((getTime() - lastUse) > 30){
+				//Over
+				return false;
+			}else{
+				//Not Over
+				return true;
+			}
+		}else{
+			registerCommandUsage(command);
+			return false;
+		}
 	}
 
 	private void loadProperties(String name){
