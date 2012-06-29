@@ -237,15 +237,20 @@ public class BotManager {
 		
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
-		
-		tempChan.getBot().partChannel(name);		
 		try {
+			tempChan.getBot().reconnect();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		/*try {
 			Thread.currentThread().sleep(20000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		tempChan.getBot().joinChannel(name);
+		tempChan.getBot().joinChannel(name);*/
 		
 		return true;
 	}
