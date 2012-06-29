@@ -238,6 +238,7 @@ public class BotManager {
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		try {
+			tempChan.getBot().disconnect();
 			tempChan.getBot().reconnect();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
