@@ -448,7 +448,7 @@ public class Bot extends PircBot {
 					String status = this.getStatus(channelInfo);
 					
 					if(status.length() > 0){
-						sendMessage(channel, channelInfo.getBullet() + " Current status: " + status);
+						sendMessage(channel, channelInfo.getBullet() + " " + status);
 					}else{
 						sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
 
@@ -482,7 +482,12 @@ public class Bot extends PircBot {
 					System.out.println("DEBUG: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							sendMessage(channel, channelInfo.getBullet() + " No topic is set.");
+							String status = this.getStatus(channelInfo);
+							if(status.length() > 0)
+								sendMessage(channel, channelInfo.getBullet() + " " + status);
+							else
+								sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
+							
 						}else{
 							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
