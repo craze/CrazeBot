@@ -458,7 +458,7 @@ public class Bot extends PircBot {
 				}
 				
 				// !{botname} - All
-				if (msg[0].equalsIgnoreCase("!" + this.getNick()) && (isRegular || isOp)) {
+				if ((msg[0].equalsIgnoreCase("!" + this.getNick()) || msg[0].equalsIgnoreCase("!commands")) && (isRegular || isOp)) {
 					System.out.println("DEBUG: Matched command !" + this.getNick());
 					sendMessage(channel, channelInfo.getBullet() + " Commands: " + channelInfo.getCommandList());
 
