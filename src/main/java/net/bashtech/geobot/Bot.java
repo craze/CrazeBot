@@ -373,7 +373,7 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("DEBUG: Matched command !bitrate");
 					try {
-						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getStreamList("video_bitrate", channelInfo) + " Kbps.");
+						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + Math.floor(Double.parseDouble(this.getStreamList("video_bitrate", channelInfo))) + " Kbps.");
 					} catch (Exception e) {
 						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
 					}
