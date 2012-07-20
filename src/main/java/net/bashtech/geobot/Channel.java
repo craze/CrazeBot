@@ -51,6 +51,7 @@ public class Channel {
 	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone
 	private int bulletInt;
 	private char bullet[] = {'>','+', '-', '~'};
+	Raffle raffle;
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();

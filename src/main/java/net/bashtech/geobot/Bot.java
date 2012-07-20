@@ -621,6 +621,45 @@ public class Bot extends PircBot {
 					}
 				}
 				
+				// !raffle - Ops
+				if((msg[0].equalsIgnoreCase("!raffle"))){
+					System.out.println("DEBUG: Matched command !raffle");
+					if(msg.length >= 2  && isOp){
+						if(msg[1].equalsIgnoreCase("enable")){
+							if(channelInfo.raffle == null){
+								channelInfo.raffle = new Raffle();
+							}
+							channelInfo.raffle.setEnabled(true);
+							
+							sendMessage(channel, channelInfo.getBullet() + " Raffle enabled.");
+						}else if(msg[1].equalsIgnoreCase("disable")){
+							if(channelInfo.raffle != null){
+								channelInfo.raffle.setEnabled(false);
+							}
+							
+							sendMessage(channel, channelInfo.getBullet() + " Raffle disabled.");
+						}else if(msg[1].equalsIgnoreCase("reset")){ 
+							if(channelInfo.raffle != null){
+								channelInfo.raffle.reset();
+							}
+							
+							sendMessage(channel, channelInfo.getBullet() + " Raffle entries cleared.");
+						}else if(msg[1].equalsIgnoreCase("winner")){
+							if(channelInfo.raffle != null){
+								sendMessage(channel, channelInfo.getBullet() + " Winner is " + channelInfo.raffle.pickWinner() + "!");
+							}else{
+								sendMessage(channel, channelInfo.getBullet() + " No raffle history found.");
+							}
+							
+							
+						}
+					}else{
+						if(channelInfo.raffle != null){
+							channelInfo.raffle.enter(sender);
+						}
+					}
+				}
+				
 				// !random - Ops
 				if(msg[0].equalsIgnoreCase("!random")&& isOp){
 					System.out.println("DEBUG: Matched command !random");
