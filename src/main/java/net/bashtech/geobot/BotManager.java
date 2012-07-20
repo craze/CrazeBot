@@ -78,7 +78,7 @@ public class BotManager {
 		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 		System.out.println("Reconnect timer scheduled.");
 		
-		this.autoPartandRejoin();
+		//this.autoPartandRejoin();
 		
 		// Load modules
 		this.registerModule(new Logger());
