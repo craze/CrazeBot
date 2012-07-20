@@ -44,6 +44,10 @@ public class Raffle {
 		entries.clear();
 	}
 	
+	public int count(){
+		return entries.size();
+	}
+	
 	private boolean checkIfEntered(String name){
 		for(String entry : entries){
 			if(entry.equalsIgnoreCase(name)){

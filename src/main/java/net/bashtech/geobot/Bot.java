@@ -644,6 +644,12 @@ public class Bot extends PircBot {
 							}
 							
 							sendMessage(channel, channelInfo.getBullet() + " Raffle entries cleared.");
+						}else if(msg[1].equalsIgnoreCase("count")){ 
+							if(channelInfo.raffle != null){
+								sendMessage(channel, channelInfo.getBullet() + " Raffle has " + channelInfo.raffle.count() + " entries.");
+							}else{
+								sendMessage(channel, channelInfo.getBullet() + " Raffle has 0 entries.");
+							}	
 						}else if(msg[1].equalsIgnoreCase("winner")){
 							if(channelInfo.raffle != null){
 								sendMessage(channel, channelInfo.getBullet() + " Winner is " + channelInfo.raffle.pickWinner() + "!");
