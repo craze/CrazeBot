@@ -49,9 +49,12 @@ public class BotManager {
 	List<Pattern> globalBannedWords;
 	boolean verboseLogging;
 	
+	private String _propertiesFile;
+	
 
-	public BotManager(){
+	public BotManager(String propertiesFile){
 		BotManager.setInstance(this);
+		_propertiesFile = propertiesFile;
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
@@ -86,7 +89,8 @@ public class BotManager {
 	
 
 	private synchronized void loadGlobalProfile(){
-		config = new PropertiesFile("global.properties");
+		config = new PropertiesFile(_propertiesFile);
+		System.out.println("DEBUG: Reading global file > " + _propertiesFile);
 		try {
 			config.load();
 		} catch (IOException e) {

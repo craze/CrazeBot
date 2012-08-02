@@ -760,7 +760,7 @@ public class Channel {
 			config.setBoolean("filterCaps", false);
 		}
 		if(!config.keyExists("filterOffensive")) {
-			config.setBoolean("filterOffensive", false);
+			config.setBoolean("filterOffensive", true);
 		}
 		if(!config.keyExists("filterCapsPercent")) {
 			config.setInt("filterCapsPercent", 50);
