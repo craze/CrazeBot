@@ -65,7 +65,7 @@ public class Bot extends PircBot {
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
-		this.setVersion("2.0");
+		this.setVersion("3.0");
 		
 		this.setVerbose(botManager.verboseLogging);
 		try {
@@ -90,6 +90,7 @@ public class Bot extends PircBot {
 	@Override
 	protected void onPrivateMessage(String sender, String login,
 			String hostname, String message) {
+		
 		String[] msg = message.trim().split(" ");
 		
 		if(msg.length > 0){
@@ -99,7 +100,7 @@ public class Bot extends PircBot {
 				
 				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
 					botManager.addTagAdmin(user);
-				if(tag.equalsIgnoreCase("subscriber"))
+				if(botManager.mode == 1 && tag.equalsIgnoreCase("subscriber"))
 					channelInfo.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
@@ -129,8 +130,9 @@ public class Bot extends PircBot {
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
 			
-				if(channelInfo == null)
-					return;
+				if(channelInfo == null){
+					channelInfo = botManager.getChannel(channel);
+				}
 				
 				//Call modules
 				for(BotModule b:botManager.getModules()){
@@ -1170,15 +1172,15 @@ public class Bot extends PircBot {
  					botManager.rejoinChannels();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-softreconnect") && isAdmin) {
+ 				if (msg[0].equalsIgnoreCase("!bm-reconnect") && isAdmin) {
  					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
  					botManager.reconnectAllBotsSoft();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
- 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
- 					botManager.reconnectAllBotsHard();
- 				}
+// 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
+// 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
+// 					botManager.reconnectAllBotsHard();
+// 				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
  					botManager.sendGlobal(message.substring(11), sender);
