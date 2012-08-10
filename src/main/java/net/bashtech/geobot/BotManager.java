@@ -48,7 +48,7 @@ public class BotManager {
 	List<String> emoteSet;
 	List<Pattern> globalBannedWords;
 	boolean verboseLogging;
-	public int mode;
+	public int botMode;
 	Bot singleBot;
 	
 	private String _propertiesFile;
@@ -70,7 +70,7 @@ public class BotManager {
 			gui = new BotGUI();
 		}
 		
-		if(mode == 0){
+		if(botMode == 0){
 			//Single
 			singleBot = new Bot(this, server, port, null);
 			for (Map.Entry<String, Channel> entry : channelList.entrySet())
@@ -80,7 +80,7 @@ public class BotManager {
 				entry.getValue().setBot(singleBot);
 				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
 			}			
-		}else if(mode == 1){
+		}else if(botMode == 1){
 			//Multi
 			for (Map.Entry<String, Channel> entry : channelList.entrySet())
 			{	
@@ -180,7 +180,9 @@ public class BotManager {
 		pingInterval = config.getInt("pingInterval");
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
-		mode = config.getInt("mode");
+		botMode = config.getInt("mode");
+		System.out.println("DEBUG: Mode = " + botMode);
+
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -198,7 +200,7 @@ public class BotManager {
 		loadEmotes();
 		loadGlobalBannedWords();
 		
-		if(server.length() < 1 && mode == 0){
+		if(server.length() < 1){
 			System.exit(1);
 		}
 	}
@@ -229,12 +231,12 @@ public class BotManager {
 		channelList.put(name.toLowerCase(), tempChan);
 
 		System.out.println("DEBUG: Joining channel " + tempChan.getChannel());
-		
-		if(mode == 0){
+		System.out.println("DEBUG: Mode = " + mode);
+		if(botMode == 0){
 			//Single
 			singleBot.joinChannel(tempChan.getChannel());
 			tempChan.setBot(singleBot);
-		}else if(mode == 1){
+		}else if(botMode == 1){
 			//Multi
 			Bot tempBot = new Bot(this, server, port, tempChan);
 			tempBot.joinChannel(tempChan.getChannel());
@@ -255,10 +257,10 @@ public class BotManager {
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		if(mode == 0){
+		if(botMode == 0){
 			//Single
 			singleBot.partChannel(name.toLowerCase());
-		}else if(mode == 1){
+		}else if(botMode == 1){
 			//Multi
 			Bot tempBot = tempChan.getBot();
 			tempBot.partChannel(name.toLowerCase());
@@ -280,11 +282,11 @@ public class BotManager {
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		if(mode == 0){
+		if(botMode == 0){
 			//Single
 			singleBot.partChannel(tempChan.getChannel());
 			singleBot.joinChannel(tempChan.getChannel());
-		}else if(mode == 1){
+		}else if(botMode == 1){
 			//Multi
 			try {
 				tempChan.getBot().disconnect();
@@ -315,10 +317,10 @@ public class BotManager {
 	
 	
 	public synchronized void reconnectAllBotsSoft(){
-		if(mode == 0){
+		if(botMode == 0){
 			//Single
 			singleBot.disconnect();
-		}else if(mode == 1){
+		}else if(botMode == 1){
 			//Multi
 			for (Map.Entry<String, Channel> entry : channelList.entrySet())
 			{

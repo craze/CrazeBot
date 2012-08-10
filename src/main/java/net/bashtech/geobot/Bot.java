@@ -100,7 +100,7 @@ public class Bot extends PircBot {
 				
 				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
 					botManager.addTagAdmin(user);
-				if(botManager.mode == 1 && tag.equalsIgnoreCase("subscriber"))
+				if(botManager.botMode == 1 && tag.equalsIgnoreCase("subscriber"))
 					channelInfo.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
@@ -1201,7 +1201,7 @@ public class Bot extends PircBot {
 	@Override
 	public void onDisconnect(){
 		//pjTimer.cancel();
-		if(!botManager.channelList.containsKey(channelInfo.getChannel()))
+		if(botManager.botMode == 1 && !botManager.channelList.containsKey(channelInfo.getChannel()))
 			return;
 		 
 		lastPing = -1;
