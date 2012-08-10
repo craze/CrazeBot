@@ -17,7 +17,12 @@ public class Main {
 	 */
 
 	public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
-		BotManager bm = new BotManager();
+		String propertiesFile = "global.properties";
+		if(args.length > 0){
+			propertiesFile = args[0];
+		}
+		
+		BotManager bm = new BotManager(propertiesFile);
 	}
 
 }

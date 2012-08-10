@@ -138,6 +138,7 @@ public abstract class PircBot implements ReplyConstants {
         // Clear everything we may have know about channels.
         this.removeAllChannels();
         
+        //*************************************************************************************************
         // Connect to the server.
         String localAddress = BotManager.getInstance().getLocalAddress();
         Socket socket;
@@ -149,7 +150,7 @@ public abstract class PircBot implements ReplyConstants {
         	System.out.println("Attempting to bind to " + localAddr.toString() + ":" + bindPort);
         	socket =  new Socket(hostname, port, localAddr, bindPort);
         }
-
+        //***********************************************************************************************
         this.log("*** Connected to server " + this.getServer() +".");
         
         _inetAddress = socket.getLocalAddress();

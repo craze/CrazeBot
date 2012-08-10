@@ -41,14 +41,16 @@ import org.xml.sax.SAXException;
 public class Bot extends PircBot {	
 
 	private BotManager botManager;
+	private Channel channelInfo;
 	private Pattern[] linkPatterns;
 	private int lastPing = -1;
 	private Set<String> tmiServers;
 	private int[] warningTODuration = {10, 30, 60, 600};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
 	
-	public Bot(BotManager bm, String server, int port){
+	public Bot(BotManager bm, String server, int port, Channel channel){
 		botManager = bm;
+		channelInfo = channel;
 		
 		linkPatterns = new Pattern[3];
 		linkPatterns[0] = Pattern.compile(".*http://.*");
@@ -63,7 +65,7 @@ public class Bot extends PircBot {
 		
 		this.setName(bm.nick);
 		this.setLogin("GeoBot");
-		this.setVersion("2.0");
+		this.setVersion("3.0");
 		
 		this.setVerbose(botManager.verboseLogging);
 		try {
@@ -88,6 +90,7 @@ public class Bot extends PircBot {
 	@Override
 	protected void onPrivateMessage(String sender, String login,
 			String hostname, String message) {
+
 		String[] msg = message.trim().split(" ");
 		
 		if(msg.length > 0){
@@ -97,6 +100,8 @@ public class Bot extends PircBot {
 				
 				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
 					botManager.addTagAdmin(user);
+				if(botManager.botMode == 1 && tag.equalsIgnoreCase("subscriber"))
+					channelInfo.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
 				String color = msg[2];
@@ -124,10 +129,10 @@ public class Bot extends PircBot {
 				if(!botManager.verboseLogging)
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
-				Channel channelInfo = botManager.getChannel(channel);
-				
-				if(channelInfo == null)
-					return;
+			
+				if(channelInfo == null){
+					channelInfo = botManager.getChannel(channel);
+				}
 				
 				//Call modules
 				for(BotModule b:botManager.getModules()){
@@ -179,7 +184,7 @@ public class Bot extends PircBot {
 					isOp = true;
 				if(channelInfo.isOwner(sender))
 					isOwner = true;
-				if(channelInfo.isRegular(sender))
+				if(channelInfo.isRegular(sender) || channelInfo.isSubscriber(sender))
 					isRegular = true;
 				
 				//Give users all the ranks below them
@@ -330,6 +335,12 @@ public class Bot extends PircBot {
 				// ********************************* Commands *************************************
 				// ********************************************************************************
 				
+				//Command cooldown check
+				if(!isRegular && msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
+					System.out.println("DEBUG: Command " + msg[0] + " is on cooldown.");
+					return;
+				}
+				
 				// !time - All
 				if (msg[0].equalsIgnoreCase("!time")) {
 						System.out.println("DEBUG: Matched command !time");
@@ -351,7 +362,7 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("DEBUG: Matched command !viewers");
 					try {
-						sendMessage(channel, channelInfo.getBullet() + " " + this.getStreamList("stream_count", channelInfo) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
+						sendMessage(channel, channelInfo.getBullet() + " " + this.getStreamList("channel_count", channelInfo) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
 					} catch (Exception e) {
 						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
 					}
@@ -364,7 +375,7 @@ public class Bot extends PircBot {
 						return;
 					System.out.println("DEBUG: Matched command !bitrate");
 					try {
-						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + this.getStreamList("video_bitrate", channelInfo) + " Kbps.");
+						sendMessage(channel, channelInfo.getBullet() + " Streaming at " + Math.floor(Double.parseDouble(this.getStreamList("video_bitrate", channelInfo))) + " Kbps.");
 					} catch (Exception e) {
 						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
 					}
@@ -439,7 +450,7 @@ public class Bot extends PircBot {
 					String status = this.getStatus(channelInfo);
 					
 					if(status.length() > 0){
-						sendMessage(channel, channelInfo.getBullet() + " Current status: " + status);
+						sendMessage(channel, channelInfo.getBullet() + " " + status);
 					}else{
 						sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
 
@@ -449,7 +460,7 @@ public class Bot extends PircBot {
 				}
 				
 				// !{botname} - All
-				if (msg[0].equalsIgnoreCase("!" + this.getNick()) && (isRegular || isOp)) {
+				if ((msg[0].equalsIgnoreCase("!" + this.getNick()) || msg[0].equalsIgnoreCase("!commands")) && (isRegular || isOp)) {
 					System.out.println("DEBUG: Matched command !" + this.getNick());
 					sendMessage(channel, channelInfo.getBullet() + " Commands: " + channelInfo.getCommandList());
 
@@ -473,7 +484,12 @@ public class Bot extends PircBot {
 					System.out.println("DEBUG: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							sendMessage(channel, channelInfo.getBullet() + " No topic is set.");
+							String status = this.getStatus(channelInfo);
+							if(status.length() > 0)
+								sendMessage(channel, channelInfo.getBullet() + " " + status);
+							else
+								sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
+							
 						}else{
 							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
@@ -604,6 +620,51 @@ public class Bot extends PircBot {
 							}
 						
 					   }
+					}
+				}
+				
+				// !raffle - Ops
+				if((msg[0].equalsIgnoreCase("!raffle"))){
+					System.out.println("DEBUG: Matched command !raffle");
+					if(msg.length >= 2  && isOp){
+						if(msg[1].equalsIgnoreCase("enable")){
+							if(channelInfo.raffle == null){
+								channelInfo.raffle = new Raffle();
+							}
+							channelInfo.raffle.setEnabled(true);
+							
+							sendMessage(channel, channelInfo.getBullet() + " Raffle enabled.");
+						}else if(msg[1].equalsIgnoreCase("disable")){
+							if(channelInfo.raffle != null){
+								channelInfo.raffle.setEnabled(false);
+							}
+							
+							sendMessage(channel, channelInfo.getBullet() + " Raffle disabled.");
+						}else if(msg[1].equalsIgnoreCase("reset")){ 
+							if(channelInfo.raffle != null){
+								channelInfo.raffle.reset();
+							}
+							
+							sendMessage(channel, channelInfo.getBullet() + " Raffle entries cleared.");
+						}else if(msg[1].equalsIgnoreCase("count")){ 
+							if(channelInfo.raffle != null){
+								sendMessage(channel, channelInfo.getBullet() + " Raffle has " + channelInfo.raffle.count() + " entries.");
+							}else{
+								sendMessage(channel, channelInfo.getBullet() + " Raffle has 0 entries.");
+							}	
+						}else if(msg[1].equalsIgnoreCase("winner")){
+							if(channelInfo.raffle != null){
+								sendMessage(channel, channelInfo.getBullet() + " Winner is " + channelInfo.raffle.pickWinner() + "!");
+							}else{
+								sendMessage(channel, channelInfo.getBullet() + " No raffle history found.");
+							}
+							
+							
+						}
+					}else{
+						if(channelInfo.raffle != null){
+							channelInfo.raffle.enter(sender);
+						}
 					}
 				}
 				
@@ -1111,19 +1172,19 @@ public class Bot extends PircBot {
  					botManager.rejoinChannels();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-softreconnect") && isAdmin) {
+ 				if (msg[0].equalsIgnoreCase("!bm-reconnect") && isAdmin) {
  					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
  					botManager.reconnectAllBotsSoft();
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
- 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
- 					botManager.reconnectAllBotsHard();
- 				}
- 				
-// 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
-// 					botManager.sendGlobal(message.substring(11), sender);
+// 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
+// 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
+// 					botManager.reconnectAllBotsHard();
 // 				}
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
+ 					botManager.sendGlobal(message.substring(11), sender);
+ 				}
  				
 				// ********************************************************************************
 				// ***************************** Info/Catch-all Command ***************************
@@ -1140,6 +1201,9 @@ public class Bot extends PircBot {
 	@Override
 	public void onDisconnect(){
 		//pjTimer.cancel();
+		if(botManager.botMode == 1 && !botManager.channelList.containsKey(channelInfo.getChannel()))
+			return;
+		 
 		lastPing = -1;
 		try {
 			System.out.println("INFO: Internal reconnection: " + this.getServer());
@@ -1161,7 +1225,6 @@ public class Bot extends PircBot {
     public void onJoin(String channel, String sender, String login, String hostname){ 
 
 		
-		Channel channelInfo = botManager.getChannel(channel);
 		
 		if(channelInfo == null)
 			return;
@@ -1178,7 +1241,6 @@ public class Bot extends PircBot {
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
-		Channel channelInfo = botManager.getChannel(channel);
 		
 		if(channelInfo == null)
 			return;
@@ -1201,7 +1263,6 @@ public class Bot extends PircBot {
 		if(!botManager.verboseLogging)
 			System.out.println("MESSAGE: " + target + " " + getNick() + " : " + message);
 		
-		Channel channelInfo = botManager.getChannel(target);
 		
 		if(channelInfo != null){
 			//Call modules
@@ -1476,7 +1537,6 @@ public class Bot extends PircBot {
 		}
 		
 		return "";
-
 	}
 	
 	private String getStreamList(String key, Channel channelInfo) throws Exception{

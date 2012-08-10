@@ -39,7 +39,6 @@ public class BotManager {
 	int pingInterval;
 	boolean useGUI;
 	BotGUI gui;
-	Map<String,Bot> botList;
 	Map<String,Channel> channelList;
 	Set<String> admins;
 	private Timer pjTimer;
@@ -49,11 +48,15 @@ public class BotManager {
 	List<String> emoteSet;
 	List<Pattern> globalBannedWords;
 	boolean verboseLogging;
+	public int botMode;
+	Bot singleBot;
+	
+	private String _propertiesFile;
 	
 
-	public BotManager(){
+	public BotManager(String propertiesFile){
 		BotManager.setInstance(this);
-		botList = new HashMap<String,Bot>();
+		_propertiesFile = propertiesFile;
 		channelList = new HashMap<String,Channel>();
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
@@ -67,20 +70,35 @@ public class BotManager {
 			gui = new BotGUI();
 		}
 		
-		botList.put(server, new Bot(this, server, port));
-		
-		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-		{	
-			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
-			botList.get(server).joinChannel(entry.getValue().getChannel());
-			System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
+		if(botMode == 0){
+			//Single
+			singleBot = new Bot(this, server, port, null);
+			for (Map.Entry<String, Channel> entry : channelList.entrySet())
+			{	
+				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
+				singleBot.joinChannel(entry.getValue().getChannel());
+				entry.getValue().setBot(singleBot);
+				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
+			}			
+		}else if(botMode == 1){
+			//Multi
+			for (Map.Entry<String, Channel> entry : channelList.entrySet())
+			{	
+				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
+				Bot tempBot = new Bot(this, server, port, entry.getValue());
+				tempBot.joinChannel(entry.getValue().getChannel());
+				entry.getValue().setBot(tempBot);
+				System.out.println("DEBUG: Joined channel " + entry.getValue().getChannel());
+			}
+		}else{
+			System.exit(1);
 		}
-
+		
 		Timer reconnectTimer = new Timer();
-		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(botList), 30 * 1000, 30 * 1000);
+		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 		System.out.println("Reconnect timer scheduled.");
 		
-		this.autoPartandRejoin();
+		//this.autoPartandRejoin();
 		
 		// Load modules
 		this.registerModule(new Logger());
@@ -88,7 +106,8 @@ public class BotManager {
 	
 
 	private synchronized void loadGlobalProfile(){
-		config = new PropertiesFile("global.properties");
+		config = new PropertiesFile(_propertiesFile);
+		System.out.println("DEBUG: Reading global file > " + _propertiesFile);
 		try {
 			config.load();
 		} catch (IOException e) {
@@ -145,6 +164,10 @@ public class BotManager {
 		if(!config.keyExists("verboseLogging")) {
 			config.setBoolean("verboseLogging", false);
 		}
+		
+		if(!config.keyExists("mode")) {
+			config.setInt("mode", 0);
+		}
 				
 		nick = config.getString("nick");
 		server = config.getString("server");
@@ -157,6 +180,9 @@ public class BotManager {
 		pingInterval = config.getInt("pingInterval");
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
+		botMode = config.getInt("mode");
+		System.out.println("DEBUG: Mode = " + botMode);
+
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -166,7 +192,6 @@ public class BotManager {
 		}
 		
 		for(String s:config.getString("adminList").split(",")) {
-			//System.out.println("DEBUG: Adding admin " + s);
 			if(s.length() > 1){
 				admins.add(s.toLowerCase());
 			}
@@ -206,7 +231,18 @@ public class BotManager {
 		channelList.put(name.toLowerCase(), tempChan);
 
 		System.out.println("DEBUG: Joining channel " + tempChan.getChannel());
-		botList.get(server).joinChannel(tempChan.getChannel());
+		System.out.println("DEBUG: Mode = " + mode);
+		if(botMode == 0){
+			//Single
+			singleBot.joinChannel(tempChan.getChannel());
+			tempChan.setBot(singleBot);
+		}else if(botMode == 1){
+			//Multi
+			Bot tempBot = new Bot(this, server, port, tempChan);
+			tempBot.joinChannel(tempChan.getChannel());
+			tempChan.setBot(tempBot);
+		}
+		
 		System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 
 		writeChannelList();
@@ -221,8 +257,16 @@ public class BotManager {
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		Bot tempBot = botList.get(server);
-		tempBot.partChannel(name.toLowerCase());
+		if(botMode == 0){
+			//Single
+			singleBot.partChannel(name.toLowerCase());
+		}else if(botMode == 1){
+			//Multi
+			Bot tempBot = tempChan.getBot();
+			tempBot.partChannel(name.toLowerCase());
+			tempBot.disconnect();
+			tempBot.dispose();
+		}
 		
 		channelList.remove(name.toLowerCase());
 		
@@ -235,18 +279,24 @@ public class BotManager {
 			return false;
 		}
 		
+		
 		Channel tempChan = channelList.get(name.toLowerCase());
 		
-		Bot tempBot = botList.get(server);
-		tempBot.partChannel(name);		
-		try {
-			Thread.currentThread().sleep(20000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		if(botMode == 0){
+			//Single
+			singleBot.partChannel(tempChan.getChannel());
+			singleBot.joinChannel(tempChan.getChannel());
+		}else if(botMode == 1){
+			//Multi
+			try {
+				tempChan.getBot().disconnect();
+				tempChan.getBot().reconnect();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		tempBot.joinChannel(name);
-		
+			
 		return true;
 	}
 	
@@ -258,66 +308,72 @@ public class BotManager {
 				continue;
 			
 			System.out.println("DEBUG: Parting channel " + entry.getValue().getChannel());
-			botList.get(server).partChannel(entry.getValue().getChannel());
+			entry.getValue().getBot().partChannel(entry.getValue().getChannel());
 			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
-			botList.get(server).joinChannel(entry.getValue().getChannel());
+			entry.getValue().getBot().joinChannel(entry.getValue().getChannel());
 		}
 
 	}
 	
 	
 	public synchronized void reconnectAllBotsSoft(){
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
-		{
-			Bot temp = entry.getValue();
-			System.out.println("DEBUG: Disconnecting " + temp.getServer());
-			temp.disconnect();
-			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
+		if(botMode == 0){
+			//Single
+			singleBot.disconnect();
+		}else if(botMode == 1){
+			//Multi
+			for (Map.Entry<String, Channel> entry : channelList.entrySet())
+			{
+				Bot temp = entry.getValue().getBot();
+				System.out.println("DEBUG: Disconnecting " + temp.getServer());
+				temp.disconnect();
+				System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
+			}
 		}
 	}
 	
-	@SuppressWarnings("static-access")
-	public synchronized void reconnectAllBotsHard(){
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
-		{
-			Bot temp = entry.getValue();
-			System.out.println("DEBUG: Disconnecting " + temp.getServer());
-			temp.disconnect();
-			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
-		}
-		System.out.println("DEBUG: Waiting....");
-		try {
-			Thread.currentThread().sleep(20000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		System.out.println("DEBUG: Done waiting. Kappa");
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
-		{
-			Bot temp = entry.getValue();
-			
-			if(temp.isConnected())
-				continue;
-			
-			System.out.println("DEBUG: Reconnecting " + temp.getServer());
-			try {
-				temp.reconnect();
-			} catch (NickAlreadyInUseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IrcException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("DEBUG: " + temp.getServer() + " reconnected.");
-		}
-		
-		rejoinChannels();
-	}
+//	@SuppressWarnings("static-access")
+//	public synchronized void reconnectAllBotsHard(){
+//		for (Map.Entry<String, Channel> entry : channelList.entrySet())
+//		{
+//			Bot temp = entry.getValue().getBot();
+//			System.out.println("DEBUG: Disconnecting " + temp.getServer());
+//			temp.disconnect();
+//			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
+//		}
+//		System.out.println("DEBUG: Waiting....");
+//		try {
+//			Thread.currentThread().sleep(20000);
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		System.out.println("DEBUG: Done waiting. Kappa");
+//		for (Map.Entry<String, Channel> entry : channelList.entrySet())
+//		{
+//			Bot temp = entry.getValue().getBot();
+//			
+//			if(temp.isConnected())
+//				continue;
+//			
+//			System.out.println("DEBUG: Reconnecting " + temp.getServer());
+//			try {
+//				temp.reconnect();
+//			} catch (NickAlreadyInUseException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IrcException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			System.out.println("DEBUG: " + temp.getServer() + " reconnected.");
+//		}
+//		
+//		rejoinChannels();
+//	}
 	
 	private synchronized void writeChannelList(){
 		String channelString = "";
@@ -378,9 +434,9 @@ public class BotManager {
 	public void sendGlobal(String message, String sender){
 
 		//System.out.println("DEBUG: Sending global message: " + message);
-		for (Map.Entry<String, Bot> entry : botList.entrySet())
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
-			Bot tempbot = (Bot)entry.getValue();
+			Bot tempbot = (Bot)entry.getValue().getBot();
 
 			for(String channel: tempbot.getChannels()){
 				if(channelList.get(channel).getMode() == 0)

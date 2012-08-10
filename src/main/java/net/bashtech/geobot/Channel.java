@@ -18,11 +18,10 @@ import java.util.regex.Pattern;
 
 public class Channel {
 	public PropertiesFile config;
+	private Bot _bot;
 	
 	private String channel;
-	
 	private HashMap<String, String> commands = new HashMap<String, String>();
-	
 	private boolean filterCaps;
 	private int filterCapsPercent;
 	private int filterCapsMinCharacters;
@@ -34,6 +33,7 @@ public class Channel {
 	private String topic;
 	private int topicTime;
 	private Set<String> regulars = new HashSet<String>();
+	private Set<String> subscribers = new HashSet<String>();
 	private Set<String> moderators = new HashSet<String>();
 	private Set<String> owners = new HashSet<String>();
 	private Set<String> permittedUsers = new HashSet<String>();
@@ -51,12 +51,15 @@ public class Channel {
 	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone
 	private int bulletInt;
 	private char bullet[] = {'>','+', '-', '~'};
+	Raffle raffle;
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
 
 	Map<String,EnumMap<FilterType, Integer>> warningCount;
 	Map<String, Long> warningTime;
+	
+	Map<String, Long> commandCooldown;
 	
 	public boolean logChat;
 		
@@ -65,19 +68,25 @@ public class Channel {
 		loadProperties(name);
 		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
+		commandCooldown = new HashMap<String, Long>();
 	}
 	
 	public Channel(String name, int mode){
-		config = new PropertiesFile(name+".properties");
-		loadProperties(name);
+		this(name);
 		setMode(mode);
-		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
-		warningTime = new HashMap<String, Long>();
 	}
 
 
 	public String getChannel() {
 		return channel;
+	}
+	
+	public Bot getBot() {
+		return _bot;
+	}
+	
+	public void setBot(Bot bot) {
+		_bot = bot;
 	}
 	
 	
@@ -346,6 +355,14 @@ public class Channel {
 		}
 		
 		return false;
+	}
+	
+	public boolean isSubscriber(String name){
+		return subscribers.contains(name.toLowerCase());
+	}
+	
+	public void addSubscriber(String name){
+		subscribers.add(name.toLowerCase());
 	}
 	
 	//###################################################
@@ -705,6 +722,29 @@ public class Channel {
 		}
 
 	}
+	
+	private void registerCommandUsage(String command){
+		synchronized (commandCooldown) {
+			commandCooldown.put(command.toLowerCase(), getTime());
+		}
+	}
+	
+	public boolean onCooldown(String command){
+		command = command.toLowerCase();
+		if(commandCooldown.containsKey(command)){
+			long lastUse = commandCooldown.get(command);
+			if((getTime() - lastUse) > 30){
+				//Over
+				return false;
+			}else{
+				//Not Over
+				return true;
+			}
+		}else{
+			registerCommandUsage(command);
+			return false;
+		}
+	}
 
 	private void loadProperties(String name){
 		try {
@@ -720,7 +760,7 @@ public class Channel {
 			config.setBoolean("filterCaps", false);
 		}
 		if(!config.keyExists("filterOffensive")) {
-			config.setBoolean("filterOffensive", false);
+			config.setBoolean("filterOffensive", true);
 		}
 		if(!config.keyExists("filterCapsPercent")) {
 			config.setInt("filterCapsPercent", 50);
