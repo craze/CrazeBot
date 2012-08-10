@@ -46,6 +46,10 @@ public class ReconnectTimer extends TimerTask{
 			}else{
 				//System.out.println("INFO: " + b.getServer() + " is connected.");
 			}
+			
+			//Only reconnect the first bot if in single mode
+			if(BotManager.getInstance().botMode == 0)
+				break;
 		}
 		
 	}
