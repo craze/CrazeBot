@@ -81,7 +81,7 @@ public class Giveaway {
 		entries.add(new GiveawayEntry(nickname,entryInt));
 	}
 	
-	public static boolean isInteger(String str) {
+	public boolean isInteger(String str) {
         if (str == null) {
                 return false;
         }
