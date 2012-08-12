@@ -44,7 +44,6 @@ public class Bot extends PircBot {
 	private Channel channelInfo;
 	private Pattern[] linkPatterns;
 	private int lastPing = -1;
-	private Set<String> tmiServers;
 	private int[] warningTODuration = {10, 30, 60, 600};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
 	
@@ -333,13 +332,13 @@ public class Bot extends PircBot {
 					return;
 				}
 				
-				// !time - All
-				if (msg[0].equalsIgnoreCase("!time")) {
-						System.out.println("DEBUG: Matched command !time");
-						String time = new java.util.Date().toString();
-						sendMessage(channel, sender + ": The time is now " + time);
-						//return;
-				}
+//				// !time - All
+//				if (msg[0].equalsIgnoreCase("!time")) {
+//						System.out.println("DEBUG: Matched command !time");
+//						String time = new java.util.Date().toString();
+//						sendMessage(channel, sender + ": The time is now " + time);
+//						//return;
+//				}
 				
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!bothelp")) {
@@ -377,9 +376,8 @@ public class Bot extends PircBot {
 						String uptime = this.getStreamList("up_time", channelInfo);
 						sendMessage(channel, channelInfo.getBullet() + " Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
 					} catch (Exception e) {
-						sendMessage(channel, channelInfo.getBullet() + " Stream is not live.");
+						sendMessage(channel, channelInfo.getBullet() + " Last.fm username not set. Do \"!set lastfm [username]\" to configure.");
 					}
-					//return;
 				}
 				
 				// !music - All
@@ -391,7 +389,6 @@ public class Bot extends PircBot {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					//return;
 				}
 				
 				// !steam - All
@@ -451,7 +448,7 @@ public class Bot extends PircBot {
 						for(int i=1;i<msg.length;i++){
 							throwMessage += msg[i] + " ";
 						}
-						this.sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
+						sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
 					}
 				}
 				
@@ -467,7 +464,7 @@ public class Bot extends PircBot {
 								sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
 							
 						}else{
-							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
+							sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
 					}else if(msg.length > 1 && isOp){
 						if(msg[1].equalsIgnoreCase("unset")){
@@ -475,7 +472,7 @@ public class Bot extends PircBot {
 							sendMessage(channel, channelInfo.getBullet() + " No topic is set.");
 						}else{
 							channelInfo.setTopic(message.substring(7));
-							this.sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
+							sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
 
 					}
@@ -486,14 +483,14 @@ public class Bot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!command")){
  					System.out.println("DEBUG: Matched command !command");
 					if(msg.length < 3 && isOp){
-						this.sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
+						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
 					}else if(msg.length > 2 && isOp){
 						if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
 							String key = "!" + msg[2];
 							String value = fuseArray(msg, 3);
 							if(!value.contains(",,")){
 								channelInfo.setCommand(key, value);
-								this.sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(key));
+								sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(key));
 							}else{
 								sendMessage(channel, channelInfo.getBullet() + " Command cannot contain double commas (\",,\").");
 							}
@@ -501,7 +498,7 @@ public class Bot extends PircBot {
 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
 							String key = "!" + msg[2];
 							channelInfo.removeCommand(key);	
-							this.sendMessage(channel, channelInfo.getBullet() + " Command " + key + " removed.");
+							sendMessage(channel, channelInfo.getBullet() + " Command " + key + " removed.");
 
 							}
 					}
@@ -510,7 +507,7 @@ public class Bot extends PircBot {
 				// !poll - Ops
 				if(msg[0].equalsIgnoreCase("!poll") && isOp){
 					System.out.println("DEBUG: Matched command !poll");
-					if(msg.length > 2){
+					if(msg.length < 2){
 						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!poll create [option option ... option]\"");
 					}else if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("create")){
@@ -555,8 +552,8 @@ public class Bot extends PircBot {
 				// !giveaway - Ops
 				if((msg[0].equalsIgnoreCase("!giveaway") || msg[0].equalsIgnoreCase("!ga")) && isOp){
 					System.out.println("DEBUG: Matched command !giveaway");
-					if(msg.length > 2){
-						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!poll create [option option ... option]\"");
+					if(msg.length < 2){
+						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!giveaway create [max number] [time to run in seconds]\". Time is optional.");
 					}else if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("create")){
 							String max = "" + 100;
@@ -602,11 +599,9 @@ public class Bot extends PircBot {
 				}
 				
 				// !raffle - Ops
-				if((msg[0].equalsIgnoreCase("!raffle"))){
+				if(msg[0].equalsIgnoreCase("!raffle") && isOp){
 					System.out.println("DEBUG: Matched command !raffle");
-					if(msg.length > 2  && isOp){
-						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!raffle enable/disable\" to enable entries and disable, \"!raffle reset\" to reset entries, \"!raffle count\" to display number of entries, and \"!raffle winner\" to pick a winner.");
-					}else if(msg.length >= 2  && isOp){
+					if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("enable")){
 							if(channelInfo.raffle == null){
 								channelInfo.raffle = new Raffle();
@@ -712,21 +707,21 @@ public class Bot extends PircBot {
 				// !clear - Ops
 				if(msg[0].equalsIgnoreCase("!clear") && isOp){
 					System.out.println("DEBUG: Matched command !clear");
-					this.sendMessage(channel, ".clear");
+					sendMessage(channel, ".clear");
 				}
  				
  				// !links - Owner
  				if(msg[0].equalsIgnoreCase("!links") && isOwner){
  					System.out.println("DEBUG: Matched command !links");
  					if(msg.length == 1){
- 						this.sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!links on/off\"");
+ 						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!links on/off\"");
  					}else if(msg.length == 2){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterLinks(true);
- 							this.sendMessage(channel, channelInfo.getBullet() + " Link filter: " + channelInfo.getFilterLinks());
+ 							sendMessage(channel, channelInfo.getBullet() + " Link filter: " + channelInfo.getFilterLinks());
  						}else if(msg[1].equalsIgnoreCase("off")){
  							channelInfo.setFilterLinks(false);
- 							this.sendMessage(channel, channelInfo.getBullet() + " Link filter: " + channelInfo.getFilterLinks());
+ 							sendMessage(channel, channelInfo.getBullet() + " Link filter: " + channelInfo.getFilterLinks());
  						}
  					}
  				}
@@ -823,28 +818,28 @@ public class Bot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!caps") && isOwner){
  					System.out.println("DEBUG: Matched command !caps");
  					if(msg.length == 1){
- 						this.sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!caps on/off\", \"!caps percent/minchars/mincaps [value]\", \"!caps status\"");
+ 						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!caps on/off\", \"!caps percent/minchars/mincaps [value]\", \"!caps status\"");
  					}else if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterCaps(true);
- 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter: " + channelInfo.getFilterCaps());
+ 							sendMessage(channel, channelInfo.getBullet() + " Caps filter: " + channelInfo.getFilterCaps());
  						}else if(msg[1].equalsIgnoreCase("off")){
  							channelInfo.setFilterCaps(false);
- 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter: " + channelInfo.getFilterCaps());
+ 							sendMessage(channel, channelInfo.getBullet() + " Caps filter: " + channelInfo.getFilterCaps());
  						}else if(msg[1].equalsIgnoreCase("percent")){
  							if(msg.length > 2){
  								channelInfo.setfilterCapsPercent(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter percent: " + channelInfo.getfilterCapsPercent());
+ 	 							sendMessage(channel, channelInfo.getBullet() + " Caps filter percent: " + channelInfo.getfilterCapsPercent());
  							}
  						}else if(msg[1].equalsIgnoreCase("minchars")){
  							if(msg.length > 2 && isInteger(msg[2])){
  								channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
+ 	 							sendMessage(channel, channelInfo.getBullet() + " Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
  							}
  						}else if(msg[1].equalsIgnoreCase("mincaps")){
  							if(msg.length > 2 && isInteger(msg[2])){
  								channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, channelInfo.getBullet() + " Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
+ 	 							sendMessage(channel, channelInfo.getBullet() + " Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
  							}
  						}else if(msg[1].equalsIgnoreCase("status")){
  							sendMessage(channel, channelInfo.getBullet() + " Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
@@ -860,14 +855,14 @@ public class Bot extends PircBot {
  					}else if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
  							channelInfo.setFilterEmotes(true);
- 							this.sendMessage(channel, channelInfo.getBullet() + " Emotes filter: " + channelInfo.getFilterEmotes());
+ 							sendMessage(channel, channelInfo.getBullet() + " Emotes filter: " + channelInfo.getFilterEmotes());
  						}else if(msg[1].equalsIgnoreCase("off")){
  							channelInfo.setFilterEmotes(false);
- 							this.sendMessage(channel, channelInfo.getBullet() + " Emotes filter: " + channelInfo.getFilterEmotes());
+ 							sendMessage(channel, channelInfo.getBullet() + " Emotes filter: " + channelInfo.getFilterEmotes());
  						}else if(msg[1].equalsIgnoreCase("max")){
  							if(msg.length > 2 && isInteger(msg[2])){
  								channelInfo.setFilterEmotesMax(Integer.parseInt(msg[2]));
- 	 							this.sendMessage(channel, channelInfo.getBullet() + " Emotes filter max: " + channelInfo.getFilterEmotesMax());
+ 	 							sendMessage(channel, channelInfo.getBullet() + " Emotes filter max: " + channelInfo.getFilterEmotesMax());
  							}
  						}else if(msg[1].equalsIgnoreCase("status")){
  							sendMessage(channel, channelInfo.getBullet() + " Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax());
@@ -1067,7 +1062,7 @@ public class Bot extends PircBot {
  				
  				
  				//!join
- 				if (msg[0].equalsIgnoreCase("!join") && botManager.publicJoin) {
+ 				if (msg[0].equalsIgnoreCase("!join") && botManager.publicJoin){
  							System.out.println("DEBUG: Matched command !join");
 							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
 							boolean joinStatus = botManager.addChannel("#" + sender, 2);
@@ -1078,7 +1073,7 @@ public class Bot extends PircBot {
 							}
 				}
  				
- 				if (msg[0].equalsIgnoreCase("!rejoin")) {
+ 				if (msg[0].equalsIgnoreCase("!rejoin")){
  					System.out.println("DEBUG: Matched command !rejoin");
  					if(msg.length > 1 && isAdmin){
  						if(msg[1].contains("#")){
@@ -1159,12 +1154,7 @@ public class Bot extends PircBot {
  					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
  					botManager.reconnectAllBotsSoft();
  				}
- 				
-// 				if (msg[0].equalsIgnoreCase("!bm-hardreconnect") && isAdmin) {
-// 					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
-// 					botManager.reconnectAllBotsHard();
-// 				}
- 				
+ 				 				
  				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
  					botManager.sendGlobal(message.substring(11), sender);
  				}
@@ -1183,7 +1173,6 @@ public class Bot extends PircBot {
 
 	@Override
 	public void onDisconnect(){
-		//pjTimer.cancel();
 		if(botManager.botMode == 1 && !botManager.channelList.containsKey(channelInfo.getChannel()))
 			return;
 		 
@@ -1206,9 +1195,6 @@ public class Bot extends PircBot {
 	}
 	
     public void onJoin(String channel, String sender, String login, String hostname){ 
-
-		
-		
 		if(channelInfo == null)
 			return;
 		
@@ -1224,7 +1210,6 @@ public class Bot extends PircBot {
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
-		
 		if(channelInfo == null)
 			return;
 		
@@ -1239,14 +1224,11 @@ public class Bot extends PircBot {
 		sendMessage(channel, "> " + sender + " left the room.");
     }
     
-    
-    
 	@Override
 	protected boolean onMessageSend(String target, String message) {
 		if(!botManager.verboseLogging)
 			System.out.println("MESSAGE: " + target + " " + getNick() + " : " + message);
-		
-		
+
 		if(channelInfo != null){
 			//Call modules
 			for(BotModule b:botManager.getModules()){
@@ -1260,7 +1242,6 @@ public class Bot extends PircBot {
 	@Override
     public void onServerPing(String response) {
 		super.onServerPing(response);
-		//System.out.println("DEBUG: Ping received at " + (int) (System.currentTimeMillis()/1000));
 		lastPing = (int) (System.currentTimeMillis()/1000);
 	}
     	
@@ -1273,10 +1254,7 @@ public class Bot extends PircBot {
 			}
 		}
 		return null;
-		
 	}
-	
-//#################################################################################
 	
     public void log(String line) {
     	super.log(line);
@@ -1309,9 +1287,7 @@ public class Bot extends PircBot {
 		
 		return (int)(((double)caps)/s.length()*100);
 	}
-	
-	
-	
+
 	private int countConsecutiveCapitals(String s){
 		int caps = 0;
 		int max = 0;
@@ -1346,7 +1322,6 @@ public class Bot extends PircBot {
 			}
 		}
 
-		
 		return false;
 	}
 	
@@ -1366,11 +1341,9 @@ public class Bot extends PircBot {
 			}
 		}
 		return count;
-		
 	}
 	
 	public boolean isGlobalBannedWord(String message){
-
 		for(Pattern reg:botManager.globalBannedWords){
 			Matcher match = reg.matcher(message.toLowerCase());
 			if(match.matches()){
@@ -1395,26 +1368,8 @@ public class Bot extends PircBot {
 			return warningTODuration[count-1];
 	}
 	
-	private void tenSecondUnban(final String channel, final String name){
-		Timer timer = new Timer();
-		
-		int delay = 30000;
-		
-		timer.schedule(new TimerTask()
-	       {
-	        public void run() {
-				if(botManager.network.equalsIgnoreCase("jtv"))
-		        	Bot.this.unBan(channel,name + "!*@*.*");
-				else
-					Bot.this.unBan(channel,name);
-	        }
-	      },delay);
-
-	}
-	
 	private void secondaryTO(final String channel, final String name, final int duration){
 		Timer timer = new Timer();
-		
 		int delay = 1000;
 		
 		timer.schedule(new TimerTask()
@@ -1427,7 +1382,6 @@ public class Bot extends PircBot {
 	}
 	
 	private void startGaTimer(int seconds, Channel channelInfo){
-		
 		if(channelInfo.getGiveaway() != null){
 			channelInfo.getGiveaway().setTimer(new Timer());
 			int delay = seconds*1000;
@@ -1441,21 +1395,21 @@ public class Bot extends PircBot {
 		}
 	}
 
-	private int getViewers(Channel channelInfo) throws IOException{
-		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
-		URLConnection conn = url.openConnection();
-		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-		String jsonIn = "";
-		while(d.ready())
-		{
-			jsonIn = d.readLine();
-		}
-		
-		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
-		
-		return data.viewers_count;
-	}
+//	private int getViewers(Channel channelInfo) throws IOException{
+//		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
+//		URLConnection conn = url.openConnection();
+//		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
+//		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+//		String jsonIn = "";
+//		while(d.ready())
+//		{
+//			jsonIn = d.readLine();
+//		}
+//		
+//		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
+//		
+//		return data.viewers_count;
+//	}
 	
 	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
 		if(channelInfo.getLastfm().length() < 1)
@@ -1546,7 +1500,6 @@ public class Bot extends PircBot {
 		}
 		
 		return "";
-
 	}
 	
 	public String getTimeStreaming(String uptime){
@@ -1559,8 +1512,7 @@ public class Bot extends PircBot {
 			e.printStackTrace();
 		}
 		
-		return "Error getting date.";
-		
+		return "Error getting date.";	
 	}
 	
 	private String getGame(Channel channelInfo){
@@ -1652,18 +1604,18 @@ public class Bot extends PircBot {
         }
 	}
 	
-	public String getIP(String server) {
-		InetAddress ip;
-		
-		try {
-			ip = InetAddress.getByName(server);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return server;
-		}
-		
-		return ip.getHostAddress();
-	}
+//	public String getIP(String server) {
+//		InetAddress ip;
+//		
+//		try {
+//			ip = InetAddress.getByName(server);
+//		} catch (UnknownHostException e) {
+//			e.printStackTrace();
+//			return server;
+//		}
+//		
+//		return ip.getHostAddress();
+//	}
 	
 	private String fuseArray(String[] array, int start){
 		String fused = "";
@@ -1696,5 +1648,4 @@ public class Bot extends PircBot {
 		
 		return returnString;
 	}
-
 }

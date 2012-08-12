@@ -136,11 +136,7 @@ public class BotManager {
 		if(!config.keyExists("adminList")) {
 			config.setString("adminList", "");
 		}
-		
-		if(!config.keyExists("network")) {
-			config.setString("network", "jtv");
-		}
-		
+
 		if(!config.keyExists("publicJoin")) {
 			config.setBoolean("publicJoin", false);
 		}
@@ -332,48 +328,6 @@ public class BotManager {
 		}
 	}
 	
-//	@SuppressWarnings("static-access")
-//	public synchronized void reconnectAllBotsHard(){
-//		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-//		{
-//			Bot temp = entry.getValue().getBot();
-//			System.out.println("DEBUG: Disconnecting " + temp.getServer());
-//			temp.disconnect();
-//			System.out.println("DEBUG: " + temp.getServer() + " disconnected.");
-//		}
-//		System.out.println("DEBUG: Waiting....");
-//		try {
-//			Thread.currentThread().sleep(20000);
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		System.out.println("DEBUG: Done waiting. Kappa");
-//		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-//		{
-//			Bot temp = entry.getValue().getBot();
-//			
-//			if(temp.isConnected())
-//				continue;
-//			
-//			System.out.println("DEBUG: Reconnecting " + temp.getServer());
-//			try {
-//				temp.reconnect();
-//			} catch (NickAlreadyInUseException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IrcException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			System.out.println("DEBUG: " + temp.getServer() + " reconnected.");
-//		}
-//		
-//		rejoinChannels();
-//	}
 	
 	private synchronized void writeChannelList(){
 		String channelString = "";
