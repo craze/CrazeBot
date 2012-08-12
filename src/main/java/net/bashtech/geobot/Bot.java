@@ -1113,7 +1113,7 @@ public class Bot extends PircBot {
  						channelString += entry.getValue().getChannel() + ", ";
  					}
  					
- 					sendMessage(channel, channelInfo.getBullet() + " Chanenls: " + channelString);
+ 					sendMessage(channel, channelInfo.getBullet() + " Channels: " + channelString);
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && isAdmin) {
