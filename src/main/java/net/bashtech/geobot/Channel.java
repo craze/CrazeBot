@@ -52,6 +52,8 @@ public class Channel {
 	private int bulletInt;
 	private char bullet[] = {'>','+', '-', '~'};
 	Raffle raffle;
+	public boolean logChat;
+		
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
@@ -60,9 +62,7 @@ public class Channel {
 	Map<String, Long> warningTime;
 	
 	Map<String, Long> commandCooldown;
-	
-	public boolean logChat;
-		
+
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");
 		loadProperties(name);
@@ -747,10 +747,6 @@ public class Channel {
 	}
 	
 	public void reload(){
-		loadProperties(channel);
-	}
-
-	private void loadProperties(String name){
 		commands.clear();
 		regulars.clear();
 		subscribers.clear();
@@ -761,7 +757,16 @@ public class Channel {
 		currentPoll = null;
 		currentGiveaway = null;
 		raffle = null;
+		offensiveWords.clear();
+		offensiveWordsRegex.clear();
+		warningCount.clear();
+		warningTime.clear();
+		commandCooldown.clear();
 		
+		loadProperties(channel);
+	}
+
+	private void loadProperties(String name){
 		try {
 			config.load();
 		} catch (IOException e) {

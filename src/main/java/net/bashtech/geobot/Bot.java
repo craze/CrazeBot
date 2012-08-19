@@ -1036,8 +1036,9 @@ public class Bot extends PircBot {
 						}
 					}else if(msg[1].equalsIgnoreCase("chatlogging")){
 						if(msg[2].equalsIgnoreCase("on")){
-							channelInfo.setLogging(true);
-							sendMessage(channel, channelInfo.getBullet() + " Chat logging is on");
+//							channelInfo.setLogging(true);
+//							sendMessage(channel, channelInfo.getBullet() + " Chat logging is on");
+							sendMessage(channel, channelInfo.getBullet() + " You cannot enable chat logging. If you would like it enabled for your channel, please PM bgeorge.");
 						}else if(msg[2].equalsIgnoreCase("off")){
 							channelInfo.setLogging(false);
 							sendMessage(channel, channelInfo.getBullet() + " Chat logging is off");
