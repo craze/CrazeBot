@@ -745,8 +745,23 @@ public class Channel {
 			return false;
 		}
 	}
+	
+	public void reload(){
+		loadProperties(channel);
+	}
 
 	private void loadProperties(String name){
+		commands.clear();
+		regulars.clear();
+		subscribers.clear();
+		moderators.clear();
+		owners.clear();
+		permittedUsers.clear();
+		permittedDomains.clear();
+		currentPoll = null;
+		currentGiveaway = null;
+		raffle = null;
+		
 		try {
 			config.load();
 		} catch (IOException e) {

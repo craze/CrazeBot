@@ -1159,6 +1159,17 @@ public class Bot extends PircBot {
  					botManager.sendGlobal(message.substring(11), sender);
  				}
  				
+ 				if (msg[0].equalsIgnoreCase("!bm-reload") && msg.length > 1 && isAdmin) {
+ 					if(msg[1].contains("#")){
+ 						sendMessage(channel, channelInfo.getBullet() + " Reloading channel "+ msg[1]);
+ 						botManager.reloadChannel(msg[1]);
+ 						sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" reloaded.");
+ 					}else{
+ 						sendMessage(channel, channelInfo.getBullet() + " Invalid channel format. Must be in format #channelname.");
+ 					}
+ 						
+ 				}
+ 				
 				// ********************************************************************************
 				// ***************************** Info/Catch-all Command ***************************
 				// ********************************************************************************

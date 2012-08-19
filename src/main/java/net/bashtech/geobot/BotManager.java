@@ -269,6 +269,15 @@ public class BotManager {
 		writeChannelList();
 	}
 	
+	public void reloadChannel(String name){
+		if(!channelList.containsKey(name.toLowerCase())){
+			System.out.println("DEBUG: Not in channel " + name);
+			return;
+		}
+		
+		channelList.get(name.toLowerCase()).reload();
+	}
+	
 	public boolean rejoinChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
 			System.out.println("DEBUG: Not in channel " + name);
