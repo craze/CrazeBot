@@ -45,6 +45,7 @@ public class BotManager {
 	private PropertiesFile config;
 	private Set<BotModule> modules;
 	private Set<String> tagAdmins;
+	private Set<String> tagStaff;
 	List<String> emoteSet;
 	List<Pattern> globalBannedWords;
 	boolean verboseLogging;
@@ -61,6 +62,7 @@ public class BotManager {
 		admins = new HashSet<String>();
 		modules = new HashSet<BotModule>();
 		tagAdmins = new HashSet<String>();
+		tagStaff = new HashSet<String>();
 		emoteSet = new LinkedList<String>();
 		globalBannedWords = new LinkedList<Pattern>();
 		
@@ -415,7 +417,15 @@ public class BotManager {
 		return tagAdmins.contains(name.toLowerCase());
 	}
 	
+	public boolean isTagStaff(String name){
+		return tagStaff.contains(name.toLowerCase());
+	}
+	
 	public void addTagAdmin(String name){
+		tagAdmins.add(name.toLowerCase());
+	}
+	
+	public void addTagStaff(String name){
 		tagAdmins.add(name.toLowerCase());
 	}
 	

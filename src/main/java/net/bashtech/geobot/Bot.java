@@ -93,6 +93,8 @@ public class Bot extends PircBot {
 				
 				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
 					botManager.addTagAdmin(user);
+				if(tag.equalsIgnoreCase("staff"))
+					botManager.addTagStaff(user);
 				if(botManager.botMode == 1 && tag.equalsIgnoreCase("subscriber"))
 					channelInfo.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
@@ -169,7 +171,7 @@ public class Bot extends PircBot {
 				//Check for user level based on other factors.
 				if(botManager.isAdmin(sender))
 					isAdmin = true;
-				if(botManager.isTagAdmin(sender))
+				if(botManager.isTagAdmin(sender) || botManager.isTagStaff(sender))
 					isAdmin = true;
 				if(botManager.network.equalsIgnoreCase("jtv") && channel.equalsIgnoreCase("#" + sender))
 					isOwner = true;
@@ -1218,7 +1220,14 @@ public class Bot extends PircBot {
 		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
 			return;
 		
-		sendMessage(channel, "> " + sender + " entered the room.");
+		String prefix = "";
+		
+		if(botManager.isTagStaff(sender))
+			prefix = " [Staff] ";
+		else if(botManager.isTagAdmin(sender))
+			prefix = " [Admin] ";
+		
+		sendMessage(channel, "> " + prefix + sender + " entered the room.");
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
@@ -1233,7 +1242,14 @@ public class Bot extends PircBot {
 		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
 			return;
 		
-		sendMessage(channel, "> " + sender + " left the room.");
+		String prefix = "";
+		
+		if(botManager.isTagStaff(sender))
+			prefix = " [Staff] ";
+		else if(botManager.isTagAdmin(sender))
+			prefix = " [Admin] ";
+		
+		sendMessage(channel, "> " + prefix + sender + " left the room.");
     }
     
 	@Override
