@@ -1000,12 +1000,13 @@ public class Bot extends PircBot {
 							sendMessage(channel, channelInfo.getBullet() + " Feature: Sign-kicks is off");
 						}
 					}else if(msg[1].equalsIgnoreCase("joinsparts")){
+						sendMessage(channel, channelInfo.getBullet() + " This feature is currently disabled due to issues with TMI.");
 						if(msg[2].equalsIgnoreCase("on")){
-							channelInfo.setAnnounceJoinParts(true);
-							sendMessage(channel, channelInfo.getBullet() + " Feature: Join/Part announcing is on");
+							//channelInfo.setAnnounceJoinParts(true);
+							//sendMessage(channel, channelInfo.getBullet() + " Feature: Join/Part announcing is on");
 						}else if(msg[2].equalsIgnoreCase("off")){
-							channelInfo.setAnnounceJoinParts(false);
-							sendMessage(channel, channelInfo.getBullet() + " Feature: Join/Part announcing is off");
+							//channelInfo.setAnnounceJoinParts(false);
+							//sendMessage(channel, channelInfo.getBullet() + " Feature: Join/Part announcing is off");
 						}
 					}else if(msg[1].equalsIgnoreCase("lastfm")){
 						if(msg[2].equalsIgnoreCase("off")){

@@ -861,7 +861,8 @@ public class Channel {
 		filterOffensive = Boolean.parseBoolean(config.getString("filterOffensive"));
 		filterEmotes = Boolean.parseBoolean(config.getString("filterEmotes"));
 		filterEmotesMax = Integer.parseInt(config.getString("filterEmotesMax"));
-		announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
+		//announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
+		announceJoinParts = false;
 		topic  = config.getString("topic");
 		topicTime = config.getInt("topicTime");
 		useTopic = Boolean.parseBoolean(config.getString("useTopic"));
