@@ -875,7 +875,7 @@ public class Bot extends PircBot {
  				// !regular - Owner
  				if(msg[0].equalsIgnoreCase("!regular") && isOwner){
  					System.out.println("DEBUG: Matched command !regular");
- 					if(msg.length <= 2){
+ 					if(msg.length < 2){
  						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!regular add/delete [name]\", \"!regular list\"");
  					}else if(msg.length  > 2){
  						if(msg[1].equalsIgnoreCase("add")){
@@ -905,7 +905,7 @@ public class Bot extends PircBot {
  				// !mod - Owner
  				if(msg[0].equalsIgnoreCase("!mod")  && isOwner){
  					System.out.println("DEBUG: Matched command !mod");
- 					if(msg.length <= 2){
+ 					if(msg.length < 2){
  						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!mod add/delete [name]\", \"!mod list\"");
  					}if(msg.length  > 2){
  						if(msg[1].equalsIgnoreCase("add")){
@@ -935,7 +935,7 @@ public class Bot extends PircBot {
  				// !owner - Owner
  				if(msg[0].equalsIgnoreCase("!owner") && isOwner){
  					System.out.println("DEBUG: Matched command !owner");
- 					if(msg.length <= 2){
+ 					if(msg.length < 2){
  						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!owner add/delete [name]\", \"!owner list\"");
  					}if(msg.length  > 2){
  						if(msg[1].equalsIgnoreCase("add")){
