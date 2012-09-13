@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 public class Bot extends PircBot {	
 
 	private BotManager botManager;
-	private Channel channelInfo;
+	private Channel channelInfoGlobal;
 	private Pattern[] linkPatterns;
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 30, 60, 600};
@@ -49,7 +49,12 @@ public class Bot extends PircBot {
 	
 	public Bot(BotManager bm, String server, int port, Channel channel){
 		botManager = bm;
-		channelInfo = channel;
+		if(channel == null){
+			System.out.println("DEBUG: Channel is null");
+		}else{
+			System.out.println("DEBUG: Channel is " + channel.getChannel());
+			channelInfoGlobal = channel;
+		}
 		
 		linkPatterns = new Pattern[3];
 		linkPatterns[0] = Pattern.compile(".*http://.*");
@@ -70,6 +75,21 @@ public class Bot extends PircBot {
 		} catch (IrcException e) {
 			System.out.println("ERROR: Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
+	}
+	
+	private Channel getChannelObject(String channel){
+		Channel channelInfo = null;
+		
+		if(channelInfoGlobal == null){
+			channelInfo = botManager.getChannel(channel);
+			System.out.println("Fetching channel from single mode");
+		}else{
+			System.out.println("Fetching channel from multi mode");
+			channelInfo = channelInfoGlobal;
+		}
+		System.out.println("Got channel: " + channelInfo.getChannel());
+		
+		return channelInfo;
 	}
 	
 	@Override
@@ -96,7 +116,7 @@ public class Bot extends PircBot {
 				if(tag.equalsIgnoreCase("staff"))
 					botManager.addTagStaff(user);
 				if(botManager.botMode == 1 && tag.equalsIgnoreCase("subscriber"))
-					channelInfo.addSubscriber(user);
+					channelInfoGlobal.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
 				String color = msg[2];
@@ -124,10 +144,8 @@ public class Bot extends PircBot {
 				if(!botManager.verboseLogging)
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
-			
-				if(channelInfo == null){
-					channelInfo = botManager.getChannel(channel);
-				}
+				Channel channelInfo = getChannelObject(channel);
+				System.out.println("Got channel (confirm): " + channelInfo.getChannel());
 				
 				//Call modules
 				for(BotModule b:botManager.getModules()){
@@ -1188,7 +1206,7 @@ public class Bot extends PircBot {
 
 	@Override
 	public void onDisconnect(){
-		if(botManager.botMode == 1 && !botManager.channelList.containsKey(channelInfo.getChannel()))
+		if(botManager.botMode == 1 && !botManager.channelList.containsKey(channelInfoGlobal.getChannel()))
 			return;
 		 
 		lastPing = -1;
@@ -1209,7 +1227,11 @@ public class Bot extends PircBot {
 		
 	}
 	
-    public void onJoin(String channel, String sender, String login, String hostname){ 
+    public void onJoin(String channel, String sender, String login, String hostname){
+    	
+		Channel channelInfo = getChannelObject(channel);
+		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
+    	
 		if(channelInfo == null)
 			return;
 		
@@ -1232,6 +1254,10 @@ public class Bot extends PircBot {
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
+    	
+		Channel channelInfo = getChannelObject(channel);
+		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
+    	
 		if(channelInfo == null)
 			return;
 		
@@ -1255,6 +1281,11 @@ public class Bot extends PircBot {
     
 	@Override
 	protected boolean onMessageSend(String target, String message) {
+    	
+		Channel channelInfo = getChannelObject(target);
+		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
+    	
+		
 		if(!botManager.verboseLogging)
 			System.out.println("MESSAGE: " + target + " " + getNick() + " : " + message);
 

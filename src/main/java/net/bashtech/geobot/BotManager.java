@@ -74,6 +74,7 @@ public class BotManager {
 		
 		if(botMode == 0){
 			//Single
+			System.out.println("DEBUG: Loading single bot mode");
 			singleBot = new Bot(this, server, port, null);
 			for (Map.Entry<String, Channel> entry : channelList.entrySet())
 			{	
@@ -84,6 +85,7 @@ public class BotManager {
 			}			
 		}else if(botMode == 1){
 			//Multi
+			System.out.println("DEBUG: Loading multi bot mode");
 			for (Map.Entry<String, Channel> entry : channelList.entrySet())
 			{	
 				System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
