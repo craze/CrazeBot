@@ -21,9 +21,6 @@ package net.bashtech.geobot;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,15 +29,11 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Pattern;
 
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
 import net.bashtech.geobot.modules.Logger;
-
-import org.jibble.pircbot.IrcException;
-import org.jibble.pircbot.NickAlreadyInUseException;
 
 public class BotManager {
 	
@@ -59,7 +52,6 @@ public class BotManager {
 	BotGUI gui;
 	Map<String,Channel> channelList;
 	Set<String> admins;
-	private Timer pjTimer;
 	private PropertiesFile config;
 	private Set<BotModule> modules;
 	private Set<String> tagAdmins;
@@ -103,6 +95,7 @@ public class BotManager {
 		sbb.setInstanceNumber(senderInstances);
 		sbb.spinUp();
 		
+		//Start timer to check for bot disconnects
 		Timer reconnectTimer = new Timer();
 		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 		System.out.println("Reconnect timer scheduled.");
@@ -112,8 +105,9 @@ public class BotManager {
 	}
 	
 
-	private synchronized void loadGlobalProfile(){
+	private void loadGlobalProfile(){
 		config = new PropertiesFile(_propertiesFile);
+		
 		System.out.println("DEBUG: Reading global file > " + _propertiesFile);
 		try {
 			config.load();
@@ -184,8 +178,6 @@ public class BotManager {
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
 		senderInstances = config.getInt("senderInstances");
-		System.out.println("DEBUG: Sender Instances = " + senderInstances);
-
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -208,7 +200,7 @@ public class BotManager {
 		}
 	}
 	
-	public Channel getChannel(String channel){
+	public synchronized Channel getChannel(String channel){
 		if(channelList.containsKey(channel.toLowerCase())){
 
 			return channelList.get(channel.toLowerCase());
@@ -217,14 +209,7 @@ public class BotManager {
 		}
 	}
 	
-	public boolean isAdmin(String nick){
-		if(admins.contains(nick.toLowerCase()))
-			return true;
-		else
-			return false;
-	}
-	
-	public boolean addChannel(String name, int mode){
+	public synchronized boolean addChannel(String name, int mode){
 		if(channelList.containsKey(name.toLowerCase())){
 			System.out.println("INFO: Already in channel " + name);
 			return false;
@@ -242,7 +227,7 @@ public class BotManager {
 		return true;
 	}
 
-	public void removeChannel(String name){
+	public synchronized void removeChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
 			System.out.println("DEBUG: Not in channel " + name);
 			return;
@@ -256,7 +241,7 @@ public class BotManager {
 		writeChannelList();
 	}
 	
-	public void reloadChannel(String name){
+	public synchronized void reloadChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
 			System.out.println("DEBUG: Not in channel " + name);
 			return;
@@ -321,20 +306,24 @@ public class BotManager {
 		return localAddress;
 	}
 	
-//	public void sendGlobal(String message, String sender){
-//		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-//		{	
-//			ReceiverBot tempbot = (ReceiverBot)entry.getValue().getBot();
-//
-//			for(String channel: tempbot.getChannels()){
-//				if(channelList.get(channel).getMode() == 0)
-//					continue;
-//				
-//				String globalMsg = "> Global: " + message + " (from " + sender + " to " + channel + ")";
-//				tempbot.sendMessage(channel, globalMsg);
-//			}
-//		}
-//	}
+	public void sendGlobal(String message, String sender){
+		for (Map.Entry<String, Channel> entry : channelList.entrySet())
+		{	
+			Channel tempChannel = (Channel)entry.getValue();
+			if(tempChannel.getMode() == 0)
+				continue;
+
+			String globalMsg = "> Global: " + message + " (from " + sender + " to " + tempChannel.getChannel() + ")";
+			SenderBotBalancer.getInstance().sendMessage(tempChannel.getChannel(), globalMsg);			
+		}
+	}
+	
+	public boolean isAdmin(String nick){
+		if(admins.contains(nick.toLowerCase()))
+			return true;
+		else
+			return false;
+	}
 	
 	public boolean isTagAdmin(String name){
 		return tagAdmins.contains(name.toLowerCase());

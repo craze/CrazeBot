@@ -1177,9 +1177,9 @@ public class ReceiverBot extends PircBot {
  					BotManager.getInstance().reconnectAllBotsSoft();
  				}
  				 				
-// 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
-// 					BotManager.getInstance().sendGlobal(message.substring(11), sender);
-// 				}
+ 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
+ 					BotManager.getInstance().sendGlobal(message.substring(11), sender);
+ 				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-reload") && msg.length > 1 && isAdmin) {
  					if(msg[1].contains("#")){
@@ -1462,22 +1462,6 @@ public class ReceiverBot extends PircBot {
 			channelInfo.getGiveaway().getTimer().schedule(new giveawayTimer(channelInfo),delay);
 		}
 	}
-
-//	private int getViewers(Channel channelInfo) throws IOException{
-//		URL url = new URL("http://api.justin.tv/api/stream/summary.json?channel=" + channelInfo.getChannel().substring(1));
-//		URLConnection conn = url.openConnection();
-//		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-//		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-//		String jsonIn = "";
-//		while(d.ready())
-//		{
-//			jsonIn = d.readLine();
-//		}
-//		
-//		JTVStreamSummary data = new Gson().fromJson(jsonIn, JTVStreamSummary.class);
-//		
-//		return data.viewers_count;
-//	}
 	
 	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
 		if(channelInfo.getLastfm().length() < 1)
