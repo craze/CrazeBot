@@ -38,36 +38,24 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class Bot extends PircBot {	
+public class ReceiverBot extends PircBot {	
 
-	private BotManager botManager;
-	private Channel channelInfoGlobal;
-	private Pattern[] linkPatterns;
+	private Pattern[] linkPatterns = new Pattern[3];
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 30, 60, 600};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
 	
-	public Bot(BotManager bm, String server, int port, Channel channel){
-		botManager = bm;
-		if(channel == null){
-			System.out.println("DEBUG: Channel is null");
-		}else{
-			System.out.println("DEBUG: Channel is " + channel.getChannel());
-			channelInfoGlobal = channel;
-		}
-		
-		linkPatterns = new Pattern[3];
+	public ReceiverBot(String server, int port){
 		linkPatterns[0] = Pattern.compile(".*http://.*");
 		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in)(\\s+|/|$).*");
 		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");	
 		
-		this.setName(bm.nick);
-		this.setLogin("GeoBot");
-		this.setVersion("3.0");
+		this.setName(BotManager.getInstance().getInstance().nick);
+		this.setLogin("ReceiverGeoBot");
 		
-		this.setVerbose(botManager.verboseLogging);
+		this.setVerbose(BotManager.getInstance().verboseLogging);
 		try {
-			this.connect(server, port, bm.password);
+			this.connect(server, port, BotManager.getInstance().getInstance().password);
 		} catch (NickAlreadyInUseException e) {
 			System.out.println("ERROR: Nickname already in use - " + this.getNick() + " " + this.getServer());
 		} catch (IOException e) {
@@ -80,13 +68,7 @@ public class Bot extends PircBot {
 	private Channel getChannelObject(String channel){
 		Channel channelInfo = null;
 		
-		if(channelInfoGlobal == null){
-			channelInfo = botManager.getChannel(channel);
-			System.out.println("Fetching channel from single mode");
-		}else{
-			System.out.println("Fetching channel from multi mode");
-			channelInfo = channelInfoGlobal;
-		}
+		channelInfo = BotManager.getInstance().getChannel(channel);
 		System.out.println("Got channel: " + channelInfo.getChannel());
 		
 		return channelInfo;
@@ -112,21 +94,21 @@ public class Bot extends PircBot {
 				String tag = msg[2];
 				
 				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
-					botManager.addTagAdmin(user);
+					BotManager.getInstance().addTagAdmin(user);
 				if(tag.equalsIgnoreCase("staff"))
-					botManager.addTagStaff(user);
-				if(botManager.botMode == 1 && tag.equalsIgnoreCase("subscriber"))
-					channelInfoGlobal.addSubscriber(user);
+					BotManager.getInstance().addTagStaff(user);
+//				if(BotManager.getInstance().botMode == 1 && tag.equalsIgnoreCase("subscriber"))
+//					channelInfoGlobal.addSubscriber(user);
 			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
 				String user = msg[1];
 				String color = msg[2];
 			}else if(msg[0].equalsIgnoreCase("CLEARCHAT")){
 				if(msg.length > 1){
 					String user = msg[1];
-					if(!botManager.verboseLogging)
+					if(!BotManager.getInstance().verboseLogging)
 						System.out.println("RAW: CLEARCHAT " + user);
 				}else{
-					if(!botManager.verboseLogging)
+					if(!BotManager.getInstance().verboseLogging)
 						System.out.println("RAW: CLEARCHAT");
 				}
 
@@ -141,14 +123,14 @@ public class Bot extends PircBot {
 
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
-				if(!botManager.verboseLogging)
+				if(!BotManager.getInstance().verboseLogging)
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
 				Channel channelInfo = getChannelObject(channel);
 				System.out.println("Got channel (confirm): " + channelInfo.getChannel());
 				
 				//Call modules
-				for(BotModule b:botManager.getModules()){
+				for(BotModule b:BotManager.getInstance().getModules()){
 					b.onMessage(channelInfo, sender, login, hostname, message);
 				}
 						
@@ -187,11 +169,11 @@ public class Bot extends PircBot {
 				}catch(Exception e){}
 				
 				//Check for user level based on other factors.
-				if(botManager.isAdmin(sender))
+				if(BotManager.getInstance().isAdmin(sender))
 					isAdmin = true;
-				if(botManager.isTagAdmin(sender) || botManager.isTagStaff(sender))
+				if(BotManager.getInstance().isTagAdmin(sender) || BotManager.getInstance().isTagStaff(sender))
 					isAdmin = true;
-				if(botManager.network.equalsIgnoreCase("jtv") && channel.equalsIgnoreCase("#" + sender))
+				if(BotManager.getInstance().network.equalsIgnoreCase("jtv") && channel.equalsIgnoreCase("#" + sender))
 					isOwner = true;
 				if(channelInfo.isModerator(sender))
 					isOp = true;
@@ -221,7 +203,7 @@ public class Bot extends PircBot {
 				//!leave - Owner
  				if ((msg[0].equalsIgnoreCase("!leave") || msg[0].equalsIgnoreCase("!remove")) && isOwner) {
  						sendMessage(channel, "Channel "+ channel +" parting...");
- 						botManager.removeChannel(channel);
+ 						BotManager.getInstance().removeChannel(channel);
  				}
  				
  				
@@ -242,7 +224,7 @@ public class Bot extends PircBot {
 					int capsPercent = getCapsPercent(message);
 					if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 						int warningCount = 0;
-						if(botManager.network.equalsIgnoreCase("jtv")){
+						if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
 							channelInfo.incWarningCount(sender, FilterType.CAPS);
 							warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
 							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
@@ -260,7 +242,7 @@ public class Bot extends PircBot {
 						if(result){
 							sendMessage(channel, "> Link permitted. (" + sender + ")" );
 						}else{
-							if(botManager.network.equalsIgnoreCase("jtv")){
+							if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
 								channelInfo.incWarningCount(sender, FilterType.LINK);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
@@ -278,7 +260,7 @@ public class Bot extends PircBot {
 					if(!isOp && channelInfo.getFilterOffensive()){
 						if(channelInfo.isOffensive(message)){
 							int warningCount = 0;
-							if(botManager.network.equalsIgnoreCase("jtv")){
+							if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
 								channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
@@ -292,7 +274,7 @@ public class Bot extends PircBot {
 					if(!isOp && channelInfo.getFilterEmotes()){
 						if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
 							int warningCount = 0;
-							if(botManager.network.equalsIgnoreCase("jtv")){
+							if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
 								channelInfo.incWarningCount(sender, FilterType.EMOTES);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
@@ -1084,10 +1066,10 @@ public class Bot extends PircBot {
  				
  				
  				//!join
- 				if (msg[0].equalsIgnoreCase("!join") && botManager.publicJoin){
+ 				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin){
  							System.out.println("DEBUG: Matched command !join");
 							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
-							boolean joinStatus = botManager.addChannel("#" + sender, 2);
+							boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
 							if(joinStatus){
 								sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" joined.");
 							}else{
@@ -1100,7 +1082,7 @@ public class Bot extends PircBot {
  					if(msg.length > 1 && isAdmin){
  						if(msg[1].contains("#")){
 							sendMessage(channel, channelInfo.getBullet() + " Rejoining channel "+ msg[1] +".");
-							boolean joinStatus = botManager.rejoinChannel(msg[1]);
+							boolean joinStatus = BotManager.getInstance().rejoinChannel(msg[1]);
 							if(joinStatus){
 								sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" rejoined.");
 							}else{
@@ -1112,7 +1094,7 @@ public class Bot extends PircBot {
 						}
  					}else{
 						sendMessage(channel, "Rejoining channel #"+ sender +".");
-						boolean joinStatus = botManager.rejoinChannel("#"+sender);
+						boolean joinStatus = BotManager.getInstance().rejoinChannel("#"+sender);
 						if(joinStatus){
 							sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" rejoined.");
 						}else{
@@ -1127,10 +1109,10 @@ public class Bot extends PircBot {
 				// ********************************************************************************
  				
  				if (msg[0].equalsIgnoreCase("!bm-channels") && isAdmin) {
- 					sendMessage(channel, channelInfo.getBullet() + " Currently in " + botManager.channelList.size() + " channels.");
+ 					sendMessage(channel, channelInfo.getBullet() + " Currently in " + BotManager.getInstance().channelList.size() + " channels.");
  					
  					String channelString = "";
- 					for (Map.Entry<String, Channel> entry : botManager.channelList.entrySet())
+ 					for (Map.Entry<String, Channel> entry : BotManager.getInstance().channelList.entrySet())
  					{
  						channelString += entry.getValue().getChannel() + ", ";
  					}
@@ -1142,7 +1124,7 @@ public class Bot extends PircBot {
 
  						if(msg[1].contains("#")){
  							sendMessage(channel, channelInfo.getBullet() + " Joining channel "+ msg[1] +".");
- 							boolean joinStatus = botManager.addChannel(msg[1],0);
+ 							boolean joinStatus = BotManager.getInstance().addChannel(msg[1],0);
  							if(joinStatus){
  								sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" joined.");
  							}else{
@@ -1159,7 +1141,7 @@ public class Bot extends PircBot {
  				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && isAdmin) {
  					if(msg[1].contains("#")){
  						sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" parting...");
- 						botManager.removeChannel(msg[1]);
+ 						BotManager.getInstance().removeChannel(msg[1]);
  						sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" parted.");
  					}else{
  						sendMessage(channel, channelInfo.getBullet() + " Invalid channel format. Must be in format #channelname.");
@@ -1167,24 +1149,24 @@ public class Bot extends PircBot {
  						
  				}
  				
- 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && isAdmin) {
- 					sendMessage(channel, channelInfo.getBullet() + " Rejoining all channels.");
- 					botManager.rejoinChannels();
- 				}
+// 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && isAdmin) {
+// 					sendMessage(channel, channelInfo.getBullet() + " Rejoining all channels.");
+// 					BotManager.getInstance().rejoinChannels();
+// 				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-reconnect") && isAdmin) {
  					sendMessage(channel, channelInfo.getBullet() + " Reconnecting all servers.");
- 					botManager.reconnectAllBotsSoft();
+ 					BotManager.getInstance().reconnectAllBotsSoft();
  				}
  				 				
- 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
- 					botManager.sendGlobal(message.substring(11), sender);
- 				}
+// 				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
+// 					BotManager.getInstance().sendGlobal(message.substring(11), sender);
+// 				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-reload") && msg.length > 1 && isAdmin) {
  					if(msg[1].contains("#")){
  						sendMessage(channel, channelInfo.getBullet() + " Reloading channel "+ msg[1]);
- 						botManager.reloadChannel(msg[1]);
+ 						BotManager.getInstance().reloadChannel(msg[1]);
  						sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" reloaded.");
  					}else{
  						sendMessage(channel, channelInfo.getBullet() + " Invalid channel format. Must be in format #channelname.");
@@ -1205,10 +1187,7 @@ public class Bot extends PircBot {
 
 
 	@Override
-	public void onDisconnect(){
-		if(botManager.botMode == 1 && !botManager.channelList.containsKey(channelInfoGlobal.getChannel()))
-			return;
-		 
+	public void onDisconnect(){		 
 		lastPing = -1;
 		try {
 			System.out.println("INFO: Internal reconnection: " + this.getServer());
@@ -1236,7 +1215,7 @@ public class Bot extends PircBot {
 			return;
 		
 		//Call modules
-		for(BotModule b:botManager.getModules()){
+		for(BotModule b:BotManager.getInstance().getModules()){
 			b.onJoin(channelInfo, sender, login, hostname);
 		}
 		
@@ -1245,9 +1224,9 @@ public class Bot extends PircBot {
 		
 		String prefix = "";
 		
-		if(botManager.isTagStaff(sender))
+		if(BotManager.getInstance().isTagStaff(sender))
 			prefix = " [Staff] ";
-		else if(botManager.isTagAdmin(sender))
+		else if(BotManager.getInstance().isTagAdmin(sender))
 			prefix = " [Admin] ";
 		
 		sendMessage(channel, "> " + prefix + sender + " entered the room.");
@@ -1262,7 +1241,7 @@ public class Bot extends PircBot {
 			return;
 		
 		//Call modules
-		for(BotModule b:botManager.getModules()){
+		for(BotModule b:BotManager.getInstance().getModules()){
 			b.onPart(channelInfo, sender, login, hostname);
 		}
 		
@@ -1271,9 +1250,9 @@ public class Bot extends PircBot {
 		
 		String prefix = "";
 		
-		if(botManager.isTagStaff(sender))
+		if(BotManager.getInstance().isTagStaff(sender))
 			prefix = " [Staff] ";
-		else if(botManager.isTagAdmin(sender))
+		else if(BotManager.getInstance().isTagAdmin(sender))
 			prefix = " [Admin] ";
 		
 		sendMessage(channel, "> " + prefix + sender + " left the room.");
@@ -1281,22 +1260,23 @@ public class Bot extends PircBot {
     
 	@Override
 	protected boolean onMessageSend(String target, String message) {
-    	
 		Channel channelInfo = getChannelObject(target);
 		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
-    	
 		
-		if(!botManager.verboseLogging)
-			System.out.println("MESSAGE: " + target + " " + getNick() + " : " + message);
+		if(!BotManager.getInstance().verboseLogging)
+			System.out.println("onMessageSend: " + target + " " + getNick() + " : " + message);
 
 		if(channelInfo != null){
 			//Call modules
-			for(BotModule b:botManager.getModules()){
+			for(BotModule b:BotManager.getInstance().getModules()){
 				b.onSelfMessage(channelInfo, this.getNick(), message);
 			}
 		}
+		
+		//Send message to the balancer
+		SenderBotBalancer.getInstance().sendMessage(target, message);
 	
-		return super.onMessageSend(target, message);
+		return false;
 	}
 
 	@Override
@@ -1319,8 +1299,8 @@ public class Bot extends PircBot {
     public void log(String line) {
     	super.log(line);
     	
-    	if(botManager.useGUI){
-    		botManager.getGUI().log(line);
+    	if(BotManager.getInstance().useGUI){
+    		BotManager.getInstance().getGUI().log(line);
     	}
     }
 	
@@ -1388,7 +1368,7 @@ public class Bot extends PircBot {
 	private int countEmotes(String message){
 		String str = message;
 		int count=0;
-		for(String findStr: botManager.emoteSet){
+		for(String findStr: BotManager.getInstance().emoteSet){
 			int lastIndex = 0;
 			while(lastIndex != -1){
 
@@ -1404,7 +1384,7 @@ public class Bot extends PircBot {
 	}
 	
 	public boolean isGlobalBannedWord(String message){
-		for(Pattern reg:botManager.globalBannedWords){
+		for(Pattern reg:BotManager.getInstance().globalBannedWords){
 			Matcher match = reg.matcher(message.toLowerCase());
 			if(match.matches()){
 				System.out.println("DEBUG: Global banned word matched: " + reg.toString());
@@ -1435,7 +1415,7 @@ public class Bot extends PircBot {
 		timer.schedule(new TimerTask()
 	       {
 	        public void run() {
-	        	Bot.this.sendMessage(channel,".timeout " + name + " " + duration);
+	        	ReceiverBot.this.sendMessage(channel,".timeout " + name + " " + duration);
 	        }
 	      },delay);
 
@@ -1638,7 +1618,7 @@ public class Bot extends PircBot {
 		
 		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
 		
-		if(difference > botManager.pingInterval){
+		if(difference > BotManager.getInstance().pingInterval){
 			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference= " + difference);
 			lastPing = -1;
 			return true;
@@ -1658,7 +1638,7 @@ public class Bot extends PircBot {
 			if(channelInfo.getGiveaway() != null){
 				if(channelInfo.getGiveaway().getStatus()){
 					channelInfo.getGiveaway().setStatus(false);
-					Bot.this.sendMessage(channelInfo.getChannel(), "> Giveaway over.");
+					ReceiverBot.this.sendMessage(channelInfo.getChannel(), "> Giveaway over.");
 				}
 			}
         }

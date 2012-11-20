@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 public class Channel {
 	public PropertiesFile config;
-	private Bot _bot;
 	
 	private String channel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
@@ -80,15 +79,6 @@ public class Channel {
 	public String getChannel() {
 		return channel;
 	}
-	
-	public Bot getBot() {
-		return _bot;
-	}
-	
-	public void setBot(Bot bot) {
-		_bot = bot;
-	}
-	
 	
 	//##############################################################
 	
