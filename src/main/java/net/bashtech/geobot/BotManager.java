@@ -73,8 +73,6 @@ public class BotManager {
 			gui = new BotGUI();
 		}
 		
-
-		System.out.println("DEBUG: Loading single bot mode");
 		receiverBot = new ReceiverBot(server, port);
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{	
@@ -167,7 +165,7 @@ public class BotManager {
 		pingInterval = config.getInt("pingInterval");
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
-		senderInstances = config.getInt("mode");
+		senderInstances = config.getInt("senderInstances");
 		System.out.println("DEBUG: Sender Instances = " + senderInstances);
 
 		

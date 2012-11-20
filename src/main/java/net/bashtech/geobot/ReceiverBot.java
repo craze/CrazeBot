@@ -1174,6 +1174,16 @@ public class ReceiverBot extends PircBot {
  						
  				}
  				
+ 				if (msg[0].equalsIgnoreCase("!bm-color") && msg.length > 1 && isAdmin) {
+ 					sendMessage(channel, ".color " + msg[1]);
+ 				}
+ 				
+ 				
+ 				if (msg[0].equalsIgnoreCase("!bm-gbtest") && msg.length > 1 && isAdmin) {
+ 					for(int i=0; i < Integer.parseInt(msg[1]); i++)
+ 						sendMessage(channel, ".timeout kappa123 1");
+ 				}
+ 				
 				// ********************************************************************************
 				// ***************************** Info/Catch-all Command ***************************
 				// ********************************************************************************

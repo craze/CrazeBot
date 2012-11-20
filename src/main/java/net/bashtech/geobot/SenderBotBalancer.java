@@ -30,7 +30,7 @@ public class SenderBotBalancer {
 		System.out.println("DEBUG: Sending message to instance - " + position);
 		instances.get(position).sendMessage(channel, message);
 		
-		if(position==9)
+		if(position > (instances.size() - 2))
 			position = 0;
 		else
 			position++;
