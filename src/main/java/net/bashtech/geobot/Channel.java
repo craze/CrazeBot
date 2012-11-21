@@ -961,6 +961,7 @@ public class Channel {
 			filterLinks = true;
 			filterOffensive = true;
 			signKicks = false;
+			enableThrow = false;
 		}
 	}
 
