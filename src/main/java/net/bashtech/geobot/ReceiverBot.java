@@ -1253,7 +1253,6 @@ public class ReceiverBot extends PircBot {
     public void onJoin(String channel, String sender, String login, String hostname){
     	
 		Channel channelInfo = getChannelObject(channel);
-		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
     	
 		if(channelInfo == null)
 			return;
@@ -1279,7 +1278,6 @@ public class ReceiverBot extends PircBot {
     public void onPart(String channel, String sender, String login, String hostname) {	
     	
 		Channel channelInfo = getChannelObject(channel);
-		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
     	
 		if(channelInfo == null)
 			return;
@@ -1305,7 +1303,6 @@ public class ReceiverBot extends PircBot {
 	@Override
 	protected boolean onMessageSend(String target, String message) {
 		Channel channelInfo = getChannelObject(target);
-		System.out.println("Got channel (confirm): " + channelInfo.getChannel());
 		
 		if(!BotManager.getInstance().verboseLogging)
 			System.out.println("onMessageSend: " + target + " " + getNick() + " : " + message);
