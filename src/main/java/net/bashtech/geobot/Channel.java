@@ -18,10 +18,7 @@
 
 package net.bashtech.geobot;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +43,7 @@ public class Channel {
 	private boolean filterLinks;
 	private boolean filterOffensive;
 	private boolean filterEmotes;
+	private boolean filterSymbols;
 	private int filterEmotesMax;
 	private String topic;
 	private int topicTime;
@@ -57,7 +55,6 @@ public class Channel {
 	private ArrayList<String> permittedDomains = new ArrayList<String>();
 	public boolean useTopic = true;
 	public boolean useFilters = true;
-	//public boolean publicCommands = true;
 	private Poll currentPoll;
 	private Giveaway currentGiveaway;
 	private boolean enableThrow;
@@ -266,6 +263,15 @@ public class Channel {
 	
 	public boolean getFilterEmotes(){
 		return filterEmotes;
+	}
+	
+	public void setFilterSymbols(boolean option){
+		filterSymbols = option;
+		config.setBoolean("filterSymbols", option);
+	}
+	
+	public boolean getFilterSymbols(){
+		return filterSymbols;
 	}
 	
 	public void setFilterEmotesMax(int option){
@@ -805,6 +811,9 @@ public class Channel {
 		if(!config.keyExists("filterEmotes")) {
 			config.setBoolean("filterEmotes", false);
 		}
+		if(!config.keyExists("filterSymbols")) {
+			config.setBoolean("filterSymbols", false);
+		}
 		if(!config.keyExists("filterEmotesMax")) {
 			config.setInt("filterEmotesMax", 4);
 		}
@@ -868,6 +877,7 @@ public class Channel {
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		filterOffensive = Boolean.parseBoolean(config.getString("filterOffensive"));
 		filterEmotes = Boolean.parseBoolean(config.getString("filterEmotes"));
+		filterSymbols = Boolean.parseBoolean(config.getString("filterSymbols"));
 		filterEmotesMax = Integer.parseInt(config.getString("filterEmotesMax"));
 		//announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
 		announceJoinParts = false;
@@ -953,15 +963,16 @@ public class Channel {
 		config.setInt("mode", this.mode);
 		
 		if(mode == -1){
-			useFilters = true;
-			filterEmotes = true;
-			filterEmotesMax = 5;
-			useTopic = false;
-			filterCaps = false;
-			filterLinks = true;
-			filterOffensive = true;
-			signKicks = false;
-			enableThrow = false;
+			this.setFiltersFeature(true);
+			this.setFilterEmotes(true);
+			this.setFilterEmotesMax(5);
+			this.setFilterSymbols(true);
+			this.setFilterCaps(false);
+			this.setFilterLinks(true);
+			this.setFilterOffensive(true);
+			this.setSignKicks(false);
+			this.setTopicFeature(false);
+			this.setThrow(false);
 		}
 	}
 

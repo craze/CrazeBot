@@ -21,18 +21,14 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -44,7 +40,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 
 import com.google.gson.Gson;
-import net.bashtech.geobot.JSONObjects.JTVStreamSummary;
 import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
 import net.bashtech.geobot.JSONObjects.SteamData;
 import net.bashtech.geobot.modules.BotModule;
@@ -59,6 +54,7 @@ import org.xml.sax.SAXException;
 public class ReceiverBot extends PircBot {	
 
 	private Pattern[] linkPatterns = new Pattern[3];
+	private Pattern[] symbolsPatterns = new Pattern[1];
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 30, 60, 600};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
@@ -68,6 +64,7 @@ public class ReceiverBot extends PircBot {
 		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in)(\\s+|/|$).*");
 		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");	
 		
+		symbolsPatterns[0] = Pattern.compile(".*(░|▀|▄|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒||█).*");
 		this.setName(BotManager.getInstance().getInstance().nick);
 		this.setLogin("ReceiverGeoBot");
 		
@@ -97,8 +94,6 @@ public class ReceiverBot extends PircBot {
 		//Force TMI to send USERCOLOR AND SPECIALUSER messages.
 		this.sendRawLine("JTVCLIENT");
 	}
-	
-	
 
 	@Override
 	protected void onPrivateMessage(String sender, String login,
@@ -191,7 +186,7 @@ public class ReceiverBot extends PircBot {
 					isAdmin = true;
 				if(BotManager.getInstance().isTagAdmin(sender) || BotManager.getInstance().isTagStaff(sender))
 					isAdmin = true;
-				if(BotManager.getInstance().network.equalsIgnoreCase("jtv") && channel.equalsIgnoreCase("#" + sender))
+				if(channel.equalsIgnoreCase("#" + sender))
 					isOwner = true;
 				if(channelInfo.isModerator(sender))
 					isOp = true;
@@ -242,13 +237,11 @@ public class ReceiverBot extends PircBot {
 					int capsPercent = getCapsPercent(message);
 					if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 						int warningCount = 0;
-						if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
+
 							channelInfo.incWarningCount(sender, FilterType.CAPS);
 							warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
 							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-						}else{
-							this.kick(channel, sender, "Too many caps");
-						}
+
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
 					}
@@ -260,17 +253,27 @@ public class ReceiverBot extends PircBot {
 						if(result){
 							sendMessage(channel, "> Link permitted. (" + sender + ")" );
 						}else{
-							if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
+
 								channelInfo.incWarningCount(sender, FilterType.LINK);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-							}else{
-								this.kick(channel, sender, "Unauthorized link");
-							}
-							
+								
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
 						}
+						
+					}
+					
+					// Symbols filter
+					if(channelInfo.getFilterSymbols() && !(isOp || isRegular) && this.containsSymbol(message,channelInfo) ){
+						int warningCount = 0;
+						channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
+						warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
+						this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+								
+						if(channelInfo.checkSignKicks())
+							sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't post spam in the chat - " + this.getWarningText(warningCount));
+			
 						
 					}
 					
@@ -278,13 +281,11 @@ public class ReceiverBot extends PircBot {
 					if(!isOp && channelInfo.getFilterOffensive()){
 						if(channelInfo.isOffensive(message)){
 							int warningCount = 0;
-							if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
+
 								channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-							}else{
-								this.kick(channel, sender, "Offensive language");
-							}
+
 						}
 					}
 					
@@ -292,15 +293,13 @@ public class ReceiverBot extends PircBot {
 					if(!isOp && channelInfo.getFilterEmotes()){
 						if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
 							int warningCount = 0;
-							if(BotManager.getInstance().network.equalsIgnoreCase("jtv")){
+
 								channelInfo.incWarningCount(sender, FilterType.EMOTES);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 								
 								if(channelInfo.checkSignKicks())
-									sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
-							}
-							
+									sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam emotes - " + this.getWarningText(warningCount));			
 							
 						}	
 					}
@@ -890,6 +889,24 @@ public class ReceiverBot extends PircBot {
  					}
  				}
  				
+ 				// !symbols - Owner
+ 				if(msg[0].equalsIgnoreCase("!symbols") && isOwner){
+ 					System.out.println("DEBUG: Matched command !symbols");
+ 					if(msg.length == 1){
+ 						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!symbols on/off\"");
+ 					}else if(msg.length > 1){
+ 						if(msg[1].equalsIgnoreCase("on")){
+ 							channelInfo.setFilterSymbols(true);
+ 							sendMessage(channel, channelInfo.getBullet() + " Symbols filter: " + channelInfo.getFilterSymbols());
+ 						}else if(msg[1].equalsIgnoreCase("off")){
+ 							channelInfo.setFilterSymbols(false);
+ 							sendMessage(channel, channelInfo.getBullet() + " Symbols filter: " + channelInfo.getFilterSymbols());
+ 						}else if(msg[1].equalsIgnoreCase("status")){
+ 							sendMessage(channel, channelInfo.getBullet() + " Symbols filter=" + channelInfo.getFilterSymbols());
+ 						}
+ 					}
+ 				}
+ 				
  				// !regular - Owner
  				if(msg[0].equalsIgnoreCase("!regular") && isOwner){
  					System.out.println("DEBUG: Matched command !regular");
@@ -1390,6 +1407,18 @@ public class ReceiverBot extends PircBot {
 					if(!ch.checkPermittedDomain(m))
 						return true;	
 				}
+			}
+		}
+
+		return false;
+	}
+	
+	private boolean containsSymbol(String message, Channel ch){
+		for(Pattern pattern: symbolsPatterns){
+			Matcher match = pattern.matcher(message);
+			if(match.matches()){
+				System.out.println("DEBUG: Symbol match on " + pattern.pattern());	
+				return true;
 			}
 		}
 

@@ -43,7 +43,6 @@ public class BotManager {
 	String server;
 	int port;
 	String password;
-	String network;
 	String localAddress;
 	boolean publicJoin;
 	boolean monitorPings;
@@ -168,7 +167,6 @@ public class BotManager {
 				
 		nick = config.getString("nick");
 		server = config.getString("server");
-		network = config.getString("network");
 		port = Integer.parseInt(config.getString("port"));
 		localAddress = config.getString("localAddress");
 		password = config.getString("password");
