@@ -337,7 +337,7 @@ public class ReceiverBot extends PircBot {
 				// ********************************************************************************
 				
 				//Check channel mode.
-				if(channelInfo.getMode() == 0 && !isOwner)
+				if((channelInfo.getMode() == 0 || channelInfo.getMode() == -1) && !isOwner)
 					return;
 				if(channelInfo.getMode() == 1 && !isOp)
 					return;
@@ -1054,6 +1054,9 @@ public class ReceiverBot extends PircBot {
 						}else if(msg[2].equalsIgnoreCase("2") || msg[2].equalsIgnoreCase("everyone")){
 							channelInfo.setMode(2);
 							sendMessage(channel, channelInfo.getBullet() + " Mode set to everyone.");
+						}else if(msg[2].equalsIgnoreCase("-1") || msg[2].equalsIgnoreCase("admin")){
+							channelInfo.setMode(-1);
+							sendMessage(channel, channelInfo.getBullet() + " Special moderation mode activated.");
 						}
 					}else if(msg[1].equalsIgnoreCase("chatlogging")){
 						if(msg[2].equalsIgnoreCase("on")){
@@ -1142,7 +1145,7 @@ public class ReceiverBot extends PircBot {
 
  						if(msg[1].contains("#")){
  							sendMessage(channel, channelInfo.getBullet() + " Joining channel "+ msg[1] +".");
- 							boolean joinStatus = BotManager.getInstance().addChannel(msg[1],0);
+ 							boolean joinStatus = BotManager.getInstance().addChannel(msg[1],-1);
  							if(joinStatus){
  								sendMessage(channel, channelInfo.getBullet() + " Channel "+ msg[1] +" joined.");
  							}else{

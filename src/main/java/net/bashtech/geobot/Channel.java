@@ -57,7 +57,7 @@ public class Channel {
 	private ArrayList<String> permittedDomains = new ArrayList<String>();
 	public boolean useTopic = true;
 	public boolean useFilters = true;
-	public boolean publicCommands = true;
+	//public boolean publicCommands = true;
 	private Poll currentPoll;
 	private Giveaway currentGiveaway;
 	private boolean enableThrow;
@@ -65,7 +65,7 @@ public class Channel {
 	private boolean announceJoinParts; 
 	private String lastfm;
 	private String steamID;
-	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone
+	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone; -1 Special mode to admins to use for channel moderation
 	private int bulletInt;
 	private char bullet[] = {'>','+', '-', '~'};
 	Raffle raffle;
@@ -951,6 +951,17 @@ public class Channel {
 	public void setMode(int mode) {
 		this.mode = mode;
 		config.setInt("mode", this.mode);
+		
+		if(mode == -1){
+			useFilters = true;
+			filterEmotes = true;
+			filterEmotesMax = 5;
+			useTopic = false;
+			filterCaps = false;
+			filterLinks = true;
+			filterOffensive = true;
+			signKicks = false;
+		}
 	}
 
 	public int getMode() {
