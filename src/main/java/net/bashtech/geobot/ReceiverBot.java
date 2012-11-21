@@ -82,10 +82,7 @@ public class ReceiverBot extends PircBot {
 	
 	private Channel getChannelObject(String channel){
 		Channel channelInfo = null;
-		
 		channelInfo = BotManager.getInstance().getChannel(channel);
-		System.out.println("Got channel: " + channelInfo.getChannel());
-		
 		return channelInfo;
 	}
 	
@@ -140,7 +137,6 @@ public class ReceiverBot extends PircBot {
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
 				Channel channelInfo = getChannelObject(channel);
-				System.out.println("Got channel (confirm): " + channelInfo.getChannel());
 				
 				//Call modules
 				for(BotModule b:BotManager.getInstance().getModules()){
