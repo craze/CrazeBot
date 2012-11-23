@@ -260,6 +260,20 @@ public class ReceiverBot extends PircBot {
 						
 					}
 					
+					// Length filter
+					if(!(isOp || isRegular) && (message.length() > channelInfo.getFilterMax())){
+						int warningCount = 0;
+
+								channelInfo.incWarningCount(sender, FilterType.LENGTH);
+								warningCount = channelInfo.getWarningCount(sender, FilterType.LENGTH);
+								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+								
+							if(channelInfo.checkSignKicks())
+								sendMessage(channel, channelInfo.getBullet() +  " " + sender + ", please don't spam long messages - " + this.getWarningText(warningCount));
+
+						
+					}
+					
 					// Symbols filter
 					if(channelInfo.getFilterSymbols() && !(isOp || isRegular) && this.containsSymbol(message,channelInfo) ){
 						int warningCount = 0;

@@ -45,6 +45,7 @@ public class Channel {
 	private boolean filterEmotes;
 	private boolean filterSymbols;
 	private int filterEmotesMax;
+	private int filterMaxLength;
 	private String topic;
 	private int topicTime;
 	private Set<String> regulars = new HashSet<String>();
@@ -272,6 +273,15 @@ public class Channel {
 	
 	public boolean getFilterSymbols(){
 		return filterSymbols;
+	}
+	
+	public int getFilterMax(){
+		return filterMaxLength;
+	}
+	
+	public void setFilterMax(int option){
+		filterMaxLength = option;
+		config.setInt("filterMaxLength", option);
 	}
 	
 	public void setFilterEmotesMax(int option){
@@ -868,6 +878,10 @@ public class Channel {
 		if(!config.keyExists("logChat")) {
 			config.setBoolean("logChat", false);
 		}
+		if(!config.keyExists("filterMaxLength")) {
+			config.setInt("filterMaxLength", 500);
+		} 
+		
 		
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
@@ -891,6 +905,7 @@ public class Channel {
 		steamID = config.getString("steamID");
 		logChat = Boolean.parseBoolean(config.getString("logChat"));
 		mode = config.getInt("mode");
+		filterMaxLength = config.getInt("filterMaxLength");
 		
 		String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");
