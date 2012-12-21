@@ -412,7 +412,7 @@ public class ReceiverBot extends PircBot {
 						String uptime = this.getStreamList("up_time", channelInfo);
 						sendMessage(channel, channelInfo.getBullet() + " Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
 					} catch (Exception e) {
-						sendMessage(channel, channelInfo.getBullet() + " Last.fm username not set. Do \"!set lastfm [username]\" to configure.");
+						sendMessage(channel, channelInfo.getBullet() + " Error accessing Twitch API.");
 					}
 				}
 				
@@ -1018,7 +1018,7 @@ public class ReceiverBot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!set") && isOwner){
  					System.out.println("DEBUG: Matched command !set");
 					if(msg.length == 1){
-						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!set [option] [value]\". Options: topic, filters, throw, signedkicks, joinsparts, lastfm, steam, mode, chatlogging");
+						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!set [option] [value]\". Options: topic, filters, throw, signedkicks, joinsparts, lastfm, steam, mode, chatlogging, maxlength");
 					}else if(msg[1].equalsIgnoreCase("topic")){
 						if(msg[2].equalsIgnoreCase("on")){
 							channelInfo.setTopicFeature(true);
@@ -1100,6 +1100,13 @@ public class ReceiverBot extends PircBot {
 						}else if(msg[2].equalsIgnoreCase("off")){
 							channelInfo.setLogging(false);
 							sendMessage(channel, channelInfo.getBullet() + " Chat logging is off");
+						}
+					}else if(msg[1].equalsIgnoreCase("maxlength")){
+						if(msg.length > 2){
+							channelInfo.setFilterMax(Integer.parseInt(msg[2]));
+							sendMessage(channel, channelInfo.getBullet() + " Max message length set to " + channelInfo.getFilterMax());
+						}else{
+							sendMessage(channel, channelInfo.getBullet() + " Max message length is " + channelInfo.getFilterMax() + " characters.");
 						}
 					}
  				}
