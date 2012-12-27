@@ -229,8 +229,9 @@ public class ReceiverBot extends PircBot {
  				// Voluntary Filters
  				if(channelInfo.useFilters){
 					// Cap filter
-					int capsNumber = getCapsNumber(message);
-					int capsPercent = getCapsPercent(message);
+ 					String messageNoWS = message.replaceAll("\\s","");
+					int capsNumber = getCapsNumber(messageNoWS);
+					int capsPercent = getCapsPercent(messageNoWS);
 					if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 						int warningCount = 0;
 
