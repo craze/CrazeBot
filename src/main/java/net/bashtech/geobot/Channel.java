@@ -749,6 +749,7 @@ public class Channel {
 	
 	private void registerCommandUsage(String command){
 		synchronized (commandCooldown) {
+			System.out.println("DEBUG: Adding command " + command + " to cooldown list");
 			commandCooldown.put(command.toLowerCase(), getTime());
 		}
 	}
@@ -759,9 +760,12 @@ public class Channel {
 			long lastUse = commandCooldown.get(command);
 			if((getTime() - lastUse) > 30){
 				//Over
+				System.out.println("DEBUG: Cooldown for " + command + " is over");
+				registerCommandUsage(command);
 				return false;
 			}else{
 				//Not Over
+				System.out.println("DEBUG: Cooldown for " + command + " is NOT over");
 				return true;
 			}
 		}else{
