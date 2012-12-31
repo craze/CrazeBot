@@ -357,9 +357,10 @@ public class ReceiverBot extends PircBot {
 				// ********************************************************************************
 				
 				//Command cooldown check
-				if(!isOp && msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
+				if(msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
 					System.out.println("DEBUG: Command " + msg[0] + " is on cooldown.");
-					return;
+					if(!isOp)
+						return;
 				}
 				
 //				// !time - All
