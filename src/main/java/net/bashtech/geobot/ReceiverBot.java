@@ -363,13 +363,13 @@ public class ReceiverBot extends PircBot {
 						return;
 				}
 				
-//				// !time - All
-//				if (msg[0].equalsIgnoreCase("!time")) {
-//						System.out.println("DEBUG: Matched command !time");
-//						String time = new java.util.Date().toString();
-//						sendMessage(channel, sender + ": The time is now " + time);
-//						//return;
-//				}
+				// !ping - All
+				if (msg[0].equalsIgnoreCase("!ping") && isOp) {
+						System.out.println("DEBUG: Matched command !ping");
+						String time = new java.util.Date().toString();
+						sendMessage(channel, channelInfo.getBullet() + " Pong sent at " + time);
+						//return;
+				}
 				
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!lockouttest")) {
