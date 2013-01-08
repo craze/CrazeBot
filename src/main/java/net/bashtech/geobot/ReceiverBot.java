@@ -547,7 +547,7 @@ public class ReceiverBot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!repeat")){
  					System.out.println("DEBUG: Matched command !repeat");
 					if(msg.length < 3 && isOp){
-						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay]\"");
+						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay in seconds]\"");
 					}else if(msg.length > 2 && isOp){
 						if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
 							String key = "!" + msg[2];
