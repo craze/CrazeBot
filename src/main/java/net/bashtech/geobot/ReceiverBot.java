@@ -535,10 +535,42 @@ public class ReceiverBot extends PircBot {
 								
 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
 							String key = "!" + msg[2];
-							channelInfo.removeCommand(key);	
+							channelInfo.removeCommand(key);
+							channelInfo.removeRepeatCommand(key);
 							sendMessage(channel, channelInfo.getBullet() + " Command " + key + " removed.");
 
 							}
+					}
+				}
+ 				
+				// !repeat - Ops
+ 				if(msg[0].equalsIgnoreCase("!repeat")){
+ 					System.out.println("DEBUG: Matched command !repeat");
+					if(msg.length < 3 && isOp){
+						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay]\"");
+					}else if(msg.length > 2 && isOp){
+						if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
+							String key = "!" + msg[2];
+							try{
+								int delay = Integer.parseInt(msg[3]);
+								if(channelInfo.getCommand(key).equalsIgnoreCase("invalid") || delay < 30){
+									//Key not found or delay to short
+									sendMessage(channel, channelInfo.getBullet() + " Command not found or delay is less than 30 seconds.");
+								}else{
+									channelInfo.setRepeatCommand(key, delay);
+									sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will repeat every " + delay + " seconds.");
+								}							
+								
+							}catch(Exception ex){
+								ex.printStackTrace();
+							}
+	
+						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
+							String key = "!" + msg[2];
+							channelInfo.removeRepeatCommand(key);	
+							sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will no longer repeat.");
+
+						}
 					}
 				}
  				
@@ -774,7 +806,7 @@ public class ReceiverBot extends PircBot {
  							channelInfo.permitUser(msg[1]);
  	 						sendMessage(channel, channelInfo.getBullet() + " " + msg[1] + " may now post 1 link.");
  						}else{
- 							sendMessage(channel, channelInfo.getBullet() + " " + msg[1] + " is a regular or subscriber and does not need to be permitted.");
+ 							sendMessage(channel, channelInfo.getBullet() + " " + msg[1] + " is a regular and does not need to be permitted.");
  						}
  					}
  				}

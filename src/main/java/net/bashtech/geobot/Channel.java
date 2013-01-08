@@ -36,6 +36,7 @@ public class Channel {
 	
 	private String channel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
+	private HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
 	private boolean filterCaps;
 	private int filterCapsPercent;
 	private int filterCapsMinCharacters;
@@ -149,6 +150,55 @@ public class Channel {
 			config.setString("commandsValue", commandsValue);
 		}
 
+	}
+	
+	public void setRepeatCommand(String key, int delay){
+		if(commandsRepeat.containsKey(key)){
+			commandsRepeat.get(key).timer.cancel();
+			commandsRepeat.remove(key);
+			RepeatCommand rc = new RepeatCommand(channel, key, delay);
+			commandsRepeat.put(key, rc);
+		}else{
+			RepeatCommand rc = new RepeatCommand(channel, key, delay);
+			commandsRepeat.put(key, rc);
+		}
+
+		//TODO: Save to file
+		String commandsRepeatKey = "";
+		String commandsRepeatDelay = "";
+		
+		Iterator itr = commandsRepeat.entrySet().iterator();
+		
+		while(itr.hasNext()){
+			Map.Entry pairs = (Map.Entry)itr.next();
+			commandsRepeatKey += pairs.getKey() + ",";
+			commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
+		}
+		
+		config.setString("commandsRepeatKey", commandsRepeatKey);
+		config.setString("commandsRepeatDelay", commandsRepeatDelay);
+	}
+	
+	public void removeRepeatCommand(String key){
+		if(commandsRepeat.containsKey(key)){
+			commandsRepeat.get(key).timer.cancel();
+			commandsRepeat.remove(key);
+		
+			//TODO: Save to file
+			String commandsRepeatKey = "";
+			String commandsRepeatDelay = "";
+			
+			Iterator itr = commandsRepeat.entrySet().iterator();
+			
+			while(itr.hasNext()){
+				Map.Entry pairs = (Map.Entry)itr.next();
+				commandsRepeatKey += pairs.getKey() + ",";
+				commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
+			}
+			
+			config.setString("commandsRepeatKey", commandsRepeatKey);
+			config.setString("commandsRepeatDelay", commandsRepeatDelay);
+		}
 	}
 	
 	public String getCommandList(){
@@ -837,6 +887,12 @@ public class Channel {
 		if(!config.keyExists("commandsKey")) {
 			config.setString("commandsKey", "");
 		}
+		if(!config.keyExists("commandsRepeatKey")) {
+			config.setString("commandsRepeatKey", "");
+		}
+		if(!config.keyExists("commandsRepeatDelay")) {
+			config.setString("commandsRepeatDelay", "");
+		}
 		if(!config.keyExists("commandsValue")) {
 			config.setString("commandsValue", "");
 		}
@@ -917,6 +973,16 @@ public class Channel {
 		for(int i = 0; i < commandsKey.length; i++){
 			if(commandsKey[i].length() > 1){
 				commands.put(commandsKey[i], commandsValue[i]);
+			}
+		}
+		
+		String[] commandsRepeatKey = config.getString("commandsRepeatKey").split(",");
+		String[] commandsRepeatDelay = config.getString("commandsRepeatDelay").split(",");
+
+		for(int i = 0; i < commandsRepeatKey.length; i++){
+			if(commandsRepeatKey[i].length() > 1){
+				RepeatCommand rc = new RepeatCommand(channel, commandsRepeatKey[i], Integer.parseInt(commandsRepeatDelay[i]));
+				commandsRepeat.put(commandsRepeatKey[i], rc);
 			}
 		}
 		
