@@ -826,6 +826,7 @@ public class Channel {
 	
 	public void reload(){
 		commands.clear();
+		commandsRepeat.clear();
 		regulars.clear();
 		subscribers.clear();
 		moderators.clear();
