@@ -845,6 +845,8 @@ public class ReceiverBot extends PircBot {
  				// !offensive - Owner
  				if(msg[0].equalsIgnoreCase("!offensive") && isOwner){
  					System.out.println("DEBUG: Matched command !offensive");
+ 					if(isOwner)
+ 						System.out.println("DEBUG: Is owner");
  					if(msg.length == 1){
  						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!offensive on/off\", \"!offsensive add/delete [string to purge]\", \"!offensive list\"");
  					}else if(msg.length > 1){
@@ -854,9 +856,13 @@ public class ReceiverBot extends PircBot {
  						}else if(msg[1].equalsIgnoreCase("off")){
 							channelInfo.setFilterOffensive(false);
 							sendMessage(channel, channelInfo.getBullet() + " Offensive word filter is off");
- 						}
- 					}else if(msg.length  > 2 && isOwner){
- 						if(msg[1].equalsIgnoreCase("add")){
+ 						}else if(msg[1].equalsIgnoreCase("list")){
+ 							String tempList = channelInfo.getBullet() + " Offsenive words: ";
+ 	 						for(String s:channelInfo.getOffensive()){
+ 	 							tempList += s + ", ";
+ 	 						}
+ 	 						sendMessage(channel, tempList);
+ 						}else if(msg[1].equalsIgnoreCase("add") && msg.length > 2){
  							String phrase = fuseArray(msg, 2);
  							if(phrase.contains(",,")){
  								sendMessage(channel,channelInfo.getBullet() + " Cannot contain double commas (,,)");
@@ -866,7 +872,7 @@ public class ReceiverBot extends PircBot {
  								channelInfo.addOffensive(phrase);
  								sendMessage(channel,channelInfo.getBullet() + " Word added. "+ "(" + phrase + ")");
  							}
- 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
+ 						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove") && msg.length > 2){
  							String phrase = fuseArray(msg, 2);
  							if(channelInfo.isOffensive(phrase)){
  								channelInfo.removeOffensive(phrase);
@@ -875,12 +881,6 @@ public class ReceiverBot extends PircBot {
  								sendMessage(channel,channelInfo.getBullet() + " Word does not exist. "+ "(" + phrase + ")");
  							}
  						}
- 					}else if(msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner){
- 						String tempList = channelInfo.getBullet() + " Offsenive words: ";
- 						for(String s:channelInfo.getOffensive()){
- 							tempList += s + ", ";
- 						}
- 						sendMessage(channel, tempList);
  					}
  				}
 				
