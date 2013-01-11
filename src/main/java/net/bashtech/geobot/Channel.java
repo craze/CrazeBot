@@ -941,8 +941,10 @@ public class Channel {
 		}
 		if(!config.keyExists("filterMaxLength")) {
 			config.setInt("filterMaxLength", 500);
-		} 
-		
+		}
+		if(!config.keyExists("offensiveWords")) {
+			config.setString("offensiveWords", "");
+		}
 		
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
