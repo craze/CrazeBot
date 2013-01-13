@@ -69,6 +69,7 @@ public class Channel {
 	private char bullet[] = {'>','+', '-', '~'};
 	Raffle raffle;
 	public boolean logChat;
+	public long messageCount;
 		
 
 	private Set<String> offensiveWords = new HashSet<String>();
@@ -152,20 +153,21 @@ public class Channel {
 
 	}
 	
-	public void setRepeatCommand(String key, int delay){
+	public void setRepeatCommand(String key, int delay, int diff){
 		if(commandsRepeat.containsKey(key)){
 			commandsRepeat.get(key).timer.cancel();
 			commandsRepeat.remove(key);
-			RepeatCommand rc = new RepeatCommand(channel, key, delay);
+			RepeatCommand rc = new RepeatCommand(channel, key, delay, diff);
 			commandsRepeat.put(key, rc);
 		}else{
-			RepeatCommand rc = new RepeatCommand(channel, key, delay);
+			RepeatCommand rc = new RepeatCommand(channel, key, delay, diff);
 			commandsRepeat.put(key, rc);
 		}
 
 		//TODO: Save to file
 		String commandsRepeatKey = "";
 		String commandsRepeatDelay = "";
+		String commandsRepeatDiff = "";
 		
 		Iterator itr = commandsRepeat.entrySet().iterator();
 		
@@ -173,10 +175,12 @@ public class Channel {
 			Map.Entry pairs = (Map.Entry)itr.next();
 			commandsRepeatKey += pairs.getKey() + ",";
 			commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
+			commandsRepeatDiff += ((RepeatCommand)pairs.getValue()).messageDifference + ",";
 		}
 		
 		config.setString("commandsRepeatKey", commandsRepeatKey);
 		config.setString("commandsRepeatDelay", commandsRepeatDelay);
+		config.setString("commandsRepeatDiff", commandsRepeatDiff);
 	}
 	
 	public void removeRepeatCommand(String key){
@@ -187,6 +191,7 @@ public class Channel {
 			//TODO: Save to file
 			String commandsRepeatKey = "";
 			String commandsRepeatDelay = "";
+			String commandsRepeatDiff = "";
 			
 			Iterator itr = commandsRepeat.entrySet().iterator();
 			
@@ -194,10 +199,12 @@ public class Channel {
 				Map.Entry pairs = (Map.Entry)itr.next();
 				commandsRepeatKey += pairs.getKey() + ",";
 				commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
+				commandsRepeatDiff += ((RepeatCommand)pairs.getValue()).messageDifference + ",";
 			}
 			
 			config.setString("commandsRepeatKey", commandsRepeatKey);
 			config.setString("commandsRepeatDelay", commandsRepeatDelay);
+			config.setString("commandsRepeatDiff", commandsRepeatDiff);
 		}
 	}
 	
@@ -894,6 +901,9 @@ public class Channel {
 		if(!config.keyExists("commandsRepeatDelay")) {
 			config.setString("commandsRepeatDelay", "");
 		}
+		if(!config.keyExists("commandsRepeatDiff")) {
+			config.setString("commandsRepeatDiff", "");
+		}
 		if(!config.keyExists("commandsValue")) {
 			config.setString("commandsValue", "");
 		}
@@ -981,10 +991,11 @@ public class Channel {
 		
 		String[] commandsRepeatKey = config.getString("commandsRepeatKey").split(",");
 		String[] commandsRepeatDelay = config.getString("commandsRepeatDelay").split(",");
-
+		String[] commandsRepeatDiff = config.getString("commandsRepeatDiff").split(",");
+		
 		for(int i = 0; i < commandsRepeatKey.length; i++){
 			if(commandsRepeatKey[i].length() > 1){
-				RepeatCommand rc = new RepeatCommand(channel, commandsRepeatKey[i], Integer.parseInt(commandsRepeatDelay[i]));
+				RepeatCommand rc = new RepeatCommand(channel, commandsRepeatKey[i], Integer.parseInt(commandsRepeatDelay[i]),Integer.parseInt(commandsRepeatDiff[i]));
 				commandsRepeat.put(commandsRepeatKey[i], rc);
 			}
 		}

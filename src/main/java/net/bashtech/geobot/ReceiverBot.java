@@ -137,6 +137,8 @@ public class ReceiverBot extends PircBot {
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
 				Channel channelInfo = getChannelObject(channel);
+				if(!sender.equalsIgnoreCase(this.getNick()))
+					channelInfo.messageCount++; //Inc message count
 				
 				//Call modules
 				for(BotModule b:BotManager.getInstance().getModules()){
@@ -547,18 +549,22 @@ public class ReceiverBot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!repeat")){
  					System.out.println("DEBUG: Matched command !repeat");
 					if(msg.length < 3 && isOp){
-						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay in seconds]\"");
+						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay in seconds] [message difference - optional]\"");
 					}else if(msg.length > 2 && isOp){
 						if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
 							String key = "!" + msg[2];
 							try{
 								int delay = Integer.parseInt(msg[3]);
+								int difference = 1;
+								if(msg.length == 5)
+									difference = Integer.parseInt(msg[4]);
+									
 								if(channelInfo.getCommand(key).equalsIgnoreCase("invalid") || delay < 30){
 									//Key not found or delay to short
 									sendMessage(channel, channelInfo.getBullet() + " Command not found or delay is less than 30 seconds.");
 								}else{
-									channelInfo.setRepeatCommand(key, delay);
-									sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will repeat every " + delay + " seconds.");
+									channelInfo.setRepeatCommand(key, delay, difference);
+									sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will repeat every " + delay + " seconds if " + difference + " messages have passed.");
 								}							
 								
 							}catch(Exception ex){
