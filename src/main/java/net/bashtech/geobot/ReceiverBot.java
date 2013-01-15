@@ -56,8 +56,8 @@ public class ReceiverBot extends PircBot {
 	private Pattern[] linkPatterns = new Pattern[3];
 	private Pattern[] symbolsPatterns = new Pattern[1];
 	private int lastPing = -1;
-	private int[] warningTODuration = {10, 30, 60, 600};
-	private String[] warningText = {"first warning (10 sec t/o)", "second warning (30 sec t/o)", "final warning (1 min t/o)", "(10 min timeout)"};
+	private int[] warningTODuration = {10, 60, 600, 86400};
+	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
 	
 	public ReceiverBot(String server, int port){
 		linkPatterns[0] = Pattern.compile(".*http://.*");
@@ -1516,15 +1516,15 @@ public class ReceiverBot extends PircBot {
 	}
 	
 	private String getWarningText(int count){
-		if(count > 4)
-			return warningText[3];
+		if(count > (warningTODuration.length-1))
+			return warningText[warningTODuration.length-1];
 		else
 			return warningText[count-1];	
 	}
 	
 	private int getWarningTODuration(int count){
-		if(count > 4)
-			return warningTODuration[3];
+		if(count > (warningTODuration.length-1))
+			return warningTODuration[warningTODuration.length-1];
 		else
 			return warningTODuration[count-1];
 	}

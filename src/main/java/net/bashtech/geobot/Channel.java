@@ -788,13 +788,16 @@ public class Channel {
 				warningTime.put(name.toLowerCase(), getTime());
 			}
 		}
+		
+		clearWarnings();
 	}
 	
 	public void clearWarnings(){
 		synchronized (warningTime) {
 			synchronized (warningCount) {
+				long time = getTime();
 				for (Map.Entry<String, Long> entry : warningTime.entrySet()){
-					if((getTime() - entry.getValue()) > 3600){
+					if((time - entry.getValue()) > 3600){
 						warningCount.remove(entry.getKey());
 						warningTime.remove(entry.getKey());
 					}
