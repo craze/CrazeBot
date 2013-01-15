@@ -107,7 +107,8 @@ filters, etc.
 
   * !command add [name] [text] - Ops - Creates an info command (!name) 
   * !command delete [name] - Ops - Removes info command (!name) 
- 
+  
+  
   * !repeat add [name] [delay in seconds] [message difference - optional] 
   * !repeat delete [name] 
 
@@ -118,8 +119,8 @@ The repeat command will repeat a custom trigger every X amount of seconds passed
   * !links on/off - Owner - Toggles link filtering on and off 
   * !permit [name] - Mods - Permits name to post 1 link 
   * !pd add/delete/list - Owner - Configures permanently permitted domains 
- 
- 
+  
+  
   * !caps on/off - Owner - Toggle cap filtering on and off 
 
 Filtered messages must match all three of the below settings:
@@ -128,12 +129,14 @@ Filtered messages must match all three of the below settings:
   * !caps mincaps [int] - >= this number of caps per line 
   * !caps minchars [int] - total characters per line must be >= this 
   * !caps status - Displays the current values 
-
+  
+  
   * !offensive on/off - Turns filter on/off 
   * !offensive list - Lists filtered words 
   * !offensive add [word string] - Adds string to filter 
   * !offensive delete [word string] - Removes string from filter 
-
+  
+  
   * !emotes on/off - Owner - Toggle emote spam filtering on and off 
   * !emotes max [int] - Max number of emotes allowed 
 
@@ -147,7 +150,8 @@ Filtered messages must match all three of the below settings:
     * steam [ID] - Sets your Steam ID. Must be in [SteamID64](http://steamidconverter.com/) format and profile must be public 
     * mode [(0/owner),(1/mod),(2,everyone),(-1, "Admin mode")] - Sets the minimum access to use any bot commands. Options are either owner, mod, everyone, or "Admin mode". Specifying no argument will display current setting. Also see !modchan 
     * chatlogging - Enables logging of chat conversations. Logs are stored at [http://btx.me/ackbot](http://btx.me/ackbot) and are publicly visible 
-
+  
+  
   * !regular add/delete/list [name] - Owner - Adds a "regular". Regulars don't need permission to post links 
   * !mod add/delete/list [name] - Owner - Adds a "moderator". Moderators have access to all the bot commands the same way mods/ops do. Sometimes the bot does not recognize peoples op status do to issues with their IRC implementation so this is a way to explicitly add them. Channel owner automatically gets this status 
   * !owner add/delete/list [name] - Owner - Gives a user owner permissions on a channel 
@@ -158,10 +162,12 @@ Filtered messages must match all three of the below settings:
   * !poll start/stop - Ops - Starts or stops the poll 
   * !poll results - Ops - Displays poll results 
   
+  
   * !giveaway create max-number [duration] - Ops - Creates a number-selection based giveaway with numbers from 1 - max. Duration is an optional value in seconds after which the giveaway will stop. Specifying a duration will auto-start the giveaway and stop will not need to be executed 
   * !giveaway start/stop - Ops - Starts or stops the giveaway entry 
   * !giveaway results - Ops - Displays winner(s) 
   * (!ga - Alias for !giveaway) 
+  
   
   * !raffle - Enters sender in the raffle. 
   * !raffle enable/disable - Enables entries in the raffle. 
