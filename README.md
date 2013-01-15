@@ -18,9 +18,7 @@ For more information about the Ackbot implementation, please see
 
 ##  Issues/Feature Requests
 
-Submit them [here](mailto:feedback@bashtech.net).
-
-##  Installation
+PM bgeorge on Twitch
 
 ###  Installing from source
 
@@ -176,7 +174,7 @@ Filtered messages must match all three of the below settings:
   * !raffle winner - Picks a winner. 
 
   
-**Random Generators**
+### Random Generators
 
   * !random user - Selects a random user from the userlist (Due to quirks with Twitch chat, this is not a recommended why of picking user) 
 
@@ -188,7 +186,7 @@ Filtered messages must match all three of the below settings:
 
 ###  Admin
 
-Admin nicks are defined in global.properties.
+Admin nicks are defined in global.properties. Twitch Admins and Staff also have access.
 
   * !bm-join [#channelname] - Joins channelname  
   * !bm-leave [#channelname] - Leaves channelname   
