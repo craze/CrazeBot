@@ -373,7 +373,7 @@ public class ReceiverBot extends PircBot {
 						//return;
 				}
 				
-				// !bothelp - All
+				// !lockouttest - All
 				if (msg[0].equalsIgnoreCase("!lockouttest")) {
 						System.out.println("DEBUG: Matched command !lockouttest");
 						sendMessage(channel, channelInfo.getBullet() + " " + sender + ", your message was received! You are NOT locked out of chat.");
@@ -383,7 +383,7 @@ public class ReceiverBot extends PircBot {
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!bothelp")) {
 						System.out.println("DEBUG: Matched command !bothelp");
-						sendMessage(channel, channelInfo.getBullet() + " Command help is available at http://bashtech.net/wiki/Geobot#Commands");
+						sendMessage(channel, channelInfo.getBullet() + " Command help is available at http://bashtech.net/twitch/geobot.php");
 						//return;
 				}
 				
