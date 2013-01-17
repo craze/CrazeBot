@@ -1533,6 +1533,8 @@ public class ReceiverBot extends PircBot {
 		Timer timer = new Timer();
 		int delay = 1000;
 		
+		System.out.println("DEBUG: Issuing a timeout on " + name + " in " + channel + " for " + duration);
+		
 		timer.schedule(new TimerTask()
 	       {
 	        public void run() {
