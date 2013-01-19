@@ -793,15 +793,21 @@ public class Channel {
 	}
 	
 	public void clearWarnings(){
+		List<String> toRemove = new ArrayList<String>();
 		synchronized (warningTime) {
 			synchronized (warningCount) {
 				long time = getTime();
 				for (Map.Entry<String, Long> entry : warningTime.entrySet()){
 					if((time - entry.getValue()) > 3600){
-						warningCount.remove(entry.getKey());
-						warningTime.remove(entry.getKey());
+						toRemove.add((String)entry.getKey());
+						//warningCount.remove(entry.getKey());
+						//warningTime.remove(entry.getKey());
 					}
-				}	
+				}
+				for(String name : toRemove){
+					warningCount.remove(name);
+					warningTime.remove(name);
+				}
 			}
 		}
 
