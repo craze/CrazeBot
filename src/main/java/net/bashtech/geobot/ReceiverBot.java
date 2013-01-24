@@ -803,7 +803,7 @@ public class ReceiverBot extends PircBot {
  				}
  				
  				// !permit - Allows users to post 1 link
- 				if(msg[0].equalsIgnoreCase("!permit") && channelInfo.getFilterLinks() && channelInfo.useFilters && isOp){
+ 				if((msg[0].equalsIgnoreCase("!permit") || msg[0].equalsIgnoreCase("!allow")) && channelInfo.getFilterLinks() && channelInfo.useFilters && isOp){
  					System.out.println("DEBUG: Matched command !permit");
  					if(msg.length == 1){
  						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!permit [username]\"");
