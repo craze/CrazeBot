@@ -61,6 +61,7 @@ public class BotManager {
 	public int senderInstances;
 	ReceiverBot receiverBot;
 	SenderBotBalancer sbb;
+	public String commercialPasscode;
 	
 	private String _propertiesFile;
 	
@@ -157,6 +158,10 @@ public class BotManager {
 			config.setString("localAddress", "");
 		}
 		
+		if(!config.keyExists("commercialPasscode")) {
+			config.setString("commercialPasscode", "");
+		}
+		
 		if(!config.keyExists("verboseLogging")) {
 			config.setBoolean("verboseLogging", false);
 		}
@@ -176,6 +181,7 @@ public class BotManager {
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
 		senderInstances = config.getInt("senderInstances");
+		commercialPasscode = config.getString("commercialPasscode");
 		
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);

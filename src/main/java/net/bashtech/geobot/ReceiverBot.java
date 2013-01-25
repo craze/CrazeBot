@@ -519,6 +519,16 @@ public class ReceiverBot extends PircBot {
 					//return;
 				}
 				
+				// !commercial
+				if(msg[0].equalsIgnoreCase("!commercial")){
+					System.out.println("DEBUG: Matched command !commercial");
+					if(isOwner){
+						String result = channelInfo.runCommercial();
+						//sendMessage(channel, channelInfo.getBullet() + " Running a 30 second commercial. Thank you for supporting the channel!");
+					}
+					//return;
+				}
+				
 				// !command - Ops
  				if(msg[0].equalsIgnoreCase("!command")){
  					System.out.println("DEBUG: Matched command !command");

@@ -38,6 +38,9 @@ public class RepeatCommand {
         	if(channelInfo.messageCount - RepeatCommand.this.lastMessageCount >= messageDifference){
         		String command = channelInfo.getCommand(key);
             	SenderBotBalancer.getInstance().sendMessage(channel, channelInfo.getBullet() + " " + command);
+            	
+            	if(key.equalsIgnoreCase("!commercial"))
+            		channelInfo.runCommercial();
         	}else{
         		System.out.println("DEBUG: No messages received since last send - " + key);
         	}

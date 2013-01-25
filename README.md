@@ -31,6 +31,7 @@ PM bgeorge on Twitch
   * !music - All - Displays what you are currently listening to on Last.fm 
   * !steam - All - Display Steam profile, current game and server 
   * !bothelp - All - Displays link bot help documents 
+  * !commercial - Owner - Runs a 30 second commercial. This command is also supported in !repeat.  
 
 ### Fun 
 
