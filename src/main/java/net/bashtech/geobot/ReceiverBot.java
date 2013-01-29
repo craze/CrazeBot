@@ -21,8 +21,10 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -515,6 +517,23 @@ public class ReceiverBot extends PircBot {
 							sendMessage(channel, channelInfo.getBullet() + " Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
 
+					}
+					//return;
+				}
+				
+				// !link
+				if(msg[0].equalsIgnoreCase("!link") && isRegular){
+					System.out.println("DEBUG: Matched command !link");
+					if(msg.length > 1){
+							String rawQuery = message.substring(6);
+							String encodedQuery = "";
+							try {
+								encodedQuery = URLEncoder.encode(rawQuery,"UTF-8");
+							} catch (UnsupportedEncodingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							sendMessage(channel, channelInfo.getBullet() + " Link to \"" + rawQuery + "\" -> " + "http://lmgtfy.com/?q=" + encodedQuery);
 					}
 					//return;
 				}
