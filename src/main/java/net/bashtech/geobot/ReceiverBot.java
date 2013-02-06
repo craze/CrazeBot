@@ -483,15 +483,27 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !throw - All
-				if((msg[0].equalsIgnoreCase("!throw") || msg[0].equalsIgnoreCase("!flip")) && (channelInfo.checkThrow() || isRegular)){
+				if(msg[0].equalsIgnoreCase("!throw") && (channelInfo.checkThrow() || isRegular)){
 					System.out.println("DEBUG: Matched command !throw");
 					if(msg.length > 1){
 						String throwMessage = "";
 						for(int i=1;i<msg.length;i++){
 							throwMessage += msg[i] + " ";
 						}
+						sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
+					}
+				}
+				
+				// !flip - All
+				if(msg[0].equalsIgnoreCase("!flip") && (channelInfo.checkThrow() || isRegular)){
+					System.out.println("DEBUG: Matched command !fli");
+					if(msg.length > 1){
+						String throwMessage = "";
+						for(int i=1;i<msg.length;i++){
+							throwMessage += msg[i] + " ";
+						}
 						//sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
-						sendMessage(channel, "(╯°‿°） TABLEFLIP " + throwMessage);
+						sendMessage(channel, throwMessage + " TABLEFLIP");
 					}
 				}
 				
