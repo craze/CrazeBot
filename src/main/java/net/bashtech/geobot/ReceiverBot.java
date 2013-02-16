@@ -371,7 +371,7 @@ public class ReceiverBot extends PircBot {
 				if (msg[0].equalsIgnoreCase("!ping") && isOp) {
 						System.out.println("DEBUG: Matched command !ping");
 						String time = new java.util.Date().toString();
-						sendMessage(channel, channelInfo.getBullet() + " Pong sent at " + time);
+						sendMessage(channel, channelInfo.getBullet() + " Pong sent at " + time + " (" + this.fuseArray(msg, 1) + ")");
 						//return;
 				}
 				
