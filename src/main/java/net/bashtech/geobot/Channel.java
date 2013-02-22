@@ -1124,7 +1124,7 @@ public class Channel {
 	
 	public String runCommercial(){
 		try{
-			URL url = new URL("http://bashtech.net/twitch/kraken/ackbot.php?channel=" + getChannel().substring(1)+ "&action=commercial&passcode=" + BotManager.getInstance().commercialPasscode);
+			URL url = new URL(BotManager.getInstance().webRoot + "/kraken.php?channel=" + getChannel().substring(1)+ "&action=commercial&passcode=" + BotManager.getInstance().commercialPasscode);
 			URLConnection conn = url.openConnection();
 			DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
 			BufferedReader d = new BufferedReader(new InputStreamReader(in));

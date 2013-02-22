@@ -62,6 +62,7 @@ public class BotManager {
 	ReceiverBot receiverBot;
 	SenderBotBalancer sbb;
 	public String commercialPasscode;
+    public String webRoot; //Location of web api resources
 	
 	private String _propertiesFile;
 	
@@ -161,6 +162,10 @@ public class BotManager {
 		if(!config.keyExists("commercialPasscode")) {
 			config.setString("commercialPasscode", "");
 		}
+
+        if(!config.keyExists("webRoot")) {
+            config.setString("webRoot", "");
+        }
 		
 		if(!config.keyExists("verboseLogging")) {
 			config.setBoolean("verboseLogging", false);
@@ -182,7 +187,8 @@ public class BotManager {
 		verboseLogging = config.getBoolean("verboseLogging");
 		senderInstances = config.getInt("senderInstances");
 		commercialPasscode = config.getString("commercialPasscode");
-		
+        webRoot = config.getString("webRoot");
+
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
 			if(s.length() > 1){

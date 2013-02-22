@@ -1603,8 +1603,8 @@ public class ReceiverBot extends PircBot {
 	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
 		if(channelInfo.getLastfm().length() < 1)
 			return "Function not configured.";
-		
-		URL url = new URL("http://bashtech.net/app-support/geobot/lastfm.php?action=lastplayed&user=" + channelInfo.getLastfm());
+
+		URL url = new URL(BotManager.getInstance().webRoot + "/lastfm.php?action=lastplayed&user=" + channelInfo.getLastfm());
 		URLConnection conn = url.openConnection();
 		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
 		BufferedReader d = new BufferedReader(new InputStreamReader(in));
@@ -1625,7 +1625,7 @@ public class ReceiverBot extends PircBot {
 	}
 	
 	private SteamData getSteamData(Channel channelInfo) throws IOException{
-		URL url = new URL("http://bashtech.net/app-support/geobot/steam.php?user=" + channelInfo.getSteam());
+		URL url = new URL(BotManager.getInstance().webRoot + "/steam.php?user=" + channelInfo.getSteam());
 		URLConnection conn = url.openConnection();
 		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
 		BufferedReader d = new BufferedReader(new InputStreamReader(in));
