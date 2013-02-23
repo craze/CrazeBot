@@ -1123,23 +1123,12 @@ public class Channel {
 	}
 	
 	public String runCommercial(){
-		try{
-			URL url = new URL(BotManager.getInstance().webRoot + "/kraken.php?channel=" + getChannel().substring(1)+ "&action=commercial&passcode=" + BotManager.getInstance().commercialPasscode);
-			URLConnection conn = url.openConnection();
-			DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-			BufferedReader d = new BufferedReader(new InputStreamReader(in));
-			String dataIn = "";
-			while(d.ready())
-			{
-				dataIn = d.readLine();
-			}
-			
-			System.out.println(dataIn);
-			
-			return "";
-		}catch(Exception e){
-			return "An error occured.";
-		}
+        String dataIn = "";
+        dataIn = BotManager.getRemoteContent(BotManager.getInstance().webRoot + "/kraken.php?channel=" + getChannel().substring(1)+ "&action=commercial&passcode=" + BotManager.getInstance().commercialPasscode);
+
+        System.out.println(dataIn);
+        return "";
+
 
 	}
 

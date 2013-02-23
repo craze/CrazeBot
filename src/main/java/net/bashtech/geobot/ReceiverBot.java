@@ -17,11 +17,8 @@
 */
 
 package net.bashtech.geobot;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -36,6 +33,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -425,26 +423,19 @@ public class ReceiverBot extends PircBot {
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
 					System.out.println("DEBUG: Matched command !music");
-					try {
-						sendMessage(channel, channelInfo.getBullet() + " " + this.getLastFMLastPlayed(channelInfo));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					sendMessage(channel, channelInfo.getBullet() + " " + this.getLastFMLastPlayed(channelInfo));
 				}
 				
 				// !steam - All
 				if (msg[0].equalsIgnoreCase("!steam")) {
 					System.out.println("DEBUG: Matched command !steam");
 					if(channelInfo.getSteam().length() > 1){
-						try {
-						if(channelInfo.getSteam().length() > 1){
-							SteamData data = this.getSteamData(channelInfo);
-							sendMessage(channel, channelInfo.getBullet() + " Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+
+                    if(channelInfo.getSteam().length() > 1){
+                        SteamData data = this.getSteamData(channelInfo);
+                        sendMessage(channel, channelInfo.getBullet() + " Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
+                    }
+
 					}else{
 						sendMessage(channel, channelInfo.getBullet() + " Steam ID not set. Do \"!set steam [ID]\" to configure. ID must be in SteamID64 format and profile must be public.");
 					}
@@ -1600,20 +1591,12 @@ public class ReceiverBot extends PircBot {
 		}
 	}
 	
-	private String getLastFMLastPlayed(Channel channelInfo) throws IOException{
+	private String getLastFMLastPlayed(Channel channelInfo){
 		if(channelInfo.getLastfm().length() < 1)
 			return "Function not configured.";
 
-		URL url = new URL(BotManager.getInstance().webRoot + "/lastfm.php?action=lastplayed&user=" + channelInfo.getLastfm());
-		URLConnection conn = url.openConnection();
-		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-		String jsonIn = "";
-		while(d.ready())
-		{
-			jsonIn = d.readLine();
-		}
-			
+        String jsonIn = BotManager.getRemoteContent(BotManager.getInstance().webRoot + "/lastfm.php?action=lastplayed&user=" + channelInfo.getLastfm());
+
 		LastFmRecentTracks data = new Gson().fromJson(jsonIn, LastFmRecentTracks.class);
 		
 		if(data.playing == true){
@@ -1624,16 +1607,10 @@ public class ReceiverBot extends PircBot {
 			
 	}
 	
-	private SteamData getSteamData(Channel channelInfo) throws IOException{
-		URL url = new URL(BotManager.getInstance().webRoot + "/steam.php?user=" + channelInfo.getSteam());
-		URLConnection conn = url.openConnection();
-		DataInputStream in = new DataInputStream ( conn.getInputStream (  )  ) ;
-		BufferedReader d = new BufferedReader(new InputStreamReader(in));
-		String jsonIn = "";
-		while(d.ready())
-		{
-			jsonIn = d.readLine();
-		}
+	private SteamData getSteamData(Channel channelInfo){
+        String jsonIn = "";
+
+        jsonIn = BotManager.getRemoteContent(BotManager.getInstance().webRoot + "/steam.php?user=" + channelInfo.getSteam());
 		
 		SteamData data = new Gson().fromJson(jsonIn, SteamData.class);
 		

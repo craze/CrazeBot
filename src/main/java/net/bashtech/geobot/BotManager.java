@@ -18,9 +18,9 @@
 
 package net.bashtech.geobot;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -398,6 +398,34 @@ public class BotManager {
 			}
 
 	}
+
+    public static String getRemoteContent(String urlString){
+        String dataIn = "";
+        try{
+            URL url = new URL(urlString);
+            //System.out.println("DEBUG: Getting data from " + url.toString());
+            URLConnection conn = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null)
+                dataIn += inputLine;
+            in.close();
+
+//            Reader reader = new InputStreamReader(conn.getInputStream());
+//
+//            while (true){
+//                int ch = reader.read();
+//                if(ch==-1){
+//                    break;
+//                }
+//                dataIn += (char)ch;
+//            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        return dataIn;
+    }
 	
 	
 }
