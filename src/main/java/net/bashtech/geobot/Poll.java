@@ -83,18 +83,31 @@ public class Poll {
 	}
 	
 	public String[] getResults(){
-		String[] results = new String[votes.size() + 4];
-		results[0] = "> Poll Results";
-		results[1] = "> -------------";
-		int c = 2;
-		for(Map.Entry<String, Integer> entry: votes.entrySet()){
-			results[c] = "> '" + entry.getKey() + "' - " + entry.getValue();
-			c++;
-		}
-		Map.Entry<String, Integer> most = this.getMostVotes();
-		results[results.length-2] = "> -------------";
-		results[results.length-1] = "> Winner: '" + most.getKey() + "' - " + most.getValue();
-		return  results;
-	}
+        String[] results = new String[votes.size() + 4];
+        results[0] = "> Poll Results";
+        results[1] = "> -------------";
+        int c = 2;
+        for(Map.Entry<String, Integer> entry: votes.entrySet()){
+            results[c] = "> '" + entry.getKey() + "' - " + entry.getValue();
+            c++;
+        }
+        Map.Entry<String, Integer> most = this.getMostVotes();
+        results[results.length-2] = "> -------------";
+        results[results.length-1] = "> Winner: '" + most.getKey() + "' - " + most.getValue();
+        return  results;
+    }
+
+    public String getResultsString(){
+        String results = "";
+        results += "Poll Results: ";
+        int c = 2;
+        for(Map.Entry<String, Integer> entry: votes.entrySet()){
+            results += "'" + entry.getKey() + "' - " + entry.getValue() + ", ";
+            c++;
+        }
+        Map.Entry<String, Integer> most = this.getMostVotes();
+        results += " ~ Winner: '" + most.getKey() + "' - " + most.getValue();
+        return  results;
+    }
 
 }

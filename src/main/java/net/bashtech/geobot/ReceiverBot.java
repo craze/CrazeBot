@@ -648,10 +648,11 @@ public class ReceiverBot extends PircBot {
 							}
 						}else if(msg[1].equalsIgnoreCase("results")){
 							if(channelInfo.getPoll() != null){
-								String[] results = channelInfo.getPoll().getResults();
-								for(int c=0;c<results.length;c++){
-									sendMessage(channel, results[c]);
-								}
+                                sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getPoll().getResultsString());
+//								String[] results = channelInfo.getPoll().getResults();
+//								for(int c=0;c<results.length;c++){
+//									sendMessage(channel, results[c]);
+//								}
 							}
 						
 					   }
