@@ -163,6 +163,23 @@ public class Giveaway {
 		}
 		return  results;		
 	}
+
+    public String getResultsString(){
+        ArrayList<GiveawayEntry> winners = getWinners();
+
+        String results = "";
+        if(winners.size() > 1)
+            results += "Tie";
+        else
+            results += "Winner";
+        results += " ~ Secret number - " + secretNumber + " ~ ";
+        int c=4;
+        for(GiveawayEntry e: winners){
+            results += " " +  e.nickname + " - " + e.entry + ", ";
+            c++;
+        }
+        return  results;
+    }
 	
 	private class GiveawayEntry{
 		String nickname;

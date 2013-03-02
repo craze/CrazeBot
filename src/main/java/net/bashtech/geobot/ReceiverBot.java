@@ -696,10 +696,11 @@ public class ReceiverBot extends PircBot {
 							}
 						}else if(msg[1].equalsIgnoreCase("results")){
 							if(channelInfo.getGiveaway() != null){
-								String[] results = channelInfo.getGiveaway().getResults();
-								for(int c=0;c<results.length;c++){
-									sendMessage(channel, results[c]);
-								}
+                                sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getGiveaway().getResultsString());
+//								String[] results = channelInfo.getGiveaway().getResults();
+//								for(int c=0;c<results.length;c++){
+//									sendMessage(channel, results[c]);
+//								}
 							}else{
 								sendMessage(channel, channelInfo.getBullet() + " No giveaway results.");
 							}
