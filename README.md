@@ -18,7 +18,7 @@ For more information about the Ackbot implementation, please see
 
 ##  Issues/Feature Requests
 
-PM bgeorge on Twitch
+PM [george](http://www.twitch.tv/message/compose?to=george) on Twitch
 
 ##  Commands
 
