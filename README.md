@@ -151,15 +151,15 @@ Admin nicks are defined in global.properties. Twitch Admins and Staff also have 
 
 Adding dynamic data to bot message is also supported via string substitutions. The following substitutions are available:
 
-  * (_GAME_) : Twitch game
-  * (_STATUS_) : Twitch status
-  * (_VIEWERS_) : Viewer count
-  * (_CHATTERS_) : Number of users in chat
-  * (_STEAM_PROFILE_) : Link to Steam profile (Steam account must be configured)
-  * (_STEAM_GAME_) : Steam game (Steam account must be configured)
-  * (_STEAM_SERVER_) : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured)
-  * (_STEAM_STORE_) : Link to Steam store for the game you are playing (Steam account must be configured)
-  * (_SONG_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
+  * (\_GAME\_) : Twitch game
+  * (\_STATUS\_) : Twitch status
+  * (\_VIEWERS\_) : Viewer count
+  * (\_CHATTERS\_) : Number of users in chat
+  * (\_STEAM_PROFILE\_) : Link to Steam profile (Steam account must be configured)
+  * (\_STEAM_GAME\_) : Steam game (Steam account must be configured)
+  * (\_STEAM_SERVER\_) : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured)
+  * (\_STEAM_STORE\_) : Link to Steam store for the game you are playing (Steam account must be configured)
+  * (\_SONG\_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
 
   Example:
   !command add info I am (_PROFILE_) and I'm playing (_STEAM_GAME_) on (_STEAM_SERVER_) listening to (_SONG_)
