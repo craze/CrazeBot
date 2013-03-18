@@ -155,14 +155,14 @@ Adding dynamic data to bot message is also supported via string substitutions. T
   * (\_STATUS\_) : Twitch status
   * (\_VIEWERS\_) : Viewer count
   * (\_CHATTERS\_) : Number of users in chat
-  * (\_STEAM_PROFILE\_) : Link to Steam profile (Steam account must be configured)
-  * (\_STEAM_GAME\_) : Steam game (Steam account must be configured)
-  * (\_STEAM_SERVER\_) : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured)
-  * (\_STEAM_STORE\_) : Link to Steam store for the game you are playing (Steam account must be configured)
+  * (\_STEAM\_PROFILE\_) : Link to Steam profile (Steam account must be configured)
+  * (\_STEAM\_GAME\_) : Steam game (Steam account must be configured)
+  * (\_STEAM\_SERVER\_) : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured)
+  * (\_STEAM\_STORE\_) : Link to Steam store for the game you are playing (Steam account must be configured)
   * (\_SONG\_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
 
   Example:
-  !command add info I am (\_PROFILE\_) and I'm playing (\_STEAM_GAME\_) on (\_STEAM_SERVER\_) listening to (\_SONG\_)
+  !command add info I am (\_PROFILE\_) and I'm playing (\_STEAM\_GAME\_) on (\_STEAM\_SERVER\_) listening to (\_SONG\_)
 
   Output:
   I am http://bit.ly/321nds and I'm playing FTL: Faster Than Light on (none) listening to Wings of Destiny by David Saulesco
