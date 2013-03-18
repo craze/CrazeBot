@@ -1,3 +1,21 @@
+/*
+ * Copyright 2012 Andrew Bashore
+ * This file is part of GeoBot.
+ *
+ * GeoBot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * GeoBot is distributed in the hope that it will be useful
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GeoBot.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package net.bashtech.geobot;
 
 import org.json.simple.JSONArray;
@@ -21,10 +39,10 @@ public class JSONUtil {
 //        System.out.println("Viewers: " + viewers);
 //    }
 
-    public static String krakenViewers(String channel) throws Exception{
+    public static String krakenViewers(String channel){
         try{
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/mlglol"));
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
 
             JSONObject jsonObject = (JSONObject) obj;
 
@@ -33,7 +51,41 @@ public class JSONUtil {
             return "Viewers: " + viewers;
         }catch (Exception ex){
             ex.printStackTrace();
-            return "Error querying API";
+            return "0";
+        }
+
+    }
+
+    public static String krakenStatus(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/channels/" + channel));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            String status = (String)jsonObject.get("status");
+
+            return status;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return "(Error querying API)";
+        }
+
+    }
+
+    public static String krakenGame(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/channels/" + channel));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            String game = (String)jsonObject.get("game");
+
+            return game;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return "(Error querying API)";
         }
 
     }
@@ -63,12 +115,12 @@ public class JSONUtil {
             }
         }catch (Exception ex){
             ex.printStackTrace();
-            return "Error querying API";
+            return "(Error querying API)";
         }
 
     }
 
-    public static String steam(String userID){
+    public static String steam(String userID, String retValues){
         String api_key = BotManager.getInstance().SteamAPIKey;
 
         try{
@@ -85,8 +137,19 @@ public class JSONUtil {
                 String profileurl = (String) index0.get("profileurl");
                 String gameextrainfo = (String) index0.get("gameextrainfo");
                 String gameserverip = (String) index0.get("gameserverip");
+                String gameid = (String) index0.get("gameid");
 
-                return "Profile: " + JSONUtil.shortenURL(profileurl) + ( gameextrainfo != null ? ", Game: " + gameextrainfo : "") + ( gameserverip != null ? ", Server: " + gameserverip : "");
+                if(retValues.equals("profile"))
+                    return JSONUtil.shortenURL(profileurl);
+                else if(retValues.equals("game"))
+                    return (gameextrainfo != null ? gameextrainfo : "(none)");
+                else if(retValues.equals("server"))
+                    return (gameserverip != null ? gameserverip : "(none)");
+                else if(retValues.equals("store"))
+                    return (gameid != null ? "http://store.steampowered.com/app/" + gameid : "(none)");
+                else
+                    return "Profile: " + JSONUtil.shortenURL(profileurl) + ( gameextrainfo != null ? ", Game: " + gameextrainfo : "") + ( gameserverip != null ? ", Server: " + gameserverip : "");
+
             }else{
                 return "Error querying API";
             }

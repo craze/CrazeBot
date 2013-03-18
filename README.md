@@ -145,4 +145,24 @@ Admin nicks are defined in global.properties. Twitch Admins and Staff also have 
   * !bm-leave [#channelname] - Leaves channelname   
   * !bm-rejoin - Rejoin all channels   
   * !bm-reconnect - Disconnects all bots and allows them to "auto-reconnect" 
-  * !bm-global [message] - Sends a message to all channel the bot is in 
+  * !bm-global [message] - Sends a message to all channel the bot is in
+
+### String Replacement
+
+Adding dynamic data to bot message is also supported via string substitutions. The following substitutions are available:
+
+  * (_GAME_) : Twitch game
+  * (_STATUS_) : Twitch status
+  * (_VIEWERS_) : Viewer count
+  * (_CHATTERS_) : Number of users in chat
+  * (_STEAM_PROFILE_) : Link to Steam profile (Steam account must be configured)
+  * (_STEAM_GAME_) : Steam game (Steam account must be configured)
+  * (_STEAM_SERVER_) : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured)
+  * (_STEAM_STORE_) : Link to Steam store for the game you are playing (Steam account must be configured)
+  * (_SONG_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
+
+  Example:
+  !command add info I am (_PROFILE_) and I'm playing (_STEAM_GAME_) on (_STEAM_SERVER_) listening to (_SONG_)
+
+  Output:
+  I am http://bit.ly/321nds and I'm playing FTL: Faster Than Light on (none) listening to Wings of Destiny by David Saulesco

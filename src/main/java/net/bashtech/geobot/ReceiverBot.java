@@ -46,15 +46,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class ReceiverBot extends PircBot {	
+public class ReceiverBot extends PircBot {
 
-	private Pattern[] linkPatterns = new Pattern[3];
+    static ReceiverBot instance;
+
+    private Pattern[] linkPatterns = new Pattern[3];
 	private Pattern[] symbolsPatterns = new Pattern[1];
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 60, 600, 86400};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
 	
 	public ReceiverBot(String server, int port){
+        ReceiverBot.setInstance(this);
 		linkPatterns[0] = Pattern.compile(".*http://.*");
 		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in|gl)(\\s+|/|$).*");
 		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");	
@@ -74,6 +77,16 @@ public class ReceiverBot extends PircBot {
 			System.out.println("ERROR: Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
 	}
+
+    public static void setInstance(ReceiverBot rb){
+        if(instance == null){
+            instance = rb;
+        }
+    }
+
+    public static ReceiverBot getInstance(){
+        return instance;
+    }
 	
 	private Channel getChannelObject(String channel){
 		Channel channelInfo = null;
@@ -427,7 +440,7 @@ public class ReceiverBot extends PircBot {
 					if(channelInfo.getSteam().length() > 1){
 
                     if(channelInfo.getSteam().length() > 1){
-                        sendMessage(channel, channelInfo.getBullet() + " " + JSONUtil.steam(channelInfo.getSteam()));
+                        sendMessage(channel, channelInfo.getBullet() + " " + JSONUtil.steam(channelInfo.getSteam(), "all"));
                     }
 
 					}else{

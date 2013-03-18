@@ -46,6 +46,9 @@ public class SenderBotBalancer {
 	
 	public synchronized void sendMessage(String channel, String message){
 		System.out.println("DEBUG: Sending message to instance - " + position);
+
+        message = MessageReplaceParser.parseMessage(channel, message);
+
 		instances.get(position).sendMessage(channel, message);
 		
 		if(position > (instances.size() - 2))
