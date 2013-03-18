@@ -38,7 +38,9 @@ public class Channel {
 	private String channel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	private HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
-	private boolean filterCaps;
+    private HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
+
+    private boolean filterCaps;
 	private int filterCapsPercent;
 	private int filterCapsMinCharacters;
 	private int filterCapsMinCapitals;
@@ -208,6 +210,61 @@ public class Channel {
 			config.setString("commandsRepeatDiff", commandsRepeatDiff);
 		}
 	}
+
+    public void setScheduledCommand(String key, String pattern, int diff){
+        if(commandsSchedule.containsKey(key)){
+            commandsSchedule.get(key).s.stop();
+            commandsSchedule.remove(key);
+            ScheduledCommand rc = new ScheduledCommand(channel, key, pattern, diff);
+            commandsSchedule.put(key, rc);
+        }else{
+            ScheduledCommand rc = new ScheduledCommand(channel, key, pattern, diff);
+            commandsSchedule.put(key, rc);
+        }
+
+        //TODO: Save to file
+        String commandsScheduleKey = "";
+        String commandsSchedulePattern = "";
+        String commandsScheduleDiff = "";
+
+        Iterator itr = commandsSchedule.entrySet().iterator();
+
+        while(itr.hasNext()){
+            Map.Entry pairs = (Map.Entry)itr.next();
+            commandsScheduleKey += pairs.getKey() + ",,";
+            commandsSchedulePattern += ((ScheduledCommand)pairs.getValue()).pattern + ",,";
+            commandsScheduleDiff += ((ScheduledCommand)pairs.getValue()).messageDifference + ",,";
+        }
+
+        config.setString("commandsScheduleKey", commandsScheduleKey);
+        config.setString("commandsSchedulePattern", commandsSchedulePattern);
+        config.setString("commandsScheduleDiff", commandsScheduleDiff);
+    }
+
+    public void removeScheduledCommand(String key){
+        if(commandsSchedule.containsKey(key)){
+            commandsSchedule.get(key).s.stop();
+            commandsSchedule.remove(key);
+
+            //TODO: Save to file
+            String commandsScheduleKey = "";
+            String commandsSchedulePattern = "";
+            String commandsScheduleDiff = "";
+
+            Iterator itr = commandsSchedule.entrySet().iterator();
+
+            while(itr.hasNext()){
+                Map.Entry pairs = (Map.Entry)itr.next();
+                commandsScheduleKey += pairs.getKey() + ",,";
+                commandsSchedulePattern += ((ScheduledCommand)pairs.getValue()).pattern + ",,";
+                commandsScheduleDiff += ((ScheduledCommand)pairs.getValue()).messageDifference + ",,";
+            }
+
+            config.setString("commandsScheduleKey", commandsScheduleKey);
+            config.setString("commandsSchedulePattern", commandsSchedulePattern);
+            config.setString("commandsScheduleDiff", commandsScheduleDiff);
+        }
+    }
 	
 	public String getCommandList(){
 		String commandKeys = "";
@@ -844,6 +901,7 @@ public class Channel {
 	public void reload(){
 		commands.clear();
 		commandsRepeat.clear();
+        commandsSchedule.clear();
 		regulars.clear();
 		subscribers.clear();
 		moderators.clear();
@@ -905,6 +963,9 @@ public class Channel {
 		if(!config.keyExists("commandsKey")) {
 			config.setString("commandsKey", "");
 		}
+        if(!config.keyExists("commandsValue")) {
+            config.setString("commandsValue", "");
+        }
 		if(!config.keyExists("commandsRepeatKey")) {
 			config.setString("commandsRepeatKey", "");
 		}
@@ -914,9 +975,16 @@ public class Channel {
 		if(!config.keyExists("commandsRepeatDiff")) {
 			config.setString("commandsRepeatDiff", "");
 		}
-		if(!config.keyExists("commandsValue")) {
-			config.setString("commandsValue", "");
-		}
+        if(!config.keyExists("commandsScheduleKey")) {
+            config.setString("commandsScheduleKey", "");
+        }
+        if(!config.keyExists("commandsSchedulePattern")) {
+            config.setString("commandsSchedulePattern", "");
+        }
+        if(!config.keyExists("commandsScheduleDiff")) {
+            config.setString("commandsScheduleDiff", "");
+        }
+
 		if(!config.keyExists("regulars")) {
 			config.setString("regulars", "");
 		}
@@ -1009,6 +1077,17 @@ public class Channel {
 				commandsRepeat.put(commandsRepeatKey[i], rc);
 			}
 		}
+
+        String[] commandsScheduleKey = config.getString("commandsScheduleKey").split(",,");
+        String[] commandsSchedulePattern = config.getString("commandsSchedulePattern").split(",,");
+        String[] commandsScheduleDiff = config.getString("commandsScheduleDiff").split(",,");
+
+        for(int i = 0; i < commandsScheduleKey.length; i++){
+            if(commandsScheduleKey[i].length() > 1){
+                ScheduledCommand rc = new ScheduledCommand(channel, commandsScheduleKey[i], commandsSchedulePattern[i],Integer.parseInt(commandsScheduleDiff[i]));
+                commandsSchedule.put(commandsScheduleKey[i], rc);
+            }
+        }
 		
 		String[] regularsRaw = config.getString("regulars").split(",");
 		synchronized (regulars) {

@@ -579,7 +579,9 @@ public class ReceiverBot extends PircBot {
 							String key = "!" + msg[2];
 							channelInfo.removeCommand(key);
 							channelInfo.removeRepeatCommand(key);
-							sendMessage(channel, channelInfo.getBullet() + " Command " + key + " removed.");
+                            channelInfo.removeScheduledCommand(key);
+
+                            sendMessage(channel, channelInfo.getBullet() + " Command " + key + " removed.");
 
 							}
 					}
@@ -619,6 +621,48 @@ public class ReceiverBot extends PircBot {
 						}
 					}
 				}
+
+                // !schedule - Ops
+                if(msg[0].equalsIgnoreCase("!schedule")){
+                    System.out.println("DEBUG: Matched command !schedule");
+                    if(msg.length < 3 && isOp){
+                        sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!schedule add/delete [commandname] [pattern] [message difference - optional]\"");
+                    }else if(msg.length > 2 && isOp){
+                        if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
+                            String key = "!" + msg[2];
+                            try{
+                                String pattern = msg[3];
+                                if(pattern.equals("hourly"))
+                                    pattern = "0 * * * *";
+                                else
+                                    pattern = pattern.replace("_", " ");
+
+                                int difference = 1;
+                                if(msg.length == 5)
+                                    difference = Integer.parseInt(msg[4]);
+
+                                if(channelInfo.getCommand(key).equalsIgnoreCase("invalid") || pattern.contains(",,")){
+                                    //Key not found or delay to short
+                                    sendMessage(channel, channelInfo.getBullet() + " Command not found or invalid pattern.");
+                                }else{
+                                    channelInfo.setScheduledCommand(key, pattern, difference);
+                                    sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will repeat every " + pattern + " if " + difference + " messages have passed.");
+                                }
+
+                            }catch(Exception ex){
+                                ex.printStackTrace();
+                            }
+
+                        }else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")){
+                            String key = "!" + msg[2];
+                            channelInfo.removeScheduledCommand(key);
+                            sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will no longer repeat.");
+
+                        }
+                    }
+                }
+
+
  				
 				// !poll - Ops
 				if(msg[0].equalsIgnoreCase("!poll") && isOp){
