@@ -448,25 +448,58 @@ public class ReceiverBot extends PircBot {
 				// !game - All
 				if (msg[0].equalsIgnoreCase("!game")) {
 					System.out.println("DEBUG: Matched command !game");
-					String game = this.getGame(channelInfo);
-					if(game.length() > 0){
-						sendMessage(channel, channelInfo.getBullet() + " Current game: " + game);
-					}else{
-						sendMessage(channel, channelInfo.getBullet() + " No game set.");
-					}
+                    if(isOwner && msg.length > 1){
+                        String game = this.fuseArray(msg, 1);
+                        game.trim();
+                        try{
+                            channelInfo.updateGame(game);
+                            sendMessage(channel, channelInfo.getBullet() + " Game update sent.");
+                        }catch (Exception ex){
+                            sendMessage(channel, channelInfo.getBullet() + " Error updating game. Did you add me as an editor?");
+                        }
+
+                    }else{
+                        String game = this.getGame(channelInfo);
+                        if(game.length() > 0){
+                            sendMessage(channel, channelInfo.getBullet() + " Current game: " + game);
+                        }else{
+                            sendMessage(channel, channelInfo.getBullet() + " No game set.");
+                        }
+                    }
+
 					
 				}
 				
 				// !status - All
 				if (msg[0].equalsIgnoreCase("!status")) {
-					System.out.println("DEBUG: Matched command !status");
-					String status = this.getStatus(channelInfo);
-					if(status.length() > 0){
-						sendMessage(channel, channelInfo.getBullet() + " " + status);
-					}else{
-						sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
-					}
+                    System.out.println("DEBUG: Matched command !status");
+                    if(isOwner && msg.length > 1){
+                        String status = this.fuseArray(msg, 1);
+                        status.trim();
+                        try{
+                            channelInfo.updateStatus(status);
+                            sendMessage(channel, channelInfo.getBullet() + " Status update sent.");
+                        }catch (Exception ex){
+                            sendMessage(channel, channelInfo.getBullet() + " Error updating status. Did you add me as an editor?");
+                        }
+
+                    }else{
+                        String status = this.getStatus(channelInfo);
+                        if(status.length() > 0){
+                            sendMessage(channel, channelInfo.getBullet() + " " + status);
+                        }else{
+                            sendMessage(channel, channelInfo.getBullet() + " Unable to query TwitchTV API.");
+                        }
+                    }
+
 				}
+
+                // !followme - Owner
+                if (msg[0].equalsIgnoreCase("!followme") && isOwner) {
+                    System.out.println("DEBUG: Matched command !followme");
+                    BotManager.getInstance().followChannel(channel.substring(1));
+                    sendMessage(channel, channelInfo.getBullet() + " Follow update sent.");
+                }
 				
 				// !commands - Op/Regular
 				if (msg[0].equalsIgnoreCase("!commands") && (isRegular || isOp)) {

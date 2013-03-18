@@ -268,6 +268,8 @@ public class BotManager {
 		System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
 
 		writeChannelList();
+
+        this.followChannel(name.substring(1));
 		return true;
 	}
 
@@ -458,8 +460,6 @@ public class BotManager {
         try{
             url=new URL(urlString);
 
-
-
             conn=(HttpURLConnection)url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
@@ -467,6 +467,7 @@ public class BotManager {
 
             conn.setFixedLengthStreamingMode(postData.getBytes().length);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
             conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
 
             PrintWriter out = new PrintWriter(conn.getOutputStream());
@@ -493,6 +494,54 @@ public class BotManager {
         }
 
         return "";
+    }
+
+    public static String putRemoteData(String urlString, String postData) throws IOException{
+        URL url;
+        HttpURLConnection conn;
+
+        try{
+            url=new URL(urlString);
+
+            conn=(HttpURLConnection)url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("PUT");
+
+
+            conn.setFixedLengthStreamingMode(postData.getBytes().length);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
+            conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
+
+            PrintWriter out = new PrintWriter(conn.getOutputStream());
+            out.print(postData);
+            out.close();
+
+            String response= "";
+
+            Scanner inStream = new Scanner(conn.getInputStream());
+
+            while(inStream.hasNextLine())
+                response+=(inStream.nextLine());
+
+            System.out.println(conn.getResponseCode());
+            System.out.println(response);
+            return response;
+
+        }
+        catch(MalformedURLException ex){
+            ex.printStackTrace();
+        }
+
+        return "";
+    }
+
+    public void followChannel(String channel){
+        try{
+            System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/users/" + this.nick + "/follows/channels/" + channel, ""));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 	
 }

@@ -31,7 +31,11 @@ PM [george](http://www.twitch.tv/message/compose?to=george) on Twitch
   * !music - All - Displays what you are currently listening to on Last.fm 
   * !steam - All - Display Steam profile, current game and server 
   * !bothelp - All - Displays link bot help documents 
-  * !commercial - Owner - Runs a 30 second commercial. You must contact the bot maintainer to follow your channel with the bot's account and add the bot as a channel editor first. This command is also supported in !repeat.  
+  * !commercial - Owner - Runs a 30 second commercial. You must contact the bot maintainer to follow your channel with the bot's account and add the bot as a channel editor first. This command is also supported in !repeat.
+  * !game [new game - optional] - All/Owner - Displays the current Twitch game. Optional - specify a new game to set. (Bot must be channel editor to update)
+  * !status [new status - optional] - All/Owner - Displays the current Twitch status. Optional - specify a new status to set. (Bot must be channel editor to update)
+  * !followme - Owner -  Forces the bot to follow your channel. Necessary for !game and !status updates or commercials.
+
 
 ### Fun 
 

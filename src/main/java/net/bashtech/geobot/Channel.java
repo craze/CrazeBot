@@ -292,6 +292,14 @@ public class Channel {
 		topicTime = (int) (System.currentTimeMillis()/1000);
 		config.setInt("topicTime", topicTime);
 	}
+
+    public void updateGame(String game) throws IOException{
+        System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/channels/" + this.channel.substring(1), "channel[game]=" + game));
+    }
+
+    public void updateStatus(String status) throws IOException{
+        System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/channels/" + this.channel.substring(1), "channel[status]=" + status));
+    }
 	
 	public String getTopicTime(){
 		int difference = (int) (System.currentTimeMillis()/1000) - topicTime;
