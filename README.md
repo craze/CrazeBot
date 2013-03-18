@@ -162,7 +162,7 @@ Adding dynamic data to bot message is also supported via string substitutions. T
   * (\_SONG\_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
 
   Example:
-  !command add info I am (_PROFILE_) and I'm playing (_STEAM_GAME_) on (_STEAM_SERVER_) listening to (_SONG_)
+  !command add info I am (\_PROFILE\_) and I'm playing (\_STEAM_GAME\_) on (\_STEAM_SERVER\_) listening to (\_SONG\_)
 
   Output:
   I am http://bit.ly/321nds and I'm playing FTL: Faster Than Light on (none) listening to Wings of Destiny by David Saulesco
