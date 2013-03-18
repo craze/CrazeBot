@@ -39,13 +39,6 @@
         </repository>   
     </repositories>
     <dependencies>
-    <!--  Gson: Java to Json conversion -->
-        <dependency>
-          <groupId>com.google.code.gson</groupId>
-          <artifactId>gson</artifactId>
-          <version>1.6</version>
-          <scope>compile</scope>
-       </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>

@@ -2,7 +2,7 @@
 
 ###  Installing from source
 
-Downloading source code
+Downloading source code (Source access currently unavailable but will be back soon.)
 
     git clone git@bitbucket.org:bashtech/geobot.git
 
@@ -17,8 +17,7 @@ Copy jar to desired location
     cp target/GeoBot.jar ~/mybot/.
 
 
-Install [GSON](http://code.google.com/p/google-gson/downloads/detail?name
-=google-gson-1.6-release.zip&can=2&q=) to '~/mybot/lib/gson-1.6.jar'
+Install [JSON Simple](http://bashtech.net/twitch/ackbot/json-simple-1.1.jar) to '~/mybot/lib/json-simple-1.1.jar'
 
 
 ###  Running

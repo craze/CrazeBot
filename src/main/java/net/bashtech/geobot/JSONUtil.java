@@ -10,15 +10,32 @@ import java.net.URLEncoder;
 
 public class JSONUtil {
 
-    public static void krakenStreams() throws Exception{
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/mlglol"));
+//    public static void krakenStreams() throws Exception{
+//        JSONParser parser = new JSONParser();
+//        Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/mlglol"));
+//
+//        JSONObject jsonObject = (JSONObject) obj;
+//
+//        JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+//        Long viewers = (Long)stream.get("viewers");
+//        System.out.println("Viewers: " + viewers);
+//    }
 
-        JSONObject jsonObject = (JSONObject) obj;
+    public static String krakenViewers(String channel) throws Exception{
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/mlglol"));
 
-        JSONObject stream = (JSONObject)(jsonObject.get("stream"));
-        Long viewers = (Long)stream.get("viewers");
-        System.out.println("Viewers: " + viewers);
+            JSONObject jsonObject = (JSONObject) obj;
+
+            JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+            Long viewers = (Long)stream.get("viewers");
+            return "Viewers: " + viewers;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return "Error querying API";
+        }
+
     }
 
     public static String lastFM(String user){

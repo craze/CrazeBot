@@ -18,7 +18,6 @@
 
 package net.bashtech.geobot;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -33,15 +32,11 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 
-import com.google.gson.Gson;
-import net.bashtech.geobot.JSONObjects.LastFmRecentTracks;
-import net.bashtech.geobot.JSONObjects.SteamData;
 import net.bashtech.geobot.modules.BotModule;
 
 import org.jibble.pircbot.*;
