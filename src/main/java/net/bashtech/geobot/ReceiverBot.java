@@ -24,11 +24,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -591,7 +587,19 @@ public class ReceiverBot extends PircBot {
  				if(msg[0].equalsIgnoreCase("!repeat")){
  					System.out.println("DEBUG: Matched command !repeat");
 					if(msg.length < 3 && isOp){
-						sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay in seconds] [message difference - optional]\"");
+                        if(msg.length > 1 && msg[1].equalsIgnoreCase("list")){
+                            String commandsRepeatKey = "";
+
+                            Iterator itr = channelInfo.commandsRepeat.entrySet().iterator();
+
+                            while(itr.hasNext()){
+                                Map.Entry pairs = (Map.Entry)itr.next();
+                                commandsRepeatKey += pairs.getKey() + ", ";
+                            }
+                            sendMessage(channel, channelInfo.getBullet() + " Repeating commands: " + commandsRepeatKey);
+                        }else{
+                            sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!repeat add/delete [commandname] [delay in seconds] [message difference - optional]\"");
+                        }
 					}else if(msg.length > 2 && isOp){
 						if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
 							String key = "!" + msg[2];
@@ -626,7 +634,19 @@ public class ReceiverBot extends PircBot {
                 if(msg[0].equalsIgnoreCase("!schedule")){
                     System.out.println("DEBUG: Matched command !schedule");
                     if(msg.length < 3 && isOp){
-                        sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!schedule add/delete [commandname] [pattern] [message difference - optional]\"");
+                        if(msg.length > 1 && msg[1].equalsIgnoreCase("list")){
+                            String commandsScheduleKey = "";
+
+                            Iterator itr = channelInfo.commandsSchedule.entrySet().iterator();
+
+                            while(itr.hasNext()){
+                                Map.Entry pairs = (Map.Entry)itr.next();
+                                commandsScheduleKey += pairs.getKey() + ", ";
+                            }
+                            sendMessage(channel, channelInfo.getBullet() + " Scheduled commands: " + commandsScheduleKey);
+                        }else{
+                            sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!schedule add/delete [commandname] [pattern] [message difference - optional]\"");
+                        }
                     }else if(msg.length > 2 && isOp){
                         if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
                             String key = "!" + msg[2];
@@ -634,6 +654,8 @@ public class ReceiverBot extends PircBot {
                                 String pattern = msg[3];
                                 if(pattern.equals("hourly"))
                                     pattern = "0 * * * *";
+                                else if(pattern.equals("semihourly"))
+                                    pattern = "0,30 * * * *";
                                 else
                                     pattern = pattern.replace("_", " ");
 

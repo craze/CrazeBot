@@ -37,8 +37,8 @@ public class Channel {
 	
 	private String channel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
-	private HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
-    private HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
+	HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
+    HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
 
     private boolean filterCaps;
 	private int filterCapsPercent;

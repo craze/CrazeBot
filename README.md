@@ -54,16 +54,31 @@ PM [george](http://www.twitch.tv/message/compose?to=george) on Twitch
   * !clear - Clears chat 
   * !modchan - Toggle command access between mod only and everyone 
 
-###  Custom and Custom Repeat
+###  Custom, Custom Repeat, and Custom Scheduled
 
   * !command add [name] [text] - Ops - Creates an info command (!name) 
   * !command delete [name] - Ops - Removes info command (!name) 
   
   
   * !repeat add [name] [delay in seconds] [message difference - optional] 
-  * !repeat delete [name] 
+  * !repeat delete [name]
+  * !repeat list
 
 The repeat command will repeat a custom trigger every X amount of seconds passed. Message difference allows you to prevent spamming an inactive channel. It requires Y amount of messages have passed in the channel since the last iteration of the message. The default is 1 so at least one message will need to have been sent in the channel in order for the repeat to trigger.
+
+  * !schedule add [name] [pattern] [message difference - optional]
+  * !schedule delete [name]
+  * !schedule list
+
+Schedule is similar to repeat but is designed to repeat at specific times such as 5pm, hourly (on the hour), semihourly (on 0:30), etc. `pattern` accepts: hourly, semihourly, and [crontab syntax**](http://i.imgur.com/j4t8CcM.png).
+
+Examples:
+
+    !schedule add youtube hourly 0 -- This will repeat the !youtube command every hour on the hour.
+    !schedule add ip *_*_*_*_* 0 -- This will repeat the !ip command every minute.
+    !schedule add texture *_5_*_*_* 0 -- This will repeat the !texture at 5am every day.
+
+\*\* **Replace the spaces in crontab syntax with _**
 
 ###  Settings
 
