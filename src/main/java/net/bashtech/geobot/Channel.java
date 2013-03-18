@@ -1121,15 +1121,14 @@ public class Channel {
 	private long getTime(){
 		return (System.currentTimeMillis() / 1000L);
 	}
-	
-	public String runCommercial(){
+
+    public String runCommercial(){
         String dataIn = "";
-        dataIn = BotManager.getRemoteContent(BotManager.getInstance().webRoot + "/kraken.php?channel=" + getChannel().substring(1)+ "&action=commercial&passcode=" + BotManager.getInstance().commercialPasscode);
+
+        dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=30");
+        //dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial?oauth_token=" + BotManager.getInstance().krakenOAuthToken, "length=30");
 
         System.out.println(dataIn);
         return "";
-
-
-	}
-
+    }
 }

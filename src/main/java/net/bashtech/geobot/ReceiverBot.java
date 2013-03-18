@@ -423,7 +423,7 @@ public class ReceiverBot extends PircBot {
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
 					System.out.println("DEBUG: Matched command !music");
-					sendMessage(channel, channelInfo.getBullet() + " " + this.getLastFMLastPlayed(channelInfo));
+					sendMessage(channel, channelInfo.getBullet() + " " + JSONUtil.lastFM(channelInfo.getLastfm()));
 				}
 				
 				// !steam - All
@@ -432,8 +432,7 @@ public class ReceiverBot extends PircBot {
 					if(channelInfo.getSteam().length() > 1){
 
                     if(channelInfo.getSteam().length() > 1){
-                        SteamData data = this.getSteamData(channelInfo);
-                        sendMessage(channel, channelInfo.getBullet() + " Steam Profile: " + data.profileurl + (data.game != null ? ", Game: " + data.game : "") + (data.server != null ? ", Server: " + data.server : "") );
+                        sendMessage(channel, channelInfo.getBullet() + " " + JSONUtil.steam(channelInfo.getSteam()));
                     }
 
 					}else{
@@ -530,13 +529,13 @@ public class ReceiverBot extends PircBot {
 					System.out.println("DEBUG: Matched command !link");
 					if(msg.length > 1){
 							String rawQuery = message.substring(6);
-							String encodedQuery = "";
-							try {
-								encodedQuery = URLEncoder.encode(rawQuery,"UTF-8");
-							} catch (UnsupportedEncodingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+                        String encodedQuery = "";
+                        try {
+                            encodedQuery = URLEncoder.encode(rawQuery,"UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
 							sendMessage(channel, channelInfo.getBullet() + " Link to \"" + rawQuery + "\" -> " + "http://lmgtfy.com/?q=" + encodedQuery);
 					}
 					//return;
@@ -1592,33 +1591,7 @@ public class ReceiverBot extends PircBot {
 			channelInfo.getGiveaway().getTimer().schedule(new giveawayTimer(channelInfo),delay);
 		}
 	}
-	
-	private String getLastFMLastPlayed(Channel channelInfo){
-		if(channelInfo.getLastfm().length() < 1)
-			return "Function not configured.";
 
-        String jsonIn = BotManager.getRemoteContent(BotManager.getInstance().webRoot + "/lastfm.php?action=lastplayed&user=" + channelInfo.getLastfm());
-
-		LastFmRecentTracks data = new Gson().fromJson(jsonIn, LastFmRecentTracks.class);
-		
-		if(data.playing == true){
-			return "Listening to: " + data.title + " by " + data.artist + " " + data.url;
-		}else{
-			return "Recently listened to: " + data.title + " by " + data.artist + " " + data.url;
-		}
-			
-	}
-	
-	private SteamData getSteamData(Channel channelInfo){
-        String jsonIn = "";
-
-        jsonIn = BotManager.getRemoteContent(BotManager.getInstance().webRoot + "/steam.php?user=" + channelInfo.getSteam());
-		
-		SteamData data = new Gson().fromJson(jsonIn, SteamData.class);
-		
-		return data;
-	}
-	
 	private String getMetaInfo(String key, Channel channelInfo) throws IllegalArgumentException, IOException, SAXException, ParserConfigurationException{
 		URL feedSource = new URL("http://twitch.tv/meta/" + channelInfo.getChannel().substring(1)+ ".xml");
 		URLConnection uc = feedSource.openConnection();
@@ -1771,19 +1744,6 @@ public class ReceiverBot extends PircBot {
 			}
         }
 	}
-	
-//	public String getIP(String server) {
-//		InetAddress ip;
-//		
-//		try {
-//			ip = InetAddress.getByName(server);
-//		} catch (UnknownHostException e) {
-//			e.printStackTrace();
-//			return server;
-//		}
-//		
-//		return ip.getHostAddress();
-//	}
 	
 	private String fuseArray(String[] array, int start){
 		String fused = "";

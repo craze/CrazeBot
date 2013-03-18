@@ -19,6 +19,8 @@
 package net.bashtech.geobot;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -61,8 +63,15 @@ public class BotManager {
 	public int senderInstances;
 	ReceiverBot receiverBot;
 	SenderBotBalancer sbb;
-	public String commercialPasscode;
-    public String webRoot; //Location of web api resources
+
+    // API KEYS
+    public String bitlyAPIKey;
+    public String bitlyLogin;
+    public String LastFMAPIKey;
+    public String SteamAPIKey;
+
+    public String krakenOAuthToken;
+    // ********
 	
 	private String _propertiesFile;
 	
@@ -159,14 +168,6 @@ public class BotManager {
 			config.setString("localAddress", "");
 		}
 		
-		if(!config.keyExists("commercialPasscode")) {
-			config.setString("commercialPasscode", "");
-		}
-
-        if(!config.keyExists("webRoot")) {
-            config.setString("webRoot", "");
-        }
-		
 		if(!config.keyExists("verboseLogging")) {
 			config.setBoolean("verboseLogging", false);
 		}
@@ -174,6 +175,30 @@ public class BotManager {
 		if(!config.keyExists("senderInstances")) {
 			config.setInt("senderInstances", 10);
 		}
+
+        // API KEYS
+
+        if(!config.keyExists("bitlyAPIKey")) {
+            config.setString("bitlyAPIKey", "");
+        }
+
+        if(!config.keyExists("bitlyLogin")) {
+            config.setString("bitlyLogin", "");
+        }
+
+        if(!config.keyExists("LastFMAPIKey")) {
+            config.setString("LastFMAPIKey", "");
+        }
+
+        if(!config.keyExists("SteamAPIKey")) {
+            config.setString("SteamAPIKey", "");
+        }
+
+        if(!config.keyExists("krakenOAuthToken")) {
+            config.setString("krakenOAuthToken", "");
+        }
+
+        // ********
 				
 		nick = config.getString("nick");
 		server = config.getString("server");
@@ -186,8 +211,17 @@ public class BotManager {
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
 		senderInstances = config.getInt("senderInstances");
-		commercialPasscode = config.getString("commercialPasscode");
-        webRoot = config.getString("webRoot");
+
+
+        // API KEYS
+
+        bitlyAPIKey = config.getString("bitlyAPIKey");
+        bitlyLogin = config.getString("bitlyLogin");
+        LastFMAPIKey = config.getString("LastFMAPIKey");
+        SteamAPIKey = config.getString("SteamAPIKey");
+        krakenOAuthToken = config.getString("krakenOAuthToken");
+
+        // ********
 
 		for(String s:config.getString("channelList").split(",")) {
 			System.out.println("DEBUG: Adding channel " + s);
@@ -411,21 +445,54 @@ public class BotManager {
                 dataIn += inputLine;
             in.close();
 
-//            Reader reader = new InputStreamReader(conn.getInputStream());
-//
-//            while (true){
-//                int ch = reader.read();
-//                if(ch==-1){
-//                    break;
-//                }
-//                dataIn += (char)ch;
-//            }
         }catch(Exception ex){
             ex.printStackTrace();
         }
 
         return dataIn;
     }
-	
+    public static String postRemoteData(String urlString, String postData){
+        URL url;
+        HttpURLConnection conn;
+
+        try{
+            url=new URL(urlString);
+
+
+
+            conn=(HttpURLConnection)url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+
+
+            conn.setFixedLengthStreamingMode(postData.getBytes().length);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
+
+            PrintWriter out = new PrintWriter(conn.getOutputStream());
+            out.print(postData);
+            out.close();
+
+            String response= "";
+
+            Scanner inStream = new Scanner(conn.getInputStream());
+
+            while(inStream.hasNextLine())
+                response+=(inStream.nextLine());
+
+            System.out.println(conn.getResponseCode());
+            System.out.println(response);
+            return response;
+
+        }
+        catch(MalformedURLException ex){
+            ex.printStackTrace();
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
+
+        return "";
+    }
 	
 }
