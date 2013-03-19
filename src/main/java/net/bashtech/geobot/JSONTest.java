@@ -21,6 +21,11 @@ public class JSONTest {
         System.out.println("dansgaming: " + JSONTest.krakenIsLive("dansgaming"));
         System.out.println("giantwaffle: " + JSONTest.krakenIsLive("giantwaffle"));
 
+        System.out.println("bgeorge" + JSONUtil.krakenChannelExist("bgeorge"));
+        System.out.println("bwana" + JSONUtil.krakenChannelExist("bwana"));
+        System.out.println("dylanlive" + JSONUtil.krakenChannelExist("dylanlive"));
+        System.out.println("communitychat" + JSONUtil.krakenChannelExist("communitychat"));
+
     }
 
 

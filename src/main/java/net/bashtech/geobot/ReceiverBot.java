@@ -1334,13 +1334,18 @@ public class ReceiverBot extends PircBot {
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin){
  							System.out.println("DEBUG: Matched command !join");
-							sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
-							boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
-							if(joinStatus){
-								sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" joined.");
-							}else{
-								sendMessage(channel, channelInfo.getBullet() + " Already in channel #"+ sender +".");
-							}
+                            if(JSONUtil.krakenChannelExist(sender)){
+                                sendMessage(channel, channelInfo.getBullet() + " Joining channel #"+ sender +".");
+                                boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
+                                if(joinStatus){
+                                    sendMessage(channel, channelInfo.getBullet() + " Channel #"+ sender +" joined.");
+                                }else{
+                                    sendMessage(channel, channelInfo.getBullet() + " Already in channel #"+ sender +".");
+                                }
+                            }else{
+                                sendMessage(channel, channelInfo.getBullet() + " Unable to join " + sender + ". Is your channel on Twitch?");
+                            }
+
 				}
  				
  				if (msg[0].equalsIgnoreCase("!rejoin")){

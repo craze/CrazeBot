@@ -217,4 +217,21 @@ public class JSONUtil {
 
     }
 
+    public static boolean krakenChannelExist(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/channels/" + channel));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            Long _id = (Long)jsonObject.get("_id");
+
+            return (_id != null);
+        }catch (Exception ex){
+            //ex.printStackTrace();
+            return false;
+        }
+
+    }
+
 }
