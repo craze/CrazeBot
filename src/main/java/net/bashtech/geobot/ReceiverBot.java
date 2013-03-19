@@ -628,7 +628,8 @@ public class ReceiverBot extends PircBot {
 
                             while(itr.hasNext()){
                                 Map.Entry pairs = (Map.Entry)itr.next();
-                                commandsRepeatKey += pairs.getKey() + ", ";
+                                RepeatCommand rc = (RepeatCommand)pairs.getValue();
+                                commandsRepeatKey += pairs.getKey() + " [" + ( rc.active == true ? "ON" : "OFF") + "]" + ", ";
                             }
                             sendMessage(channel, channelInfo.getBullet() + " Repeating commands: " + commandsRepeatKey);
                         }else{
@@ -660,7 +661,17 @@ public class ReceiverBot extends PircBot {
 							channelInfo.removeRepeatCommand(key);	
 							sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will no longer repeat.");
 
-						}
+						}else if(msg[1].equalsIgnoreCase("on") || msg[1].equalsIgnoreCase("off")){
+                            String key = "!" + msg[2];
+                            if(msg[1].equalsIgnoreCase("on")){
+                                channelInfo.setRepeatCommandStatus(key, true);
+                                sendMessage(channel, channelInfo.getBullet() + " Repeat command " + key + " has been enabled.");
+                            }else if(msg[1].equalsIgnoreCase("off")){
+                                channelInfo.setRepeatCommandStatus(key, false);
+                                sendMessage(channel, channelInfo.getBullet() + " Repeat command " + key + " has been disabled.");
+                            }
+
+                        }
 					}
 				}
 
@@ -675,11 +686,12 @@ public class ReceiverBot extends PircBot {
 
                             while(itr.hasNext()){
                                 Map.Entry pairs = (Map.Entry)itr.next();
-                                commandsScheduleKey += pairs.getKey() + ", ";
+                                ScheduledCommand sc = (ScheduledCommand)pairs.getValue();
+                                commandsScheduleKey += pairs.getKey() + " [" + ( sc.active == true ? "ON" : "OFF") + "]" + ", ";
                             }
                             sendMessage(channel, channelInfo.getBullet() + " Scheduled commands: " + commandsScheduleKey);
                         }else{
-                            sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!schedule add/delete [commandname] [pattern] [message difference - optional]\"");
+                            sendMessage(channel, channelInfo.getBullet() + " Syntax: \"!schedule add/delete/on/off [commandname] [pattern] [message difference - optional]\"");
                         }
                     }else if(msg.length > 2 && isOp){
                         if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
@@ -713,6 +725,16 @@ public class ReceiverBot extends PircBot {
                             String key = "!" + msg[2];
                             channelInfo.removeScheduledCommand(key);
                             sendMessage(channel, channelInfo.getBullet() + " Command " + key + " will no longer repeat.");
+
+                        }else if(msg[1].equalsIgnoreCase("on") || msg[1].equalsIgnoreCase("off")){
+                            String key = "!" + msg[2];
+                            if(msg[1].equalsIgnoreCase("on")){
+                                channelInfo.setScheduledCommandStatus(key, true);
+                                sendMessage(channel, channelInfo.getBullet() + " Scheduled command " + key + " has been enabled.");
+                            }else if(msg[1].equalsIgnoreCase("off")){
+                                channelInfo.setScheduledCommandStatus(key, false);
+                                sendMessage(channel, channelInfo.getBullet() + " Scheduled command " + key + " has been disabled.");
+                            }
 
                         }
                     }

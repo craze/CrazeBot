@@ -160,72 +160,91 @@ public class Channel {
 		if(commandsRepeat.containsKey(key)){
 			commandsRepeat.get(key).timer.cancel();
 			commandsRepeat.remove(key);
-			RepeatCommand rc = new RepeatCommand(channel, key, delay, diff);
+			RepeatCommand rc = new RepeatCommand(channel, key, delay, diff, true);
 			commandsRepeat.put(key, rc);
 		}else{
-			RepeatCommand rc = new RepeatCommand(channel, key, delay, diff);
+			RepeatCommand rc = new RepeatCommand(channel, key, delay, diff, true);
 			commandsRepeat.put(key, rc);
 		}
 
-		//TODO: Save to file
-		String commandsRepeatKey = "";
-		String commandsRepeatDelay = "";
-		String commandsRepeatDiff = "";
-		
-		Iterator itr = commandsRepeat.entrySet().iterator();
-		
-		while(itr.hasNext()){
-			Map.Entry pairs = (Map.Entry)itr.next();
-			commandsRepeatKey += pairs.getKey() + ",";
-			commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
-			commandsRepeatDiff += ((RepeatCommand)pairs.getValue()).messageDifference + ",";
-		}
-		
-		config.setString("commandsRepeatKey", commandsRepeatKey);
-		config.setString("commandsRepeatDelay", commandsRepeatDelay);
-		config.setString("commandsRepeatDiff", commandsRepeatDiff);
-	}
+        writeRepeatCommand();
+    }
 	
 	public void removeRepeatCommand(String key){
 		if(commandsRepeat.containsKey(key)){
 			commandsRepeat.get(key).timer.cancel();
 			commandsRepeat.remove(key);
-		
-			//TODO: Save to file
-			String commandsRepeatKey = "";
-			String commandsRepeatDelay = "";
-			String commandsRepeatDiff = "";
-			
-			Iterator itr = commandsRepeat.entrySet().iterator();
-			
-			while(itr.hasNext()){
-				Map.Entry pairs = (Map.Entry)itr.next();
-				commandsRepeatKey += pairs.getKey() + ",";
-				commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
-				commandsRepeatDiff += ((RepeatCommand)pairs.getValue()).messageDifference + ",";
-			}
-			
-			config.setString("commandsRepeatKey", commandsRepeatKey);
-			config.setString("commandsRepeatDelay", commandsRepeatDelay);
-			config.setString("commandsRepeatDiff", commandsRepeatDiff);
-		}
+
+            writeRepeatCommand();
+        }
 	}
+
+    public void setRepeatCommandStatus(String key, boolean status){
+        if(commandsRepeat.containsKey(key)){
+            commandsRepeat.get(key).setStatus(status);
+            writeRepeatCommand();
+        }
+    }
+
+    private void writeRepeatCommand(){
+        String commandsRepeatKey = "";
+        String commandsRepeatDelay = "";
+        String commandsRepeatDiff = "";
+        String commandsRepeatActive = "";
+
+        Iterator itr = commandsRepeat.entrySet().iterator();
+
+        while(itr.hasNext()){
+            Map.Entry pairs = (Map.Entry)itr.next();
+            commandsRepeatKey += pairs.getKey() + ",";
+            commandsRepeatDelay += ((RepeatCommand)pairs.getValue()).delay + ",";
+            commandsRepeatDiff += ((RepeatCommand)pairs.getValue()).messageDifference + ",";
+            commandsRepeatActive += ((RepeatCommand)pairs.getValue()).active + ",";
+        }
+
+        config.setString("commandsRepeatKey", commandsRepeatKey);
+        config.setString("commandsRepeatDelay", commandsRepeatDelay);
+        config.setString("commandsRepeatDiff", commandsRepeatDiff);
+        config.setString("commandsRepeatActive", commandsRepeatActive);
+    }
 
     public void setScheduledCommand(String key, String pattern, int diff){
         if(commandsSchedule.containsKey(key)){
             commandsSchedule.get(key).s.stop();
             commandsSchedule.remove(key);
-            ScheduledCommand rc = new ScheduledCommand(channel, key, pattern, diff);
+            ScheduledCommand rc = new ScheduledCommand(channel, key, pattern, diff, true);
             commandsSchedule.put(key, rc);
         }else{
-            ScheduledCommand rc = new ScheduledCommand(channel, key, pattern, diff);
+            ScheduledCommand rc = new ScheduledCommand(channel, key, pattern, diff, true);
             commandsSchedule.put(key, rc);
         }
 
-        //TODO: Save to file
+        writeScheduledCommand();
+
+
+    }
+
+    public void removeScheduledCommand(String key){
+        if(commandsSchedule.containsKey(key)){
+            commandsSchedule.get(key).s.stop();
+            commandsSchedule.remove(key);
+
+            writeScheduledCommand();
+        }
+    }
+
+    public void setScheduledCommandStatus(String key, boolean status){
+        if(commandsSchedule.containsKey(key)){
+            commandsSchedule.get(key).setStatus(status);
+            writeScheduledCommand();
+        }
+    }
+
+    private void writeScheduledCommand(){
         String commandsScheduleKey = "";
         String commandsSchedulePattern = "";
         String commandsScheduleDiff = "";
+        String commandsScheduleActive = "";
 
         Iterator itr = commandsSchedule.entrySet().iterator();
 
@@ -234,36 +253,14 @@ public class Channel {
             commandsScheduleKey += pairs.getKey() + ",,";
             commandsSchedulePattern += ((ScheduledCommand)pairs.getValue()).pattern + ",,";
             commandsScheduleDiff += ((ScheduledCommand)pairs.getValue()).messageDifference + ",,";
+            commandsScheduleActive += ((ScheduledCommand)pairs.getValue()).active + ",,";
+
         }
 
         config.setString("commandsScheduleKey", commandsScheduleKey);
         config.setString("commandsSchedulePattern", commandsSchedulePattern);
         config.setString("commandsScheduleDiff", commandsScheduleDiff);
-    }
-
-    public void removeScheduledCommand(String key){
-        if(commandsSchedule.containsKey(key)){
-            commandsSchedule.get(key).s.stop();
-            commandsSchedule.remove(key);
-
-            //TODO: Save to file
-            String commandsScheduleKey = "";
-            String commandsSchedulePattern = "";
-            String commandsScheduleDiff = "";
-
-            Iterator itr = commandsSchedule.entrySet().iterator();
-
-            while(itr.hasNext()){
-                Map.Entry pairs = (Map.Entry)itr.next();
-                commandsScheduleKey += pairs.getKey() + ",,";
-                commandsSchedulePattern += ((ScheduledCommand)pairs.getValue()).pattern + ",,";
-                commandsScheduleDiff += ((ScheduledCommand)pairs.getValue()).messageDifference + ",,";
-            }
-
-            config.setString("commandsScheduleKey", commandsScheduleKey);
-            config.setString("commandsSchedulePattern", commandsSchedulePattern);
-            config.setString("commandsScheduleDiff", commandsScheduleDiff);
-        }
+        config.setString("commandsScheduleActive", commandsScheduleActive);
     }
 	
 	public String getCommandList(){
@@ -983,6 +980,9 @@ public class Channel {
 		if(!config.keyExists("commandsRepeatDiff")) {
 			config.setString("commandsRepeatDiff", "");
 		}
+        if(!config.keyExists("commandsRepeatActive")) {
+            config.setString("commandsRepeatActive", "");
+        }
         if(!config.keyExists("commandsScheduleKey")) {
             config.setString("commandsScheduleKey", "");
         }
@@ -991,6 +991,9 @@ public class Channel {
         }
         if(!config.keyExists("commandsScheduleDiff")) {
             config.setString("commandsScheduleDiff", "");
+        }
+        if(!config.keyExists("commandsScheduleActive")) {
+            config.setString("commandsScheduleActive", "");
         }
 
 		if(!config.keyExists("regulars")) {
@@ -1078,10 +1081,12 @@ public class Channel {
 		String[] commandsRepeatKey = config.getString("commandsRepeatKey").split(",");
 		String[] commandsRepeatDelay = config.getString("commandsRepeatDelay").split(",");
 		String[] commandsRepeatDiff = config.getString("commandsRepeatDiff").split(",");
-		
-		for(int i = 0; i < commandsRepeatKey.length; i++){
+        String[] commandsRepeatActive = config.getString("commandsRepeatActive").split(",");
+
+
+        for(int i = 0; i < commandsRepeatKey.length; i++){
 			if(commandsRepeatKey[i].length() > 1){
-				RepeatCommand rc = new RepeatCommand(channel, commandsRepeatKey[i], Integer.parseInt(commandsRepeatDelay[i]),Integer.parseInt(commandsRepeatDiff[i]));
+				RepeatCommand rc = new RepeatCommand(channel, commandsRepeatKey[i], Integer.parseInt(commandsRepeatDelay[i]),Integer.parseInt(commandsRepeatDiff[i]),Boolean.parseBoolean(commandsRepeatActive[i]));
 				commandsRepeat.put(commandsRepeatKey[i], rc);
 			}
 		}
@@ -1089,10 +1094,12 @@ public class Channel {
         String[] commandsScheduleKey = config.getString("commandsScheduleKey").split(",,");
         String[] commandsSchedulePattern = config.getString("commandsSchedulePattern").split(",,");
         String[] commandsScheduleDiff = config.getString("commandsScheduleDiff").split(",,");
+        String[] commandsScheduleActive = config.getString("commandsScheduleActive").split(",,");
+
 
         for(int i = 0; i < commandsScheduleKey.length; i++){
             if(commandsScheduleKey[i].length() > 1){
-                ScheduledCommand rc = new ScheduledCommand(channel, commandsScheduleKey[i], commandsSchedulePattern[i],Integer.parseInt(commandsScheduleDiff[i]));
+                ScheduledCommand rc = new ScheduledCommand(channel, commandsScheduleKey[i], commandsSchedulePattern[i],Integer.parseInt(commandsScheduleDiff[i]),Boolean.parseBoolean(commandsScheduleActive[i]));
                 commandsSchedule.put(commandsScheduleKey[i], rc);
             }
         }
@@ -1206,7 +1213,7 @@ public class Channel {
 	}
 
     public void runCommercial(){
-        if(JSONUtil.krakenIsLive(getChannel().substring(1))){
+        if(JSONUtil.krakenIsLive(getChannel().substring(1)) || true){
             String dataIn = "";
             dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=30");
 

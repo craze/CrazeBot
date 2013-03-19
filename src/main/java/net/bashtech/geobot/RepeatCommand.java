@@ -27,18 +27,39 @@ public class RepeatCommand {
 	Timer timer;
 	long lastMessageCount;
 	int messageDifference;
-	
-	public RepeatCommand(String _channel, String _key, int _delay, int _messageDifference){
+    boolean active;
+    TimerTask task;
+    String channel;
+
+    public RepeatCommand(String _channel, String _key, int _delay, int _messageDifference, boolean _active){
 		key = _key;
 		delay = _delay; //In seconds
 		lastMessageCount = 0;
 		messageDifference = _messageDifference;
+        active = _active;
+        channel = _channel;
 		
 		timer = new Timer();
-		int timerDelay = delay * 1000; //In milliseconds
-		
-		timer.scheduleAtFixedRate(new RepeatCommandTask(_channel, key, messageDifference), timerDelay, timerDelay);
+
+        if(active)
+		    timer.scheduleAtFixedRate( new RepeatCommandTask(channel, key, messageDifference), (delay * 1000), (delay * 1000));
+
 	}
+
+    public void setStatus(boolean status){
+        if(status == active)
+            return;
+        else if(status == true){
+            System.out.println("creating scheduler");
+            timer = null;
+            timer = new Timer();
+            timer.scheduleAtFixedRate( new RepeatCommandTask(channel, key, messageDifference), (delay * 1000), (delay * 1000));
+            active = true;
+        }else if(status == false){
+           timer.cancel();
+            active = false;
+        }
+    }
 	
 	private class RepeatCommandTask extends TimerTask{
 		private String key;

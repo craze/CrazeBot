@@ -66,12 +66,14 @@ PM [george](http://www.twitch.tv/message/compose?to=george) on Twitch
   
   * !repeat add [name] [delay in seconds] [message difference - optional] 
   * !repeat delete [name]
+  * !repeat on/off [name]
   * !repeat list
 
 The repeat command will repeat a custom trigger every X amount of seconds passed. Message difference allows you to prevent spamming an inactive channel. It requires Y amount of messages have passed in the channel since the last iteration of the message. The default is 1 so at least one message will need to have been sent in the channel in order for the repeat to trigger.
 
   * !schedule add [name] [pattern] [message difference - optional]
   * !schedule delete [name]
+  * !schedule on/off [name]
   * !schedule list
 
 Schedule is similar to repeat but is designed to repeat at specific times such as 5pm, hourly (on the hour), semihourly (on 0:30), etc. `pattern` accepts: hourly, semihourly, and [crontab syntax**](http://i.imgur.com/j4t8CcM.png).

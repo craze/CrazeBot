@@ -26,17 +26,32 @@ public class ScheduledCommand {
     Scheduler s;
     long lastMessageCount;
     int messageDifference;
+    boolean active;
 
-    public ScheduledCommand(String _channel, String _key, String _pattern, int _messageDifference){
+    public ScheduledCommand(String _channel, String _key, String _pattern, int _messageDifference, boolean _active){
         key = _key;
         pattern = _pattern; //In seconds
         lastMessageCount = 0;
         messageDifference = _messageDifference;
+        active = _active;
 
         s = new Scheduler();
         System.out.println("Scheduling " + key + " on " + pattern);
         s.schedule(pattern, new ScheduledCommandTask(_channel, key, messageDifference));
-        s.start();
+        if(active)
+            s.start();
+    }
+
+    public void setStatus(boolean status){
+        if(status == active)
+            return;
+        else if(status == true){
+            s.start();
+            active = true;
+        }else if(status == false){
+            s.stop();
+            active = false;
+        }
     }
 
     private class ScheduledCommandTask implements Runnable{
