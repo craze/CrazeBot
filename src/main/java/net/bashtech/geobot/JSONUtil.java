@@ -39,7 +39,7 @@ public class JSONUtil {
 //        System.out.println("Viewers: " + viewers);
 //    }
 
-    public static String krakenViewers(String channel){
+    public static Long krakenViewers(String channel){
         try{
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
@@ -47,11 +47,14 @@ public class JSONUtil {
             JSONObject jsonObject = (JSONObject) obj;
 
             JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+            if(stream == null)
+                return (long) 0;
+
             Long viewers = (Long)stream.get("viewers");
-            return "Viewers: " + viewers;
+            return viewers;
         }catch (Exception ex){
             ex.printStackTrace();
-            return "0";
+            return (long) 0;
         }
 
     }
