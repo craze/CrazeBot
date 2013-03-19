@@ -194,4 +194,24 @@ public class JSONUtil {
 
     }
 
+    public static boolean krakenIsLive(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+
+            if(stream != null)
+                return true;
+            else
+                return false;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+
+    }
+
 }

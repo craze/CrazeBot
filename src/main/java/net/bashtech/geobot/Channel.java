@@ -1205,13 +1205,14 @@ public class Channel {
 		return (System.currentTimeMillis() / 1000L);
 	}
 
-    public String runCommercial(){
-        String dataIn = "";
+    public void runCommercial(){
+        if(JSONUtil.krakenIsLive(getChannel().substring(1))){
+            String dataIn = "";
+            dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=30");
 
-        dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=30");
-        //dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial?oauth_token=" + BotManager.getInstance().krakenOAuthToken, "length=30");
-
-        System.out.println(dataIn);
-        return "";
+            System.out.println(dataIn);
+        }else{
+            System.out.println(getChannel().substring(1) + " is not live. Skipping commercial.");
+        }
     }
 }

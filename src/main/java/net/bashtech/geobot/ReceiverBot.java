@@ -573,7 +573,8 @@ public class ReceiverBot extends PircBot {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
-							sendMessage(channel, channelInfo.getBullet() + " Link to \"" + rawQuery + "\" -> " + "http://lmgtfy.com/?q=" + encodedQuery);
+                            String url = "http://lmgtfy.com/?q=" + encodedQuery;
+							sendMessage(channel, channelInfo.getBullet() + " Link to \"" + rawQuery + "\" -> " + JSONUtil.shortenURL(url));
 					}
 					//return;
 				}
@@ -582,7 +583,7 @@ public class ReceiverBot extends PircBot {
 				if(msg[0].equalsIgnoreCase("!commercial")){
 					System.out.println("DEBUG: Matched command !commercial");
 					if(isOwner){
-						String result = channelInfo.runCommercial();
+						channelInfo.runCommercial();
 						//sendMessage(channel, channelInfo.getBullet() + " Running a 30 second commercial. Thank you for supporting the channel!");
 					}
 					//return;

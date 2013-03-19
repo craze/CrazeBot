@@ -15,26 +15,11 @@ import java.util.Scanner;
 public class JSONTest {
     public static void main(String[] args) {
 
-        JSONParser parser = new JSONParser();
-
-        try {
-            String out = JSONTest.putRemoteData("https://api.twitch.tv/kraken/channels/george", "channel[game]=Kappa");
-            System.out.println(out);
-
-
-//            long age = (Long) jsonObject.get("age");
-//            System.out.println(age);
-//
-//            // loop array
-//            JSONArray msg = (JSONArray) jsonObject.get("messages");
-//            Iterator<String> iterator = msg.iterator();
-//            while (iterator.hasNext()) {
-//                System.out.println(iterator.next());
-//            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("tal: " + JSONTest.krakenIsLive("talutha"));
+        System.out.println("bwana: " + JSONTest.krakenIsLive("bwana"));
+        System.out.println("lirik: " + JSONTest.krakenIsLive("lirik"));
+        System.out.println("dansgaming: " + JSONTest.krakenIsLive("dansgaming"));
+        System.out.println("giantwaffle: " + JSONTest.krakenIsLive("giantwaffle"));
 
     }
 
@@ -82,4 +67,25 @@ public class JSONTest {
 
         return "";
     }
+
+    public static boolean krakenIsLive(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+
+            if(stream != null)
+                return true;
+            else
+                return false;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+
+    }
+
 }
