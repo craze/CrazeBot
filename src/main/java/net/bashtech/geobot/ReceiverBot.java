@@ -48,6 +48,7 @@ public class ReceiverBot extends PircBot {
 
     private Pattern[] linkPatterns = new Pattern[3];
 	private Pattern[] symbolsPatterns = new Pattern[1];
+//    private Pattern[] symbolsClassPatterns = new Pattern[1];
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 60, 600, 86400};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
@@ -56,10 +57,15 @@ public class ReceiverBot extends PircBot {
         ReceiverBot.setInstance(this);
 		linkPatterns[0] = Pattern.compile(".*http://.*");
 		linkPatterns[1] = Pattern.compile(".*(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in|gl)(\\s+|/|$).*");
-		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");	
-		
-		symbolsPatterns[0] = Pattern.compile(".*(░|░|▓|▀|▄|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒|█).*");
-		this.setName(BotManager.getInstance().getInstance().nick);
+		linkPatterns[2] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
+
+        symbolsPatterns[0] = Pattern.compile("(\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|▀|▄|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒|█)");
+
+//		symbolsPatterns[0] = Pattern.compile(".*(░|░|▓|▀|▄|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒|█).*");
+        // http://en.wikipedia.org/wiki/Unicode_block
+//        symbolsClassPatterns[0] = Pattern.compile("(\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes})");
+
+        this.setName(BotManager.getInstance().getInstance().nick);
 		this.setLogin("ReceiverGeoBot");
 		
 		this.setVerbose(BotManager.getInstance().verboseLogging);
@@ -1644,12 +1650,21 @@ public class ReceiverBot extends PircBot {
 	}
 	
 	private boolean containsSymbol(String message, Channel ch){
+//        for(Pattern pattern: symbolsClassPatterns){
+//            Matcher match = pattern.matcher(message);
+//            if(match.find()){
+//                System.out.println("DEBUG: Symbol find on " + pattern.pattern());
+//                return true;
+//            }
+//        }
+
 		for(Pattern pattern: symbolsPatterns){
 			Matcher match = pattern.matcher(message);
-			if(match.matches()){
+			if(match.find()){
 				System.out.println("DEBUG: Symbol match on " + pattern.pattern());	
 				return true;
 			}
+
 		}
 
 		return false;
