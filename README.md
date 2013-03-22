@@ -118,7 +118,8 @@ Filtered messages must match all three of the below settings:
     * throw - Enables the !throw command 
     * signedkicks - Enables announcing cap and link kicks 
     * joinsparts - Enables announcing users joining and leaving the channel 
-    * lastfm [username/off] - Sets username to use with !music command 
+    * lastfm [username/off] - Sets username to use with !music command
+    * maxlength [num of chars] - Maximum allowed message length
     * steam [ID] - Sets your Steam ID. Must be in [SteamID64](http://steamidconverter.com/) format and profile must be public 
     * mode [(0/owner),(1/mod),(2,everyone),(-1, "Admin mode")] - Sets the minimum access to use any bot commands. Options are either owner, mod, everyone, or "Admin mode". Specifying no argument will display current setting. Also see !modchan 
     * chatlogging - Enables logging of chat conversations. Logs are stored at [http://btx.me/ackbot](http://btx.me/ackbot) and are publicly visible 
