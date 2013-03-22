@@ -145,11 +145,11 @@ public class JSONUtil {
                 if(retValues.equals("profile"))
                     return JSONUtil.shortenURL(profileurl);
                 else if(retValues.equals("game"))
-                    return (gameextrainfo != null ? gameextrainfo : "(none)");
+                    return (gameextrainfo != null ? gameextrainfo : "(unavailable)");
                 else if(retValues.equals("server"))
-                    return (gameserverip != null ? gameserverip : "(none)");
+                    return (gameserverip != null ? gameserverip : "(unavailable)");
                 else if(retValues.equals("store"))
-                    return (gameid != null ? "http://store.steampowered.com/app/" + gameid : "(none)");
+                    return (gameid != null ? "http://store.steampowered.com/app/" + gameid : "(unavailable)");
                 else
                     return "Profile: " + JSONUtil.shortenURL(profileurl) + ( gameextrainfo != null ? ", Game: " + gameextrainfo : "") + ( gameserverip != null ? ", Server: " + gameserverip : "");
 
