@@ -52,6 +52,7 @@ public class ReceiverBot extends PircBot {
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 60, 600, 86400};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
+    Timer joinCheck;
 	
 	public ReceiverBot(String server, int port){
         ReceiverBot.setInstance(this);
@@ -78,6 +79,8 @@ public class ReceiverBot extends PircBot {
 		} catch (IrcException e) {
 			System.out.println("ERROR: Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
+
+        startJoinCheck();
 	}
 
     public static void setInstance(ReceiverBot rb){
@@ -1514,18 +1517,22 @@ public class ReceiverBot extends PircBot {
 		for(BotModule b:BotManager.getInstance().getModules()){
 			b.onJoin(channelInfo, sender, login, hostname);
 		}
+
+        if(this.getNick().equalsIgnoreCase(sender)){
+            System.out.println("DEBUG: Got self join for " + channel);
+        }
 		
-		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
-			return;
-		
-		String prefix = "";
-		
-		if(BotManager.getInstance().isTagStaff(sender))
-			prefix = " [Staff] ";
-		else if(BotManager.getInstance().isTagAdmin(sender))
-			prefix = " [Admin] ";
-		
-		sendMessage(channel, "> " + prefix + sender + " entered the room.");
+//		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
+//			return;
+//
+//		String prefix = "";
+//
+//		if(BotManager.getInstance().isTagStaff(sender))
+//			prefix = " [Staff] ";
+//		else if(BotManager.getInstance().isTagAdmin(sender))
+//			prefix = " [Admin] ";
+//
+//		sendMessage(channel, "> " + prefix + sender + " entered the room.");
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
@@ -1540,17 +1547,17 @@ public class ReceiverBot extends PircBot {
 			b.onPart(channelInfo, sender, login, hostname);
 		}
 		
-		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
-			return;
-		
-		String prefix = "";
-		
-		if(BotManager.getInstance().isTagStaff(sender))
-			prefix = " [Staff] ";
-		else if(BotManager.getInstance().isTagAdmin(sender))
-			prefix = " [Admin] ";
-		
-		sendMessage(channel, "> " + prefix + sender + " left the room.");
+//		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
+//			return;
+//
+//		String prefix = "";
+//
+//		if(BotManager.getInstance().isTagStaff(sender))
+//			prefix = " [Staff] ";
+//		else if(BotManager.getInstance().isTagAdmin(sender))
+//			prefix = " [Admin] ";
+//
+//		sendMessage(channel, "> " + prefix + sender + " left the room.");
     }
     
 	@Override
@@ -1596,6 +1603,35 @@ public class ReceiverBot extends PircBot {
     	if(BotManager.getInstance().useGUI){
     		BotManager.getInstance().getGUI().log(line);
     	}
+    }
+
+    private void startJoinCheck(){
+
+        joinCheck = new Timer();
+
+        int delay = 60000;
+
+        joinCheck.scheduleAtFixedRate(new TimerTask()
+        {
+            public void run() {
+                String[] currentChanList = ReceiverBot.this.getChannels();
+                for (Map.Entry<String, Channel> entry : BotManager.getInstance().channelList.entrySet())
+                {
+                    boolean inList = false;
+                    for(String c : currentChanList){
+                        if(entry.getValue().getChannel().equals(c))
+                            inList = true;
+                    }
+
+                    if(!inList){
+                        System.out.println("DEBUG: " + entry.getValue().getChannel() + " is not in the joined list.");
+                        ReceiverBot.this.joinChannel(entry.getValue().getChannel());
+                    }
+
+                }
+            }
+        },delay,delay);
+
     }
 	
 	private int getCapsNumber(String s){
