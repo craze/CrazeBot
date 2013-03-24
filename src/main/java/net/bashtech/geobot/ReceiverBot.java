@@ -1312,13 +1312,23 @@ public class ReceiverBot extends PircBot {
 							sendMessage(channel, channelInfo.getBullet() + " Chat logging is off");
 						}
 					}else if(msg[1].equalsIgnoreCase("maxlength")){
-						if(msg.length > 2){
-							channelInfo.setFilterMax(Integer.parseInt(msg[2]));
-							sendMessage(channel, channelInfo.getBullet() + " Max message length set to " + channelInfo.getFilterMax());
-						}else{
-							sendMessage(channel, channelInfo.getBullet() + " Max message length is " + channelInfo.getFilterMax() + " characters.");
-						}
-					}
+                        if(msg.length > 2){
+                            channelInfo.setFilterMax(Integer.parseInt(msg[2]));
+                            sendMessage(channel, channelInfo.getBullet() + " Max message length set to " + channelInfo.getFilterMax());
+                        }else{
+                            sendMessage(channel, channelInfo.getBullet() + " Max message length is " + channelInfo.getFilterMax() + " characters.");
+                        }
+                    }else if(msg[1].equalsIgnoreCase("commerciallength")){
+                        if(msg.length > 2){
+                            int cLength = Integer.parseInt(msg[2]);
+                            if(cLength == 30 || cLength == 60 || cLength == 90){
+                                channelInfo.setCommercialLength(cLength);
+                                sendMessage(channel, channelInfo.getBullet() + " Commercial length is set to " + channelInfo.getCommercialLength() + " seconds.");
+                            }
+                        }else{
+                            sendMessage(channel, channelInfo.getBullet() + " Commercial length is " + channelInfo.getCommercialLength() + " seconds.");
+                        }
+                    }
  				}
  				
  				

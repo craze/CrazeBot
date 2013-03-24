@@ -73,6 +73,7 @@ public class Channel {
 	Raffle raffle;
 	public boolean logChat;
 	public long messageCount;
+    public int commercialLength;
 		
 
 	private Set<String> offensiveWords = new HashSet<String>();
@@ -779,8 +780,17 @@ public class Channel {
 	public boolean getLogging(){
 		return logChat;
 	}
-	
-	// ##################################################
+
+    public int getCommercialLength() {
+        return commercialLength;
+    }
+
+    public void setCommercialLength(int commercialLength) {
+        this.commercialLength = commercialLength;
+        config.setInt("commercialLength", commercialLength);
+    }
+
+    // ##################################################
 	
 	public boolean checkPermittedDomain(String message){
 		//Allow base domain w/o a path
@@ -1044,6 +1054,9 @@ public class Channel {
 		if(!config.keyExists("offensiveWords")) {
 			config.setString("offensiveWords", "");
 		}
+        if(!config.keyExists("commercialLength")) {
+            config.setInt("commercialLength", 30);
+        }
 		
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
@@ -1068,8 +1081,10 @@ public class Channel {
 		logChat = Boolean.parseBoolean(config.getString("logChat"));
 		mode = config.getInt("mode");
 		filterMaxLength = config.getInt("filterMaxLength");
-		
-		String[] commandsKey = config.getString("commandsKey").split(",");
+        commercialLength = config.getInt("commercialLength");
+
+
+        String[] commandsKey = config.getString("commandsKey").split(",");
 		String[] commandsValue = config.getString("commandsValue").split(",,");
 
 		for(int i = 0; i < commandsKey.length; i++){
@@ -1215,7 +1230,7 @@ public class Channel {
     public void runCommercial(){
         if(JSONUtil.krakenIsLive(getChannel().substring(1))){
             String dataIn = "";
-            dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=30");
+            dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=" + commercialLength);
 
             System.out.println(dataIn);
         }else{
