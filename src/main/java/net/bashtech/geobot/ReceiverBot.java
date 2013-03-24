@@ -1321,7 +1321,7 @@ public class ReceiverBot extends PircBot {
                     }else if(msg[1].equalsIgnoreCase("commerciallength")){
                         if(msg.length > 2){
                             int cLength = Integer.parseInt(msg[2]);
-                            if(cLength == 30 || cLength == 60 || cLength == 90){
+                            if(cLength == 30 || cLength == 60 || cLength == 90 || cLength == 120 || cLength == 150 || cLength == 180){
                                 channelInfo.setCommercialLength(cLength);
                                 sendMessage(channel, channelInfo.getBullet() + " Commercial length is set to " + channelInfo.getCommercialLength() + " seconds.");
                             }

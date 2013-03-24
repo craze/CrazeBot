@@ -123,7 +123,7 @@ Filtered messages must match all three of the below settings:
     * steam [ID] - Sets your Steam ID. Must be in [SteamID64](http://steamidconverter.com/) format and profile must be public 
     * mode [(0/owner),(1/mod),(2,everyone),(-1, "Admin mode")] - Sets the minimum access to use any bot commands. Options are either owner, mod, everyone, or "Admin mode". Specifying no argument will display current setting. Also see !modchan 
     * chatlogging - Enables logging of chat conversations. Logs are stored at [http://btx.me/ackbot](http://btx.me/ackbot) and are publicly visible
-    * commerciallength [30/60/90] - Lenth of commercials to run with
+    * commerciallength [30/60/90/120/150/180] - Lenth of commercials to run with
   
   
   * !regular add/delete/list [name] - Owner - Adds a "regular". Regulars don't need permission to post links 
