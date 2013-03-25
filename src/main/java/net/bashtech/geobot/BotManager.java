@@ -269,7 +269,7 @@ public class BotManager {
 
 		writeChannelList();
 
-        this.followChannel(name.substring(1));
+        //this.followChannel(name.substring(1)); //DAMN IT TWITCH!!!!
 		return true;
 	}
 
