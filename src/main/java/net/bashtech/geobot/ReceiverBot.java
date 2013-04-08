@@ -1307,9 +1307,9 @@ public class ReceiverBot extends PircBot {
 						}
 					}else if(msg[1].equalsIgnoreCase("chatlogging")){
 						if(msg[2].equalsIgnoreCase("on")){
-//							channelInfo.setLogging(true);
-//							sendMessage(channel, channelInfo.getBullet() + " Chat logging is on");
-							sendMessage(channel, channelInfo.getBullet() + " You cannot enable chat logging. If you would like it enabled for your channel, please PM bgeorge.");
+							channelInfo.setLogging(true);
+							sendMessage(channel, channelInfo.getBullet() + " Chat logging is on");
+							//sendMessage(channel, channelInfo.getBullet() + " You cannot enable chat logging. If you would like it enabled for your channel, please contact the bot maintainer.");
 						}else if(msg[2].equalsIgnoreCase("off")){
 							channelInfo.setLogging(false);
 							sendMessage(channel, channelInfo.getBullet() + " Chat logging is off");
@@ -1478,9 +1478,13 @@ public class ReceiverBot extends PircBot {
 				// ***************************** Info/Catch-all Command ***************************
 				// ********************************************************************************
  				
-				if(msg[0].substring(0,1).equalsIgnoreCase("!") && !channelInfo.getCommand(msg[0]).equalsIgnoreCase("invalid")){
-					System.out.println("DEBUG: Matched command " + msg[0]);
-					sendMessage(channel, channelInfo.getBullet() + " " + channelInfo.getCommand(msg[0]));
+				if(msg[0].substring(0,1).equalsIgnoreCase("!")){
+                    String value = channelInfo.getCommand(msg[0]);
+                    if(value != null){
+                        System.out.println("DEBUG: Matched command " + msg[0]);
+                        sendMessage(channel, channelInfo.getBullet() + " " + value);
+                    }
+
 				}
 
 	}

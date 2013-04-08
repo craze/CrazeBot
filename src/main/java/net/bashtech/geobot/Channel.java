@@ -108,7 +108,7 @@ public class Channel {
 		if(commands.containsKey(key)){
 			return commands.get(key);
 		}else{
-			return "invalid";
+			return null;
 		}
 	}
 	
