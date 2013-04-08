@@ -1482,7 +1482,18 @@ public class ReceiverBot extends PircBot {
                     String value = channelInfo.getCommand(msg[0]);
                     if(value != null){
                         System.out.println("DEBUG: Matched command " + msg[0]);
-                        sendMessage(channel, value);
+                        if(msg.length > 1 && isOp){
+                            String updatedMessage = fuseArray(msg, 1);
+                            if(!updatedMessage.contains(",,")){
+                                channelInfo.setCommand(msg[0], updatedMessage);
+                                sendMessage(channel, channelInfo.getCommand(msg[0]));
+                            }else{
+                                sendMessage(channel, "Command cannot contain double commas (\",,\").");
+                            }
+                        }else{
+                            sendMessage(channel, value);
+                        }
+
                     }
 
 				}

@@ -137,7 +137,7 @@ public abstract class PircBot implements ReplyConstants {
         
         // Clear everything we may have know about channels.
         this.removeAllChannels();
-        
+
         //*************************************************************************************************
         // Connect to the server.
         String localAddress = BotManager.getInstance().getLocalAddress();
