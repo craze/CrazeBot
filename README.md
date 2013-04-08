@@ -183,6 +183,7 @@ Adding dynamic data to bot message is also supported via string substitutions. T
   * (\_STEAM\_SERVER\_) : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured)
   * (\_STEAM\_STORE\_) : Link to Steam store for the game you are playing (Steam account must be configured)
   * (\_SONG\_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
+  * (\_BOT\_HELP\_) : Bot's help message. See bothelpMessage in global.properties.
 
   Example:
   !command add info I am (\_PROFILE\_) and I'm playing (\_STEAM\_GAME\_) on (\_STEAM\_SERVER\_) listening to (\_SONG\_)

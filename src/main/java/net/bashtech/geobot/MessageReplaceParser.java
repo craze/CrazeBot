@@ -44,6 +44,8 @@ public class MessageReplaceParser {
             message = message.replace("(_STEAM_SERVER_)", JSONUtil.steam(ci.getSteam(),"server"));
         if(message.contains("(_STEAM_STORE_)"))
             message = message.replace("(_STEAM_STORE_)", JSONUtil.steam(ci.getSteam(),"store"));
+        if(message.contains("(_BOT_HELP_)"))
+            message = message.replace("(_BOT_HELP_)", BotManager.getInstance().bothelpMessage);
 
         return message;
     }

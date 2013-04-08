@@ -63,6 +63,7 @@ public class BotManager {
 	public int senderInstances;
 	ReceiverBot receiverBot;
 	SenderBotBalancer sbb;
+    String bothelpMessage;
 
     // API KEYS
     public String bitlyAPIKey;
@@ -176,6 +177,10 @@ public class BotManager {
 			config.setInt("senderInstances", 10);
 		}
 
+        if(!config.keyExists("bothelpMessage")) {
+            config.setString("bothelpMessage", "http://bashtech.net/twitch/geobot.php");
+        }
+
         // API KEYS
 
         if(!config.keyExists("bitlyAPIKey")) {
@@ -211,7 +216,7 @@ public class BotManager {
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
 		senderInstances = config.getInt("senderInstances");
-
+        bothelpMessage = config.getString("bothelpMessage");
 
         // API KEYS
 

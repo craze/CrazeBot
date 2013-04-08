@@ -396,7 +396,7 @@ public class ReceiverBot extends PircBot {
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!bothelp")) {
 						System.out.println("DEBUG: Matched command !bothelp");
-						sendMessage(channel, "Command help is available at http://bashtech.net/twitch/geobot.php");
+						sendMessage(channel, BotManager.getInstance().bothelpMessage);
 						//return;
 				}
 				
