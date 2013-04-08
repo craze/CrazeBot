@@ -69,7 +69,6 @@ public class Channel {
 	private String steamID;
 	private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone; -1 Special mode to admins to use for channel moderation
 	private int bulletInt;
-	private char bullet[] = {'>','+', '-', '~'};
 	Raffle raffle;
 	public boolean logChat;
 	public long messageCount;
@@ -1196,31 +1195,6 @@ public class Channel {
 
 	public int getMode() {
 		return mode;
-	}
-	
-	public char getBullet(){
-		char rt;
-		switch(bulletInt){
-			case 0:
-				rt = bullet[bulletInt];
-				bulletInt++;
-				return rt;
-			case 1:
-				rt = bullet[bulletInt];
-				bulletInt++;
-				return rt;
-			case 2:
-				rt = bullet[bulletInt];
-				bulletInt++;
-				return rt;
-			case 3:
-				rt = bullet[bulletInt];
-				bulletInt = 0;
-				return rt;
-		}
-		
-		return '>';
-			
 	}
 	
 	private long getTime(){

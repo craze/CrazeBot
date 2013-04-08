@@ -26,8 +26,10 @@ public class SenderBotBalancer {
 	private int instanceNumber;
 	private ArrayList<SenderBot> instances;
 	private int position;
-	
-	public SenderBotBalancer(){
+    private char bullet[] = {'>','+', '-', '~'};
+    private int bulletPos = 0;
+
+    public SenderBotBalancer(){
 		setInstance(this);
 		instanceNumber = 10;
 		position = 0;
@@ -48,6 +50,7 @@ public class SenderBotBalancer {
 		System.out.println("DEBUG: Sending message to instance - " + position);
 
         message = MessageReplaceParser.parseMessage(channel, message);
+        message = getBullet() + " " + message;
 
 		instances.get(position).sendMessage(channel, message);
 		
@@ -70,5 +73,16 @@ public class SenderBotBalancer {
 	public static SenderBotBalancer getInstance(){
 		return _instance;
 	}
+
+    public char getBullet(){
+        if(bulletPos == bullet.length)
+            bulletPos = 0;
+
+        char rt = bullet[bulletPos];
+        bulletPos++;
+
+        return rt;
+
+    }
 
 }
