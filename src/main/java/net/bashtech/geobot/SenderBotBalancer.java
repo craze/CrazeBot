@@ -50,7 +50,8 @@ public class SenderBotBalancer {
 		System.out.println("DEBUG: Sending message to instance - " + position);
 
         message = MessageReplaceParser.parseMessage(channel, message);
-        message = getBullet() + " " + message;
+        if(!message.startsWith("."))
+            message = getBullet() + " " + message;
 
 		instances.get(position).sendMessage(channel, message);
 		
