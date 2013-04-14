@@ -406,7 +406,7 @@ public class Channel {
 	
 	public void setFilterEmotesMax(int option){
 		filterEmotesMax = option;
-		config.setInt("filterOffensive", option);
+		config.setInt("filterEmotesMax", option);
 	}
 	
 	public int getFilterEmotesMax(){
