@@ -247,7 +247,7 @@ public class ReceiverBot extends PircBot {
  					String messageNoWS = message.replaceAll("\\s","");
 					int capsNumber = getCapsNumber(messageNoWS);
 					int capsPercent = getCapsPercent(messageNoWS);
-					if(channelInfo.getFilterCaps() && !(isOp) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
+					if(channelInfo.getFilterCaps() && !(isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 						int warningCount = 0;
 
 							channelInfo.incWarningCount(sender, FilterType.CAPS);
@@ -259,7 +259,7 @@ public class ReceiverBot extends PircBot {
 					}
 					
 					// Link filter
-					if(channelInfo.getFilterLinks() && !(isOp || isRegular) && this.containsLink(message,channelInfo) ){
+					if(channelInfo.getFilterLinks() && !(isRegular) && this.containsLink(message,channelInfo) ){
 						boolean result = channelInfo.linkPermissionCheck(sender);
 						int warningCount = 0;
 						if(result){
@@ -277,7 +277,7 @@ public class ReceiverBot extends PircBot {
 					}
 					
 					// Length filter
-					if(!(isOp || isRegular) && (message.length() > channelInfo.getFilterMax())){
+					if(!(isRegular) && (message.length() > channelInfo.getFilterMax())){
 						int warningCount = 0;
 
 								channelInfo.incWarningCount(sender, FilterType.LENGTH);
@@ -291,7 +291,7 @@ public class ReceiverBot extends PircBot {
 					}
 					
 					// Symbols filter
-					if(channelInfo.getFilterSymbols() && !(isOp || isRegular) && this.containsSymbol(message,channelInfo) ){
+					if(channelInfo.getFilterSymbols() && !(isRegular) && this.containsSymbol(message,channelInfo) ){
 						int warningCount = 0;
 						channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
 						warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
@@ -316,7 +316,7 @@ public class ReceiverBot extends PircBot {
 					}
 					
 					//Emote filter
-					if(!isOp && channelInfo.getFilterEmotes()){
+					if(!isRegular && channelInfo.getFilterEmotes()){
 						if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
 							int warningCount = 0;
 
