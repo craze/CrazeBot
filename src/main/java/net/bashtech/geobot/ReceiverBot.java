@@ -436,7 +436,7 @@ public class ReceiverBot extends PircBot {
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
 					System.out.println("DEBUG: Matched command !music");
-					sendMessage(channel, JSONUtil.lastFM(channelInfo.getLastfm()));
+					sendMessage(channel, "Now playing: " + JSONUtil.lastFM(channelInfo.getLastfm()));
 				}
 				
 				// !steam - All
