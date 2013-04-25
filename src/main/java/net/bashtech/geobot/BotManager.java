@@ -72,6 +72,7 @@ public class BotManager {
     public String SteamAPIKey;
 
     public String krakenOAuthToken;
+    public String krakenClientID;
     // ********
 	
 	private String _propertiesFile;
@@ -203,6 +204,10 @@ public class BotManager {
             config.setString("krakenOAuthToken", "");
         }
 
+        if(!config.keyExists("krakenClientID")) {
+            config.setString("krakenClientID", "");
+        }
+
         // ********
 				
 		nick = config.getString("nick");
@@ -225,6 +230,8 @@ public class BotManager {
         LastFMAPIKey = config.getString("LastFMAPIKey");
         SteamAPIKey = config.getString("SteamAPIKey");
         krakenOAuthToken = config.getString("krakenOAuthToken");
+        krakenClientID = config.getString("krakenClientID");
+
 
         // ********
 
@@ -474,6 +481,7 @@ public class BotManager {
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
             conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
+            conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
 
             PrintWriter out = new PrintWriter(conn.getOutputStream());
             out.print(postData);
@@ -517,6 +525,7 @@ public class BotManager {
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
             conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
+            conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
 
             PrintWriter out = new PrintWriter(conn.getOutputStream());
             out.print(postData);
