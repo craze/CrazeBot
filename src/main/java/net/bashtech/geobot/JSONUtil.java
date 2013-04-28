@@ -42,7 +42,7 @@ public class JSONUtil {
     public static Long krakenViewers(String channel){
         try{
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/streams/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
@@ -62,7 +62,7 @@ public class JSONUtil {
     public static String krakenStatus(String channel){
         try{
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/channels/" + channel));
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
@@ -79,7 +79,7 @@ public class JSONUtil {
     public static String krakenGame(String channel){
         try{
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/channels/" + channel));
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
@@ -200,7 +200,7 @@ public class JSONUtil {
     public static boolean krakenIsLive(String channel){
         try{
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/streams/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
@@ -220,7 +220,7 @@ public class JSONUtil {
     public static boolean krakenChannelExist(String channel){
         try{
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/channels/" + channel));
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 

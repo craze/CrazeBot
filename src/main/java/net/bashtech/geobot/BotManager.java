@@ -465,7 +465,33 @@ public class BotManager {
 
         return dataIn;
     }
-    public static String postRemoteData(String urlString, String postData){
+
+    public static String getRemoteContentTwitch(String urlString, int krakenVersion){
+        String dataIn = "";
+        try{
+            URL url = new URL(urlString);
+            //System.out.println("DEBUG: Getting data from " + url.toString());
+            HttpURLConnection conn =(HttpURLConnection)url.openConnection();
+
+            if(BotManager.getInstance().krakenClientID.length() > 0)
+                conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
+
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null)
+                dataIn += inputLine;
+            in.close();
+
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        return dataIn;
+    }
+
+    public static String postRemoteDataTwitch(String urlString, String postData, int krakenVersion){
         URL url;
         HttpURLConnection conn;
 
@@ -479,7 +505,7 @@ public class BotManager {
 
             conn.setFixedLengthStreamingMode(postData.getBytes().length);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
             conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
             conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
 

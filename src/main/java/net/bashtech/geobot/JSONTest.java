@@ -15,7 +15,8 @@ import java.util.Scanner;
 public class JSONTest {
     public static void main(String[] args) {
 
-        System.out.println("tal: " + JSONTest.krakenIsLive("talutha"));
+
+/*        System.out.println("tal: " + JSONTest.krakenIsLive("talutha"));
         System.out.println("bwana: " + JSONTest.krakenIsLive("bwana"));
         System.out.println("lirik: " + JSONTest.krakenIsLive("lirik"));
         System.out.println("dansgaming: " + JSONTest.krakenIsLive("dansgaming"));
@@ -24,7 +25,7 @@ public class JSONTest {
         System.out.println("bgeorge" + JSONUtil.krakenChannelExist("bgeorge"));
         System.out.println("bwana" + JSONUtil.krakenChannelExist("bwana"));
         System.out.println("dylanlive" + JSONUtil.krakenChannelExist("dylanlive"));
-        System.out.println("communitychat" + JSONUtil.krakenChannelExist("communitychat"));
+        System.out.println("communitychat" + JSONUtil.krakenChannelExist("communitychat"));*/
 
     }
 

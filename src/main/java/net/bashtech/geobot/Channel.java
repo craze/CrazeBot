@@ -1204,7 +1204,7 @@ public class Channel {
     public void runCommercial(){
         if(JSONUtil.krakenIsLive(getChannel().substring(1))){
             String dataIn = "";
-            dataIn = BotManager.postRemoteData("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=" + commercialLength);
+            dataIn = BotManager.postRemoteDataTwitch("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=" + commercialLength, 2);
 
             System.out.println(dataIn);
         }else{
