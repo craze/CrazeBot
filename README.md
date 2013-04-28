@@ -106,9 +106,10 @@ Filtered messages must match all three of the below settings:
   * !offensive on/off - Turns filter on/off 
   * !offensive list - Lists filtered words 
   * !offensive add [word string] - Adds string to filter 
-  * !offensive delete [word string] - Removes string from filter 
-  
-  
+  * !offensive delete [word string] - Removes string from filter
+
+  * !symbols on/off - Turns symbols filter on/off. Covers unicode classes for box drawings, block elements and geometric shapes also select other spammed characters.
+
   * !emotes on/off - Owner - Toggle emote spam filtering on and off 
   * !emotes max [int] - Max number of emotes allowed 
 
