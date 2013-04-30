@@ -1036,7 +1036,7 @@ public class ReceiverBot extends PircBot {
 							channelInfo.setFilterOffensive(false);
 							sendMessage(channel, "Offensive word filter is off");
  						}else if(msg[1].equalsIgnoreCase("list")){
- 							String tempList = "Offsenive words: ";
+ 							String tempList = "Offensive words: ";
  	 						for(String s:channelInfo.getOffensive()){
  	 							tempList += s + ", ";
  	 						}
