@@ -19,5 +19,5 @@
 package net.bashtech.geobot;
 
 public enum FilterType {
-	LINK, CAPS, OFFENSIVE, EMOTES, SYMBOLS, LENGTH;
+	LINK, CAPS, OFFENSIVE, EMOTES, SYMBOLS, LENGTH, NICKCOLOR;
 }

@@ -73,7 +73,8 @@ public class Channel {
 	public boolean logChat;
 	public long messageCount;
     public int commercialLength;
-		
+
+    private boolean filterColors;
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
@@ -408,7 +409,7 @@ public class Channel {
 		filterEmotesMax = option;
 		config.setInt("filterEmotesMax", option);
 	}
-	
+
 	public int getFilterEmotesMax(){
 		return filterEmotesMax;
 	}
@@ -421,6 +422,15 @@ public class Channel {
 	public boolean getAnnounceJoinParts(){
 		return announceJoinParts;
 	}
+
+    public void setFilterColor(boolean option){
+        filterColors = option;
+        config.setBoolean("filterColors", option);
+    }
+
+    public boolean getFilterColor(){
+        return filterColors;
+    }
 	
 	//###################################################
 	
@@ -1056,6 +1066,9 @@ public class Channel {
         if(!config.keyExists("commercialLength")) {
             config.setInt("commercialLength", 30);
         }
+        if(!config.keyExists("filterColors")) {
+            config.setBoolean("filterColors", false);
+        }
 		
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
@@ -1081,6 +1094,8 @@ public class Channel {
 		mode = config.getInt("mode");
 		filterMaxLength = config.getInt("filterMaxLength");
         commercialLength = config.getInt("commercialLength");
+        filterColors = Boolean.parseBoolean(config.getString("filterColors"));
+
 
 
         String[] commandsKey = config.getString("commandsKey").split(",");
