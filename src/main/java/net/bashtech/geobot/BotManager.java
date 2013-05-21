@@ -96,11 +96,24 @@ public class BotManager {
 		}
 		
 		receiverBot = new ReceiverBot(server, port);
+        List<String> outdatedChannels = new LinkedList<String>();
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-		{	
-			System.out.println("DEBUG: Joining channel " + entry.getValue().getChannel());
-			receiverBot.joinChannel(entry.getValue().getChannel());
+		{
+            String channel = entry.getValue().getChannel();
+            if(!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1))){
+                System.out.println("DEBUG: Joining channel " + channel);
+                receiverBot.joinChannel(channel);
+            }else{
+                outdatedChannels.add(channel);
+            }
+
 		}
+
+        //Remove outdatedChannels
+        for(String channel : outdatedChannels){
+            System.out.println("DEBUG: Removing channel: " + channel);
+            this.removeChannel(channel);
+        }
 		
 		//Spinup senders
 		sbb = new SenderBotBalancer();

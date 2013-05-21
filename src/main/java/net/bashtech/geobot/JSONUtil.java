@@ -24,6 +24,9 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class JSONUtil {
@@ -231,6 +234,41 @@ public class JSONUtil {
             //ex.printStackTrace();
             return false;
         }
+
+    }
+
+    public static boolean krakenOutdatedChannel(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            String updatedAtString = (String)jsonObject.get("updated_at");
+            //System.out.println("Time: " + updatedAtString);
+
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            format.setTimeZone(java.util.TimeZone.getTimeZone("US/Pacific"));
+            long differenceDay = 0;
+
+            try {
+                Date then = format.parse(updatedAtString);
+                long differenceSec = (long) (System.currentTimeMillis()/1000) - (then.getTime()/1000);
+                differenceDay = (long)(differenceSec / 86400);
+            }catch (Exception exi){
+                exi.printStackTrace();
+            }
+
+            if(differenceDay > 30){
+                System.out.println("Channel " + channel + " not updated in " + differenceDay + " days. Parting channel.");
+                return true;
+            }
+
+        }catch (Exception ex){
+            return false;
+        }
+
+        return false;
 
     }
 
