@@ -491,12 +491,23 @@ public class BotManager {
 
             conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null)
-                dataIn += inputLine;
-            in.close();
+            try{
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null)
+                    dataIn += inputLine;
+                in.close();
+            }catch (IOException exerr){
+                String inputLine;
 
+                InputStream errorStream = conn.getErrorStream();
+                if(errorStream != null){
+                    BufferedReader inE = new BufferedReader(new InputStreamReader(errorStream));
+                    while ((inputLine = inE.readLine()) != null)
+                        dataIn += inputLine;
+                    inE.close();
+                }
+            }
         }catch(Exception ex){
             ex.printStackTrace();
         }

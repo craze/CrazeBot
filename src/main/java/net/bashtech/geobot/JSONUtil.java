@@ -244,6 +244,16 @@ public class JSONUtil {
 
             JSONObject jsonObject = (JSONObject) obj;
 
+            Object statusO = jsonObject.get("status");
+            Long status;
+            if(statusO != null){
+                status = (Long) statusO;
+                if(status == 422 || status == 404){
+                    System.out.println("Channel " + channel + " returned status: " + status + ". Parting channel.");
+                    return true;
+                }
+            }
+
             String updatedAtString = (String)jsonObject.get("updated_at");
             //System.out.println("Time: " + updatedAtString);
 
