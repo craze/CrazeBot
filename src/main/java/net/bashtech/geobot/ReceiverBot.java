@@ -150,6 +150,8 @@ public class ReceiverBot extends PircBot {
 					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
 				
 				Channel channelInfo = getChannelObject(channel);
+                String twitchName = channelInfo.getTwitchName();
+
 				if(!sender.equalsIgnoreCase(this.getNick()))
 					channelInfo.messageCount++; //Inc message count
 				
@@ -404,7 +406,7 @@ public class ReceiverBot extends PircBot {
 				if (msg[0].equalsIgnoreCase("!viewers") || msg[0].equalsIgnoreCase("!lurkers")) {
 					System.out.println("DEBUG: Matched command !viewers");
 					try {
-						sendMessage(channel, this.getStreamList("channel_count", channelInfo) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
+						sendMessage(channel, JSONUtil.krakenViewers(twitchName) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
 					} catch (Exception e) {
 						sendMessage(channel, "Stream is not live.");
 					}
@@ -468,7 +470,7 @@ public class ReceiverBot extends PircBot {
                         }
 
                     }else{
-                        String game = this.getGame(channelInfo);
+                        String game = JSONUtil.krakenGame(twitchName);
                         if(game.length() > 0){
                             sendMessage(channel, "Current game: " + game);
                         }else{
@@ -493,7 +495,7 @@ public class ReceiverBot extends PircBot {
                         }
 
                     }else{
-                        String status = JSONUtil.krakenStatus(channelInfo.getChannel().substring(1));
+                        String status = JSONUtil.krakenStatus(twitchName);
                         if(status.length() > 0){
                             sendMessage(channel, status);
                         }else{
@@ -506,7 +508,7 @@ public class ReceiverBot extends PircBot {
                 // !followme - Owner
                 if (msg[0].equalsIgnoreCase("!followme") && isOwner) {
                     System.out.println("DEBUG: Matched command !followme");
-                    BotManager.getInstance().followChannel(channel.substring(1));
+                    BotManager.getInstance().followChannel(twitchName);
                     sendMessage(channel, "Follow update sent.");
                 }
 				
@@ -548,7 +550,7 @@ public class ReceiverBot extends PircBot {
 					System.out.println("DEBUG: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							String status = JSONUtil.krakenStatus(channelInfo.getChannel().substring(1));
+							String status = JSONUtil.krakenStatus(twitchName);
 							if(status.length() > 0)
 								sendMessage(channel, status);
 							else
@@ -1803,8 +1805,8 @@ public class ReceiverBot extends PircBot {
 		}
 	}
 
-	private String getMetaInfo(String key, Channel channelInfo) throws IllegalArgumentException, IOException, SAXException, ParserConfigurationException{
-		URL feedSource = new URL("http://twitch.tv/meta/" + channelInfo.getChannel().substring(1)+ ".xml");
+/*	private String getMetaInfo(String key, Channel channelInfo) throws IllegalArgumentException, IOException, SAXException, ParserConfigurationException{
+		URL feedSource = new URL("http://twitch.tv/meta/" + channelInfo.getTwitchName() + ".xml");
 		URLConnection uc = feedSource.openConnection();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -1826,10 +1828,10 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		return "";
-	}
+	}*/
 	
 	private String getStreamList(String key, Channel channelInfo) throws Exception{
-		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getChannel().substring(1));
+		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
 		URLConnection uc = feedSource.openConnection();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -1853,6 +1855,14 @@ public class ReceiverBot extends PircBot {
 		
 		return "";
 	}
+
+    private static String getTagValue(String sTag, Element eElement) {
+        NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
+
+        Node nValue = (Node) nlList.item(0);
+
+        return nValue.getNodeValue();
+    }
 	
 	public String getTimeStreaming(String uptime){
 		DateFormat format = new SimpleDateFormat("EEE MMMM dd HH:mm:ss yyyy");
@@ -1866,40 +1876,7 @@ public class ReceiverBot extends PircBot {
 		
 		return "Error getting date.";	
 	}
-	
-	private String getGame(Channel channelInfo){
-		String game = "";
-		try {
-			game =  getMetaInfo("meta_game", channelInfo);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-		return game;
-	}
-	
-/*	private String getStatus(Channel channelInfo){
-		String game = "";
-		try {
-			game =  getMetaInfo("status", channelInfo);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return game;
-	}*/
-	
-	private static String getTagValue(String sTag, Element eElement) {
-		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
-	 
-	    Node nValue = (Node) nlList.item(0);
-	 
-		return nValue.getNodeValue();
-	  }
 
-	
 	public static boolean isInteger(String str) {
         if (str == null) {
                 return false;

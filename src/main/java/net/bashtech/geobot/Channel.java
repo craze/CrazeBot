@@ -36,7 +36,7 @@ public class Channel {
 	public PropertiesFile config;
 	
 	private String channel;
-    private String shortChannel;
+    private String twitchname;
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
@@ -92,7 +92,7 @@ public class Channel {
 		warningTime = new HashMap<String, Long>();
 		commandCooldown = new HashMap<String, Long>();
 
-        shortChannel = channel.substring(1);
+        twitchname = channel.substring(1);
 	}
 	
 	public Channel(String name, int mode){
@@ -105,8 +105,8 @@ public class Channel {
         return channel;
     }
 
-    public String getShortChannel() {
-        return shortChannel;
+    public String getTwitchName() {
+        return twitchname;
     }
 	
 	//##############################################################
