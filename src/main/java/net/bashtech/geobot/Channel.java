@@ -36,6 +36,7 @@ public class Channel {
 	public PropertiesFile config;
 	
 	private String channel;
+    private String shortChannel;
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
@@ -90,6 +91,8 @@ public class Channel {
 		warningCount = new HashMap<String,EnumMap<FilterType, Integer>>();
 		warningTime = new HashMap<String, Long>();
 		commandCooldown = new HashMap<String, Long>();
+
+        shortChannel = channel.substring(1);
 	}
 	
 	public Channel(String name, int mode){
@@ -99,8 +102,12 @@ public class Channel {
 
 
 	public String getChannel() {
-		return channel;
-	}
+        return channel;
+    }
+
+    public String getShortChannel() {
+        return shortChannel;
+    }
 	
 	//##############################################################
 	

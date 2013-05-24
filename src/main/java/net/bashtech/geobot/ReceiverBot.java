@@ -493,7 +493,7 @@ public class ReceiverBot extends PircBot {
                         }
 
                     }else{
-                        String status = this.getStatus(channelInfo);
+                        String status = JSONUtil.krakenStatus(channelInfo.getChannel().substring(1));
                         if(status.length() > 0){
                             sendMessage(channel, status);
                         }else{
@@ -548,7 +548,7 @@ public class ReceiverBot extends PircBot {
 					System.out.println("DEBUG: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							String status = this.getStatus(channelInfo);
+							String status = JSONUtil.krakenStatus(channelInfo.getChannel().substring(1));
 							if(status.length() > 0)
 								sendMessage(channel, status);
 							else
@@ -1879,7 +1879,7 @@ public class ReceiverBot extends PircBot {
 		return game;
 	}
 	
-	private String getStatus(Channel channelInfo){
+/*	private String getStatus(Channel channelInfo){
 		String game = "";
 		try {
 			game =  getMetaInfo("status", channelInfo);
@@ -1889,7 +1889,7 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		return game;
-	}
+	}*/
 	
 	private static String getTagValue(String sTag, Element eElement) {
 		NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
