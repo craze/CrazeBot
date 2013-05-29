@@ -406,7 +406,7 @@ public class ReceiverBot extends PircBot {
 				if (msg[0].equalsIgnoreCase("!viewers") || msg[0].equalsIgnoreCase("!lurkers")) {
 					System.out.println("DEBUG: Matched command !viewers");
 					try {
-						sendMessage(channel, JSONUtil.krakenViewers(twitchName) + " viewers (" + this.getStreamList("embed_count", channelInfo) + " from embeds).");
+						sendMessage(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
 					} catch (Exception e) {
 						sendMessage(channel, "Stream is not live.");
 					}
@@ -414,7 +414,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !bitrate - All
-				if (msg[0].equalsIgnoreCase("!bitrate")) {
+/*				if (msg[0].equalsIgnoreCase("!bitrate")) {
 					System.out.println("DEBUG: Matched command !bitrate");
 					try {
 						sendMessage(channel, "Streaming at " + Math.floor(Double.parseDouble(this.getStreamList("video_bitrate", channelInfo))) + " Kbps.");
@@ -422,10 +422,10 @@ public class ReceiverBot extends PircBot {
 						sendMessage(channel, "Stream is not live.");
 					}
 					//return;
-				}
+				}*/
 				
 				// !uptime - All
-				if (msg[0].equalsIgnoreCase("!uptime")) {
+/*				if (msg[0].equalsIgnoreCase("!uptime")) {
 					System.out.println("DEBUG: Matched command !uptime");
 					try {
 						String uptime = this.getStreamList("up_time", channelInfo);
@@ -434,7 +434,7 @@ public class ReceiverBot extends PircBot {
 						sendMessage(channel, "Error accessing Twitch API.");
 					}
 				}
-				
+				*/
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
 					System.out.println("DEBUG: Matched command !music");
@@ -1830,7 +1830,7 @@ public class ReceiverBot extends PircBot {
 		return "";
 	}*/
 	
-	private String getStreamList(String key, Channel channelInfo) throws Exception{
+/*	private String getStreamList(String key, Channel channelInfo) throws Exception{
 		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
 		URLConnection uc = feedSource.openConnection();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -1854,7 +1854,31 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		return "";
-	}
+	}*//*	private String getStreamList(String key, Channel channelInfo) throws Exception{
+		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
+		URLConnection uc = feedSource.openConnection();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(uc.getInputStream());
+		doc.getDocumentElement().normalize();
+
+		NodeList nList = doc.getElementsByTagName("stream");
+		if(nList.getLength() < 1)
+			throw new Exception();
+
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+
+		   Node nNode = nList.item(temp);
+		   if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		      Element eElement = (Element) nNode;
+
+		      return getTagValue(key, eElement);
+
+		   }
+		}
+
+		return "";
+	}*/
 
     private static String getTagValue(String sTag, Element eElement) {
         NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
