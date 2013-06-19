@@ -678,13 +678,22 @@ public class Channel {
 	
 	public void addOffensive(String word){
 		synchronized (offensiveWords) { 
-			offensiveWords.add(word.toLowerCase());
+			offensiveWords.add(word);
 		}
 		
 		synchronized (offensiveWordsRegex) {
-			String line = ".*" + Pattern.quote(word.toLowerCase()) + ".*";
-			Pattern tempP = Pattern.compile(line);
-			offensiveWordsRegex.add(tempP);
+            if(word.startsWith("REGEX:")){
+                String line = word.substring(6);
+                System.out.println("Adding: " + line);
+                Pattern tempP = Pattern.compile(line);
+                offensiveWordsRegex.add(tempP);
+            }else{
+                String line = "(?i).*" + Pattern.quote(word) + ".*";
+                System.out.println("Adding: " + line);
+                Pattern tempP = Pattern.compile(line);
+                offensiveWordsRegex.add(tempP);
+            }
+
 		}
 		
 		String offensiveWordsString = "";
@@ -701,8 +710,8 @@ public class Channel {
 	
 	public void removeOffensive(String word){
 		synchronized (offensiveWords) { 
-			if(offensiveWords.contains(word.toLowerCase()))
-				offensiveWords.remove(word.toLowerCase());
+			if(offensiveWords.contains(word))
+				offensiveWords.remove(word);
 		}	
 		
 		String offensiveWordsString = "";
@@ -718,9 +727,17 @@ public class Channel {
 			offensiveWordsRegex.clear();
 			
 			for(String w:offensiveWords){
-				String line = ".*" + Pattern.quote(w.toLowerCase()) + ".*";
-				Pattern tempP = Pattern.compile(line);
-				offensiveWordsRegex.add(tempP);
+                if(w.startsWith("REGEX:")){
+                    String line = w.substring(6);
+                    System.out.println("ReAdding: " + line);
+                    Pattern tempP = Pattern.compile(line);
+                    offensiveWordsRegex.add(tempP);
+                }else{
+                    String line = "(?i).*" + Pattern.quote(w) + ".*";
+                    System.out.println("ReAdding: " + line);
+                    Pattern tempP = Pattern.compile(line);
+                    offensiveWordsRegex.add(tempP);
+                }
 			}
 		}
 	}
@@ -729,10 +746,11 @@ public class Channel {
 
 		for(Pattern reg:offensiveWordsRegex){
 			Matcher match = reg.matcher(word.toLowerCase());
-			if(match.matches()){
+			if(match.find()){
 				System.out.println("Matched: " + reg.toString());
 				return true;
 			}
+
 		}
 		return false;
 	}
@@ -1177,18 +1195,26 @@ public class Channel {
 				}
 			}
 		}
-		
+		System.out.println(config.getString("offensiveWords"));
 		String[] offensiveWordsRaw = config.getString("offensiveWords").split(",,");
 		synchronized (offensiveWords) {
 			synchronized (offensiveWordsRegex) {
 				for(int i = 0; i < offensiveWordsRaw.length; i++){
 					if(offensiveWordsRaw[i].length() > 1){
-						String w = offensiveWordsRaw[i].toLowerCase();
-						offensiveWords.add(w);
-						String line = ".*" + Pattern.quote(w) + ".*";
-						System.out.println("Adding: " + line);
-						Pattern tempP = Pattern.compile(line);
-						offensiveWordsRegex.add(tempP);
+						String w = offensiveWordsRaw[i];
+                        offensiveWords.add(w);
+                        if(w.startsWith("REGEX:")){
+                            String line = w.substring(6);
+                            System.out.println("Adding: " + line);
+                            Pattern tempP = Pattern.compile(line);
+                            offensiveWordsRegex.add(tempP);
+                        }else{
+                            String line = "(?i).*" + Pattern.quote(w) + ".*";
+                            System.out.println("Adding: " + line);
+                            Pattern tempP = Pattern.compile(line);
+                            offensiveWordsRegex.add(tempP);
+                        }
+
 					}
 				}
 			}

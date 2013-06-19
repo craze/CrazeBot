@@ -258,6 +258,8 @@ public class ReceiverBot extends PircBot {
 
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
+
+                        return;
 					}
 					
 					// Link filter
@@ -275,7 +277,7 @@ public class ReceiverBot extends PircBot {
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
 						}
-						
+                        return;
 					}
 					
 					// Length filter
@@ -289,7 +291,7 @@ public class ReceiverBot extends PircBot {
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, sender + ", please don't spam long messages - " + this.getWarningText(warningCount));
 
-						
+                        return;
 					}
 					
 					// Symbols filter
@@ -301,8 +303,8 @@ public class ReceiverBot extends PircBot {
 								
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't post spam in the chat - " + this.getWarningText(warningCount));
-			
-						
+
+                        return;
 					}
 					
 					//Offensive filter
@@ -314,7 +316,11 @@ public class ReceiverBot extends PircBot {
 								warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
 								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 
+                            if(channelInfo.checkSignKicks())
+                                sendMessage(channel, sender + ", disallowed word or phrase - " + this.getWarningText(warningCount));
+
 						}
+                        return;
 					}
 					
 					//Emote filter
@@ -329,8 +335,10 @@ public class ReceiverBot extends PircBot {
 								if(channelInfo.checkSignKicks())
 									sendMessage(channel, sender + ", please don't spam emotes - " + this.getWarningText(warningCount));			
 							
-						}	
+						}
+                        return;
 					}
+
  				}
 
 				// ********************************************************************************
@@ -425,7 +433,7 @@ public class ReceiverBot extends PircBot {
 				}*/
 				
 				// !uptime - All
-/*				if (msg[0].equalsIgnoreCase("!uptime")) {
+				if (msg[0].equalsIgnoreCase("!uptime")) {
 					System.out.println("DEBUG: Matched command !uptime");
 					try {
 						String uptime = this.getStreamList("up_time", channelInfo);
@@ -434,7 +442,7 @@ public class ReceiverBot extends PircBot {
 						sendMessage(channel, "Error accessing Twitch API.");
 					}
 				}
-				*/
+
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
 					System.out.println("DEBUG: Matched command !music");
@@ -1023,22 +1031,22 @@ public class ReceiverBot extends PircBot {
  					}
  				}
  				
- 				// !offensive - Owner
- 				if(msg[0].equalsIgnoreCase("!offensive") && isOwner){
- 					System.out.println("DEBUG: Matched command !offensive");
+ 				// !banphrase - Owner
+ 				if(msg[0].equalsIgnoreCase("!banphrase") && isOwner){
+ 					System.out.println("DEBUG: Matched command !banphrase");
  					if(isOwner)
  						System.out.println("DEBUG: Is owner");
  					if(msg.length == 1){
- 						sendMessage(channel, "Syntax: \"!offensive on/off\", \"!offsensive add/delete [string to purge]\", \"!offensive list\"");
+ 						sendMessage(channel, "Syntax: \"!banphrase on/off\", \"!banphrase add/delete [string to purge]\", \"!banphrase list\"");
  					}else if(msg.length > 1){
  						if(msg[1].equalsIgnoreCase("on")){
 							channelInfo.setFilterOffensive(true);
-							sendMessage(channel, "Offensive word filter is on");
+							sendMessage(channel, "Ban phrase filter is on");
  						}else if(msg[1].equalsIgnoreCase("off")){
 							channelInfo.setFilterOffensive(false);
-							sendMessage(channel, "Offensive word filter is off");
+							sendMessage(channel, "Ban phrase filter is off");
  						}else if(msg[1].equalsIgnoreCase("list")){
- 							String tempList = "Offensive words: ";
+ 							String tempList = "Banned phrases words: ";
  	 						for(String s:channelInfo.getOffensive()){
  	 							tempList += s + ", ";
  	 						}
@@ -1055,12 +1063,14 @@ public class ReceiverBot extends PircBot {
  							}
  						}else if(msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove") && msg.length > 2){
  							String phrase = fuseArray(msg, 2);
- 							if(channelInfo.isOffensive(phrase)){
- 								channelInfo.removeOffensive(phrase);
- 								sendMessage(channel,"Word removed. "+ "(" + phrase + ")");
- 							}else{
- 								sendMessage(channel,"Word does not exist. "+ "(" + phrase + ")");
- 							}
+                             channelInfo.removeOffensive(phrase);
+                             sendMessage(channel,"Word removed. "+ "(" + phrase + ")");
+// 							if(channelInfo.isOffensive(phrase)){
+// 								channelInfo.removeOffensive(phrase);
+// 								sendMessage(channel,"Word removed. "+ "(" + phrase + ")");
+// 							}else{
+// 								sendMessage(channel,"Word does not exist. "+ "(" + phrase + ")");
+// 							}
  						}
  					}
  				}
@@ -1261,10 +1271,10 @@ public class ReceiverBot extends PircBot {
 					}else if(msg[1].equalsIgnoreCase("signedkicks")){
 						if(msg[2].equalsIgnoreCase("on")){
 							channelInfo.setSignKicks(true);
-							sendMessage(channel, "Feature: Sign-kicks is on");
+							sendMessage(channel, "Feature: Signed-kicks is on");
 						}else if(msg[2].equalsIgnoreCase("off")){
 							channelInfo.setSignKicks(false);
-							sendMessage(channel, "Feature: Sign-kicks is off");
+							sendMessage(channel, "Feature: Signed-kicks is off");
 						}
 					}else if(msg[1].equalsIgnoreCase("joinsparts")){
 						sendMessage(channel, "This feature is currently disabled due to issues with TMI.");
@@ -1830,7 +1840,7 @@ public class ReceiverBot extends PircBot {
 		return "";
 	}*/
 	
-/*	private String getStreamList(String key, Channel channelInfo) throws Exception{
+	private String getStreamList(String key, Channel channelInfo) throws Exception{
 		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
 		URLConnection uc = feedSource.openConnection();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -1854,7 +1864,9 @@ public class ReceiverBot extends PircBot {
 		}
 		
 		return "";
-	}*//*	private String getStreamList(String key, Channel channelInfo) throws Exception{
+	}
+
+	/*	private String getStreamList(String key, Channel channelInfo) throws Exception{
 		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
 		URLConnection uc = feedSource.openConnection();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

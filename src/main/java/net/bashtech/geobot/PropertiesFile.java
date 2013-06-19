@@ -77,7 +77,8 @@ public final class PropertiesFile {
             }
 
             int start = pos;
-            boolean needsEscape = line.indexOf('\\', pos) != -1;
+            //boolean needsEscape = line.indexOf('\\', pos) != -1; // CHANGED TO FALSE
+            boolean needsEscape = false;
             StringBuffer key = needsEscape ? new StringBuffer() : null;
 
             while (pos < line.length() && !Character.isWhitespace(c = line.charAt(pos++)) && c != '=' && c != ':') {

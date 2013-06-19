@@ -103,10 +103,10 @@ Filtered messages must match all three of the below settings:
   * !caps status - Displays the current values 
   
   
-  * !offensive on/off - Turns filter on/off 
-  * !offensive list - Lists filtered words 
-  * !offensive add [word string] - Adds string to filter 
-  * !offensive delete [word string] - Removes string from filter
+  * !banphrase on/off - Turns filter on/off
+  * !banphrase list - Lists filtered words
+  * !banphrase add [word string] - Adds string to filter - Accepts direct regular expressions (Prefix with REGEX:)
+  * !banphrase delete [word string] - Removes string from filter
 
   * !symbols on/off - Turns symbols filter on/off. Covers unicode classes for box drawings, block elements and geometric shapes also select other spammed characters.
 
@@ -118,7 +118,6 @@ Filtered messages must match all three of the below settings:
     * filters - Global toggle for cap and link filters 
     * throw - Enables the !throw command 
     * signedkicks - Enables announcing cap and link kicks 
-    * joinsparts - Enables announcing users joining and leaving the channel 
     * lastfm [username/off] - Sets username to use with !music command
     * maxlength [num of chars] - Maximum allowed message length
     * steam [ID] - Sets your Steam ID. Must be in [SteamID64](http://steamidconverter.com/) format and profile must be public 
