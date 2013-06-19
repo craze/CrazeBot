@@ -252,9 +252,9 @@ public class ReceiverBot extends PircBot {
 					if(channelInfo.getFilterCaps() && !(isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
 						int warningCount = 0;
 
-							channelInfo.incWarningCount(sender, FilterType.CAPS);
-							warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
-							this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+                        channelInfo.incWarningCount(sender, FilterType.CAPS);
+                        warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
+                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
@@ -276,20 +276,21 @@ public class ReceiverBot extends PircBot {
 								
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
+                            return;
 						}
-                        return;
+
 					}
 					
 					// Length filter
 					if(!(isRegular) && (message.length() > channelInfo.getFilterMax())){
 						int warningCount = 0;
 
-								channelInfo.incWarningCount(sender, FilterType.LENGTH);
-								warningCount = channelInfo.getWarningCount(sender, FilterType.LENGTH);
-								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-								
-							if(channelInfo.checkSignKicks())
-								sendMessage(channel, sender + ", please don't spam long messages - " + this.getWarningText(warningCount));
+                        channelInfo.incWarningCount(sender, FilterType.LENGTH);
+                        warningCount = channelInfo.getWarningCount(sender, FilterType.LENGTH);
+                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+
+                        if(channelInfo.checkSignKicks())
+                            sendMessage(channel, sender + ", please don't spam long messages - " + this.getWarningText(warningCount));
 
                         return;
 					}
@@ -312,15 +313,16 @@ public class ReceiverBot extends PircBot {
 						if(channelInfo.isOffensive(message)){
 							int warningCount = 0;
 
-								channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
-								warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
-								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+                            channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
+                            warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
+                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
 
                             if(channelInfo.checkSignKicks())
                                 sendMessage(channel, sender + ", disallowed word or phrase - " + this.getWarningText(warningCount));
 
+                            return;
 						}
-                        return;
+
 					}
 					
 					//Emote filter
@@ -328,15 +330,17 @@ public class ReceiverBot extends PircBot {
 						if(countEmotes(message) > channelInfo.getFilterEmotesMax()){
 							int warningCount = 0;
 
-								channelInfo.incWarningCount(sender, FilterType.EMOTES);
-								warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
-								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
-								
-								if(channelInfo.checkSignKicks())
-									sendMessage(channel, sender + ", please don't spam emotes - " + this.getWarningText(warningCount));			
+                            channelInfo.incWarningCount(sender, FilterType.EMOTES);
+                            warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
+                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+
+                            if(channelInfo.checkSignKicks())
+                                sendMessage(channel, sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
+
+                            return;
 							
 						}
-                        return;
+
 					}
 
  				}
