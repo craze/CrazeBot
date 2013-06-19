@@ -94,8 +94,14 @@ public class BotManager {
 		if(useGUI){
 			gui = new BotGUI();
 		}
-		
-		receiverBot = new ReceiverBot(server, port);
+
+        //Spinup senders
+        sbb = new SenderBotBalancer();
+        sbb.setInstanceNumber(senderInstances);
+        sbb.spinUp();
+
+
+        receiverBot = new ReceiverBot(server, port);
         List<String> outdatedChannels = new LinkedList<String>();
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{
@@ -114,12 +120,7 @@ public class BotManager {
             System.out.println("DEBUG: Removing channel: " + channel);
             this.removeChannel(channel);
         }
-		
-		//Spinup senders
-		sbb = new SenderBotBalancer();
-		sbb.setInstanceNumber(senderInstances);
-		sbb.spinUp();
-		
+
 		//Start timer to check for bot disconnects
 		Timer reconnectTimer = new Timer();
 		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
