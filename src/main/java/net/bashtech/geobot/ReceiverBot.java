@@ -1489,6 +1489,11 @@ public class ReceiverBot extends PircBot {
  					for(int i=0; i < Integer.parseInt(msg[1]); i++)
  						sendMessage(channel, ".timeout kappa123 1");
  				}
+
+                if (msg[0].equalsIgnoreCase("!bm-loadglobalfilter") && isAdmin) {
+                    BotManager.getInstance().loadGlobalBannedWords();
+                    sendMessage(channel, "Global banned filter reloaded.");
+                }
  				
 				// ********************************************************************************
 				// ***************************** Info/Catch-all Command ***************************

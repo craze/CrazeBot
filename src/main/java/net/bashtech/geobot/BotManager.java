@@ -436,7 +436,8 @@ public class BotManager {
 
 	}
 	
-	private void loadGlobalBannedWords(){
+	public void loadGlobalBannedWords(){
+        globalBannedWords.clear();
 		File f = new File("globalbannedwords.cfg");
 		if(!f.exists())
 			try {
