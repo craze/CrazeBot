@@ -241,6 +241,7 @@ public class ReceiverBot extends PircBot {
  				if(!isOp && this.isGlobalBannedWord(message)){
  					this.secondaryTO(channel, sender, 600);
  					System.out.println("NOTICE: Global banned word timeout: " + sender + " in " + channel + " : " + message);
+                    return;
  				}
  				
  				// Voluntary Filters
