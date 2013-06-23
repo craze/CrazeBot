@@ -2029,7 +2029,7 @@ public class ReceiverBot extends PircBot {
 
     public void logGlobalBan(String channel, String sender, String message)
     {
-        String line = sender + "," + channel + ",\"" + message + "\"";
+        String line = sender + "," + channel + ",\"" + message + "\"\n";
 
         System.out.print(line);
         try {
