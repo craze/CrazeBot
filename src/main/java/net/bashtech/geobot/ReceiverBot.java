@@ -239,7 +239,7 @@ public class ReceiverBot extends PircBot {
 				
  				//Global banned word filter
  				if(!isOp && this.isGlobalBannedWord(message)){
- 					this.secondaryTO(channel, sender, 600);
+ 					this.secondaryBan(channel, sender);
  					System.out.println("NOTICE: Global banned word timeout: " + sender + " in " + channel + " : " + message);
                     return;
  				}
@@ -1810,6 +1810,21 @@ public class ReceiverBot extends PircBot {
 	      },delay);
 
 	}
+
+    private void secondaryBan(final String channel, final String name){
+        Timer timer = new Timer();
+        int delay = 1000;
+
+        System.out.println("DEBUG: Issuing a ban on " + name + " in " + channel);
+
+        timer.schedule(new TimerTask()
+        {
+            public void run() {
+                ReceiverBot.this.sendMessage(channel,".ban " + name);
+            }
+        },delay);
+
+    }
 	
 	private void startGaTimer(int seconds, Channel channelInfo){
 		if(channelInfo.getGiveaway() != null){
