@@ -224,6 +224,24 @@ public class ReceiverBot extends PircBot {
 				}else if(isRegular){
 					System.out.println("DEBUG: " + sender + " is regular.");
 				}
+
+                //Impersonation command
+                if (isAdmin && msg[0].equalsIgnoreCase("!imp")){
+                    if(msg.length >= 3){
+                        channelInfo = getChannelObject("#" + msg[1]);
+                        twitchName = channelInfo.getTwitchName();
+
+                        String[] newMsg = new String[msg.length - 2];
+                        for(int i = 2; i < msg.length; i++){
+                            newMsg[i-2] = msg[i];
+                        }
+                        msg = newMsg;
+
+                        sendMessage(channel, "Impersonating channel " + channelInfo.getChannel() + " with command: " + fuseArray(msg, 0));
+                        System.out.println("IMP: Impersonating channel " + channelInfo.getChannel() + " with command: " + fuseArray(msg, 0));
+                    }
+
+                }
 				
 				
 				//!leave - Owner
@@ -311,7 +329,7 @@ public class ReceiverBot extends PircBot {
 					}
 					
 					//Offensive filter
-					if(!isOp && channelInfo.getFilterOffensive()){
+					if(!isRegular && channelInfo.getFilterOffensive()){
 						if(channelInfo.isOffensive(message)){
 							int warningCount = 0;
 
@@ -389,11 +407,11 @@ public class ReceiverBot extends PircBot {
 				
 				//Command cooldown check
 				if(msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
-					System.out.println("DEBUG: Command " + msg[0] + " is on cooldown.");
+					//System.out.println("DEBUG: Command " + msg[0] + " is on cooldown.");
 					if(!isOwner)
 						return;
 				}
-				
+
 				// !ping - All
 				if (msg[0].equalsIgnoreCase("!ping") && isOp) {
 						System.out.println("DEBUG: Matched command !ping");
