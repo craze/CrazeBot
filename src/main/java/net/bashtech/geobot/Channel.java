@@ -18,6 +18,8 @@
 
 package net.bashtech.geobot;
 
+import org.java_websocket.WebSocket;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -84,6 +86,8 @@ public class Channel {
 	Map<String, Long> warningTime;
 	
 	Map<String, Long> commandCooldown;
+
+    Set<WebSocket> wsSubscribers = new HashSet<WebSocket>();
 
 	public Channel(String name){
 		config = new PropertiesFile(name+".properties");

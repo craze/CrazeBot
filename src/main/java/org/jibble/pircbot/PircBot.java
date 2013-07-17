@@ -2383,6 +2383,10 @@ public abstract class PircBot implements ReplyConstants {
     public final void setVerbose(boolean verbose) {
         _verbose = verbose;
     }
+
+    public final boolean getVerbose() {
+        return _verbose;
+    }
     
     
     /**

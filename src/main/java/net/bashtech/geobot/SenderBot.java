@@ -45,7 +45,7 @@ public class SenderBot extends PircBot {
 	}
 	
 	@Override
-	public void onDisconnect(){		 
+	public void onDisconnect(){
 		lastPing = -1;
 		try {
 			System.out.println("INFO: Internal reconnection: " + this.getServer());

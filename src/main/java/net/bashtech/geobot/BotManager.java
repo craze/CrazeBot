@@ -19,10 +19,7 @@
 package net.bashtech.geobot;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -36,6 +33,7 @@ import java.util.regex.Pattern;
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
 import net.bashtech.geobot.modules.Logger;
+import org.java_websocket.WebSocketImpl;
 
 public class BotManager {
 	
@@ -64,6 +62,11 @@ public class BotManager {
 	ReceiverBot receiverBot;
 	SenderBotBalancer sbb;
     String bothelpMessage;
+
+    WSServer ws;
+    boolean wsEnabled;
+    int wsPort;
+    String wsAdminPassword;
 
     // API KEYS
     public String bitlyAPIKey;
@@ -95,6 +98,19 @@ public class BotManager {
 			gui = new BotGUI();
 		}
 
+        //Start WebSocket server
+        if(wsEnabled){
+            WebSocketImpl.DEBUG = false;
+            ws = null;
+            try {
+                ws = new WSServer(wsPort);
+                ws.start();
+                System.out.println( "WebSocket server started on port: " + ws.getPort() );
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }
+
         //Spinup senders
         sbb = new SenderBotBalancer();
         sbb.setInstanceNumber(senderInstances);
@@ -107,7 +123,7 @@ public class BotManager {
 		{
             String channel = entry.getValue().getChannel();
             if(!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1))){
-                System.out.println("DEBUG: Joining channel " + channel);
+                log("BM: Joining channel " + channel);
                 receiverBot.joinChannel(channel);
             }else{
                 outdatedChannels.add(channel);
@@ -117,15 +133,14 @@ public class BotManager {
 
         //Remove outdatedChannels
         for(String channel : outdatedChannels){
-            System.out.println("DEBUG: Removing channel: " + channel);
+            log("BM: Removing channel: " + channel);
             this.removeChannel(channel);
         }
 
 		//Start timer to check for bot disconnects
 		Timer reconnectTimer = new Timer();
 		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
-		System.out.println("Reconnect timer scheduled.");
-		
+
 		// Load modules
 		this.registerModule(new Logger());
 	}
@@ -134,7 +149,7 @@ public class BotManager {
 	private void loadGlobalProfile(){
 		config = new PropertiesFile(_propertiesFile);
 		
-		System.out.println("DEBUG: Reading global file > " + _propertiesFile);
+		log("BM: Reading global file > " + _propertiesFile);
 		try {
 			config.load();
 		} catch (IOException e) {
@@ -222,6 +237,17 @@ public class BotManager {
             config.setString("krakenClientID", "");
         }
 
+        if(!config.keyExists("wsPort")) {
+            config.setInt("wsPort", 8887);
+        }
+
+        if(!config.keyExists("wsEnabled")) {
+            config.setBoolean("wsEnabled", false);
+        }
+
+        if(!config.keyExists("wsAdminPassword")) {
+            config.setString("wsAdminPassword", "");
+        }
         // ********
 				
 		nick = config.getString("nick");
@@ -236,6 +262,11 @@ public class BotManager {
 		verboseLogging = config.getBoolean("verboseLogging");
 		senderInstances = config.getInt("senderInstances");
         bothelpMessage = config.getString("bothelpMessage");
+
+        wsEnabled = config.getBoolean("wsEnabled");
+        wsPort = config.getInt("wsPort");
+        wsAdminPassword = config.getString("wsAdminPassword");
+
 
         // API KEYS
 
@@ -288,10 +319,10 @@ public class BotManager {
 		
 		channelList.put(name.toLowerCase(), tempChan);
 
-		System.out.println("DEBUG: Joining channel " + tempChan.getChannel());
+		log("BM: Joining channel " + tempChan.getChannel());
 		receiverBot.joinChannel(tempChan.getChannel());
 
-		System.out.println("DEBUG: Joined channel " + tempChan.getChannel());
+		log("BM: Joined channel " + tempChan.getChannel());
 
 		writeChannelList();
 
@@ -301,7 +332,7 @@ public class BotManager {
 
 	public synchronized void removeChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
-			System.out.println("DEBUG: Not in channel " + name);
+			log("BM: Not in channel " + name);
 			return;
 		}
 		
@@ -315,7 +346,7 @@ public class BotManager {
 	
 	public synchronized void reloadChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
-			System.out.println("DEBUG: Not in channel " + name);
+			log("BM: Not in channel " + name);
 			return;
 		}
 		
@@ -324,7 +355,7 @@ public class BotManager {
 	
 	public boolean rejoinChannel(String name){
 		if(!channelList.containsKey(name.toLowerCase())){
-			System.out.println("DEBUG: Not in channel " + name);
+			log("BM: Not in channel " + name);
 			return false;
 		}
 		
@@ -607,6 +638,17 @@ public class BotManager {
             System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/users/" + this.nick + "/follows/channels/" + channel, ""));
         }catch (Exception ex){
             ex.printStackTrace();
+        }
+    }
+
+    public void log(String line){
+        System.out.println(line);
+
+        if(wsEnabled)
+            ws.sendToAdmin(line);
+
+        if(useGUI){
+            getGUI().log(line);
         }
     }
 	

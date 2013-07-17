@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 
 import net.bashtech.geobot.modules.BotModule;
@@ -40,7 +39,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class ReceiverBot extends PircBot {
 
@@ -48,7 +46,6 @@ public class ReceiverBot extends PircBot {
 
     private Pattern[] linkPatterns = new Pattern[3];
 	private Pattern[] symbolsPatterns = new Pattern[1];
-//    private Pattern[] symbolsClassPatterns = new Pattern[1];
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 60, 600, 86400};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
@@ -73,11 +70,11 @@ public class ReceiverBot extends PircBot {
 		try {
 			this.connect(server, port, BotManager.getInstance().getInstance().password);
 		} catch (NickAlreadyInUseException e) {
-			System.out.println("ERROR: Nickname already in use - " + this.getNick() + " " + this.getServer());
+            logMain("RB: [ERROR] Nickname already in use - " + this.getNick() + " " + this.getServer());
 		} catch (IOException e) {
-			System.out.println("ERROR: Unable to connect to server - " + this.getNick() + " " + this.getServer());
+            logMain("RB: [ERROR] Unable to connect to server - " + this.getNick() + " " + this.getServer());
 		} catch (IrcException e) {
-			System.out.println("ERROR: Error connecting to server - " + this.getNick() + " " + this.getServer());
+            logMain("RB: [ERROR] Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
 
         startJoinCheck();
@@ -210,19 +207,19 @@ public class ReceiverBot extends PircBot {
 				
 				//Give users all the ranks below them
 				if(isAdmin){
-					System.out.println("DEBUG: " + sender + " is admin.");
+					log("RB: " + sender + " is admin.");
 					isOwner = true;
 					isOp = true;
 					isRegular = true;
 				}else if(isOwner){
-					System.out.println("DEBUG: " + sender + " is owner.");
+                    log("RB: " + sender + " is owner.");
 					isOp = true;
 					isRegular = true;
 				}else if(isOp){
-					System.out.println("DEBUG: " + sender + " is op.");
+                    log("RB: " + sender + " is op.");
 					isRegular = true;
 				}else if(isRegular){
-					System.out.println("DEBUG: " + sender + " is regular.");
+                    log("RB: " + sender + " is regular.");
 				}
 
                 //Impersonation command
@@ -257,7 +254,7 @@ public class ReceiverBot extends PircBot {
 				
  				//Global banned word filter
  				if(!isOp && this.isGlobalBannedWord(message)){
- 					this.secondaryBan(channel, sender);
+ 					this.secondaryBan(channel, sender, FilterType.GLOBALBAN);
  					System.out.println("NOTICE: Global banned word timeout: " + sender + " in " + channel + " : " + message);
                     logGlobalBan(channel, sender, message);
                     return;
@@ -274,7 +271,7 @@ public class ReceiverBot extends PircBot {
 
                         channelInfo.incWarningCount(sender, FilterType.CAPS);
                         warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
-                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.CAPS);
 
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
@@ -292,7 +289,7 @@ public class ReceiverBot extends PircBot {
 
 								channelInfo.incWarningCount(sender, FilterType.LINK);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
-								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.LINK);
 								
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
@@ -307,7 +304,7 @@ public class ReceiverBot extends PircBot {
 
                         channelInfo.incWarningCount(sender, FilterType.LENGTH);
                         warningCount = channelInfo.getWarningCount(sender, FilterType.LENGTH);
-                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.LENGTH);
 
                         if(channelInfo.checkSignKicks())
                             sendMessage(channel, sender + ", please don't spam long messages - " + this.getWarningText(warningCount));
@@ -320,7 +317,7 @@ public class ReceiverBot extends PircBot {
 						int warningCount = 0;
 						channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
 						warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
-						this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+						this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.SYMBOLS);
 								
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't post spam in the chat - " + this.getWarningText(warningCount));
@@ -335,7 +332,7 @@ public class ReceiverBot extends PircBot {
 
                             channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
                             warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
-                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.OFFENSIVE);
 
                             if(channelInfo.checkSignKicks())
                                 sendMessage(channel, sender + ", disallowed word or phrase - " + this.getWarningText(warningCount));
@@ -352,7 +349,7 @@ public class ReceiverBot extends PircBot {
 
                             channelInfo.incWarningCount(sender, FilterType.EMOTES);
                             warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
-                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount));
+                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.EMOTES);
 
                             if(channelInfo.checkSignKicks())
                                 sendMessage(channel, sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
@@ -386,7 +383,7 @@ public class ReceiverBot extends PircBot {
 				// ***************************** Raffle Entry *************************************
 				// ********************************************************************************
 				if(msg[0].equalsIgnoreCase("!raffle") && msg.length == 1){
-					System.out.println("DEBUG: Matched command !raffle (user entry)");
+					log("RB: Matched command !raffle (user entry)");
 						if(channelInfo.raffle != null){
 							channelInfo.raffle.enter(sender);
 						}
@@ -407,14 +404,13 @@ public class ReceiverBot extends PircBot {
 				
 				//Command cooldown check
 				if(msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
-					//System.out.println("DEBUG: Command " + msg[0] + " is on cooldown.");
 					if(!isOwner)
 						return;
 				}
 
 				// !ping - All
 				if (msg[0].equalsIgnoreCase("!ping") && isOp) {
-						System.out.println("DEBUG: Matched command !ping");
+						log("RB: Matched command !ping");
 						String time = new java.util.Date().toString();
 						sendMessage(channel, "Pong sent at " + time + " (" + this.fuseArray(msg, 1) + ")");
 						//return;
@@ -422,21 +418,21 @@ public class ReceiverBot extends PircBot {
 				
 				// !lockouttest - All
 				if (msg[0].equalsIgnoreCase("!lockouttest")) {
-						System.out.println("DEBUG: Matched command !lockouttest");
+						log("RB: Matched command !lockouttest");
 						sendMessage(channel, sender + ", your message was received! You are NOT locked out of chat.");
 						//return;
 				}
 				
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!bothelp")) {
-						System.out.println("DEBUG: Matched command !bothelp");
+						log("RB: Matched command !bothelp");
 						sendMessage(channel, BotManager.getInstance().bothelpMessage);
 						//return;
 				}
 				
 				// !viewers - All
 				if (msg[0].equalsIgnoreCase("!viewers") || msg[0].equalsIgnoreCase("!lurkers")) {
-					System.out.println("DEBUG: Matched command !viewers");
+					log("RB: Matched command !viewers");
 					try {
 						sendMessage(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
 					} catch (Exception e) {
@@ -447,7 +443,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !bitrate - All
 /*				if (msg[0].equalsIgnoreCase("!bitrate")) {
-					System.out.println("DEBUG: Matched command !bitrate");
+					log("RB: Matched command !bitrate");
 					try {
 						sendMessage(channel, "Streaming at " + Math.floor(Double.parseDouble(this.getStreamList("video_bitrate", channelInfo))) + " Kbps.");
 					} catch (Exception e) {
@@ -458,7 +454,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !uptime - All
 				if (msg[0].equalsIgnoreCase("!uptime")) {
-					System.out.println("DEBUG: Matched command !uptime");
+					log("RB: Matched command !uptime");
 					try {
 						String uptime = this.getStreamList("up_time", channelInfo);
 						sendMessage(channel, "Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
@@ -469,13 +465,13 @@ public class ReceiverBot extends PircBot {
 
 				// !music - All
 				if (msg[0].equalsIgnoreCase("!music") || msg[0].equalsIgnoreCase("!lastfm")) {
-					System.out.println("DEBUG: Matched command !music");
+					log("RB: Matched command !music");
 					sendMessage(channel, "Now playing: " + JSONUtil.lastFM(channelInfo.getLastfm()));
 				}
 				
 				// !steam - All
 				if (msg[0].equalsIgnoreCase("!steam")) {
-					System.out.println("DEBUG: Matched command !steam");
+					log("RB: Matched command !steam");
 					if(channelInfo.getSteam().length() > 1){
 
                     if(channelInfo.getSteam().length() > 1){
@@ -490,7 +486,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !game - All
 				if (msg[0].equalsIgnoreCase("!game")) {
-					System.out.println("DEBUG: Matched command !game");
+					log("RB: Matched command !game");
                     if(isOwner && msg.length > 1){
                         String game = this.fuseArray(msg, 1);
                         game.trim();
@@ -515,7 +511,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !status - All
 				if (msg[0].equalsIgnoreCase("!status")) {
-                    System.out.println("DEBUG: Matched command !status");
+                    log("RB: Matched command !status");
                     if(isOwner && msg.length > 1){
                         String status = this.fuseArray(msg, 1);
                         status.trim();
@@ -539,14 +535,14 @@ public class ReceiverBot extends PircBot {
 
                 // !followme - Owner
                 if (msg[0].equalsIgnoreCase("!followme") && isOwner) {
-                    System.out.println("DEBUG: Matched command !followme");
+                    log("RB: Matched command !followme");
                     BotManager.getInstance().followChannel(twitchName);
                     sendMessage(channel, "Follow update sent.");
                 }
 				
 				// !commands - Op/Regular
 				if (msg[0].equalsIgnoreCase("!commands") && (isRegular || isOp)) {
-					System.out.println("DEBUG: Matched command !commands");
+					log("RB: Matched command !commands");
 					sendMessage(channel, "Commands: " + channelInfo.getCommandList());
 
 					//return;
@@ -554,32 +550,32 @@ public class ReceiverBot extends PircBot {
 				
 				// !throw - All
 				if(msg[0].equalsIgnoreCase("!throw") && (channelInfo.checkThrow() || isRegular)){
-					System.out.println("DEBUG: Matched command !throw");
+					log("RB: Matched command !throw");
 					if(msg.length > 1){
 						String throwMessage = "";
 						for(int i=1;i<msg.length;i++){
 							throwMessage += msg[i] + " ";
 						}
-						sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
+						sendMessage(channel, "(?°?°???" + throwMessage);
 					}
 				}
 				
 				// !flip - All
 				if(msg[0].equalsIgnoreCase("!flip") && (channelInfo.checkThrow() || isRegular)){
-					System.out.println("DEBUG: Matched command !flip");
+					log("RB: Matched command !flip");
 					if(msg.length > 1){
 						String throwMessage = "";
 						for(int i=1;i<msg.length;i++){
 							throwMessage += msg[i] + " ";
 						}
-						//sendMessage(channel, "(╯°‿°）╯︵" + throwMessage);
+						//sendMessage(channel, "(?°?°???" + throwMessage);
 						sendMessage(channel, throwMessage + "TABLEFLIP");
 					}
 				}
 				
 				// !topic
 				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
-					System.out.println("DEBUG: Matched command !topic");
+					log("RB: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
 							String status = JSONUtil.krakenStatus(twitchName);
@@ -606,7 +602,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !link
 				if(msg[0].equalsIgnoreCase("!link") && isRegular){
-					System.out.println("DEBUG: Matched command !link");
+					log("RB: Matched command !link");
 					if(msg.length > 1){
 							String rawQuery = message.substring(6);
                         String encodedQuery = "";
@@ -624,7 +620,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !commercial
 				if(msg[0].equalsIgnoreCase("!commercial")){
-					System.out.println("DEBUG: Matched command !commercial");
+					log("RB: Matched command !commercial");
 					if(isOwner){
 						channelInfo.runCommercial();
 						//sendMessage(channel, "Running a 30 second commercial. Thank you for supporting the channel!");
@@ -634,7 +630,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !command - Ops
  				if(msg[0].equalsIgnoreCase("!command")){
- 					System.out.println("DEBUG: Matched command !command");
+ 					log("RB: Matched command !command");
 					if(msg.length < 3 && isOp){
 						sendMessage(channel, "Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
 					}else if(msg.length > 2 && isOp){
@@ -662,7 +658,7 @@ public class ReceiverBot extends PircBot {
  				
 				// !repeat - Ops
  				if(msg[0].equalsIgnoreCase("!repeat")){
- 					System.out.println("DEBUG: Matched command !repeat");
+ 					log("RB: Matched command !repeat");
 					if(msg.length < 3 && isOp){
                         if(msg.length > 1 && msg[1].equalsIgnoreCase("list")){
                             String commandsRepeatKey = "";
@@ -720,7 +716,7 @@ public class ReceiverBot extends PircBot {
 
                 // !schedule - Ops
                 if(msg[0].equalsIgnoreCase("!schedule")){
-                    System.out.println("DEBUG: Matched command !schedule");
+                    log("RB: Matched command !schedule");
                     if(msg.length < 3 && isOp){
                         if(msg.length > 1 && msg[1].equalsIgnoreCase("list")){
                             String commandsScheduleKey = "";
@@ -787,7 +783,7 @@ public class ReceiverBot extends PircBot {
  				
 				// !poll - Ops
 				if(msg[0].equalsIgnoreCase("!poll") && isOp){
-					System.out.println("DEBUG: Matched command !poll");
+					log("RB: Matched command !poll");
 					if(msg.length < 2){
 						sendMessage(channel, "Syntax: \"!poll create [option option ... option]\"");
 					}else if(msg.length >= 2){
@@ -833,7 +829,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !giveaway - Ops
 				if((msg[0].equalsIgnoreCase("!giveaway") || msg[0].equalsIgnoreCase("!ga")) && isOp){
-					System.out.println("DEBUG: Matched command !giveaway");
+					log("RB: Matched command !giveaway");
 					if(msg.length < 2){
 						sendMessage(channel, "Syntax: \"!giveaway create [max number] [time to run in seconds]\". Time is optional.");
 					}else if(msg.length >= 2){
@@ -883,7 +879,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !raffle - Ops
 				if(msg[0].equalsIgnoreCase("!raffle") && isOp){
-					System.out.println("DEBUG: Matched command !raffle");
+					log("RB: Matched command !raffle");
 					if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("enable")){
 							if(channelInfo.raffle == null){
@@ -926,7 +922,7 @@ public class ReceiverBot extends PircBot {
 				
 				// !random - Ops
 				if(msg[0].equalsIgnoreCase("!random")&& isOp){
-					System.out.println("DEBUG: Matched command !random");
+					log("RB: Matched command !random");
 					if(msg.length >= 2){
 						if(msg[1].equalsIgnoreCase("user")){
 							User[] userList = this.getUsers(channel);
@@ -989,13 +985,13 @@ public class ReceiverBot extends PircBot {
  				
 				// !clear - Ops
 				if(msg[0].equalsIgnoreCase("!clear") && isOp){
-					System.out.println("DEBUG: Matched command !clear");
+					log("RB: Matched command !clear");
 					sendMessage(channel, ".clear");
 				}
  				
  				// !links - Owner
  				if(msg[0].equalsIgnoreCase("!links") && isOwner){
- 					System.out.println("DEBUG: Matched command !links");
+ 					log("RB: Matched command !links");
  					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!links on/off\"");
  					}else if(msg.length == 2){
@@ -1011,7 +1007,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !permit - Allows users to post 1 link
  				if((msg[0].equalsIgnoreCase("!permit") || msg[0].equalsIgnoreCase("!allow")) && channelInfo.getFilterLinks() && channelInfo.useFilters && isOp){
- 					System.out.println("DEBUG: Matched command !permit");
+ 					log("RB: Matched command !permit");
  					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!permit [username]\"");
  					}else if(msg.length > 1){
@@ -1027,7 +1023,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !pd - Owner
  				if(msg[0].equalsIgnoreCase("!pd") && isOwner){
- 					System.out.println("DEBUG: Matched command !pd");
+ 					log("RB: Matched command !pd");
  					if(msg.length <= 2){
  						sendMessage(channel, "Syntax: \"!pd add/delete [domain]\" and \"!pd list\"");
  					}else if(msg.length  > 2){
@@ -1057,9 +1053,9 @@ public class ReceiverBot extends PircBot {
  				
  				// !banphrase - Owner
  				if(msg[0].equalsIgnoreCase("!banphrase") && isOwner){
- 					System.out.println("DEBUG: Matched command !banphrase");
+ 					log("RB: Matched command !banphrase");
  					if(isOwner)
- 						System.out.println("DEBUG: Is owner");
+ 						log("RB: Is owner");
  					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!banphrase on/off\", \"!banphrase add/delete [string to purge]\", \"!banphrase list\"");
  					}else if(msg.length > 1){
@@ -1101,7 +1097,7 @@ public class ReceiverBot extends PircBot {
 				
  				// !caps - Owner
  				if(msg[0].equalsIgnoreCase("!caps") && isOwner){
- 					System.out.println("DEBUG: Matched command !caps");
+ 					log("RB: Matched command !caps");
  					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!caps on/off\", \"!caps percent/minchars/mincaps [value]\", \"!caps status\"");
  					}else if(msg.length > 1){
@@ -1134,7 +1130,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !emotes - Owner
  				if(msg[0].equalsIgnoreCase("!emotes") && isOwner){
- 					System.out.println("DEBUG: Matched command !emotes");
+ 					log("RB: Matched command !emotes");
  					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!emotes on/off\", \"!emotes max [value]\"");
  					}else if(msg.length > 1){
@@ -1157,7 +1153,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !symbols - Owner
  				if(msg[0].equalsIgnoreCase("!symbols") && isOwner){
- 					System.out.println("DEBUG: Matched command !symbols");
+ 					log("RB: Matched command !symbols");
  					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!symbols on/off\"");
  					}else if(msg.length > 1){
@@ -1175,7 +1171,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !regular - Owner
  				if(msg[0].equalsIgnoreCase("!regular") && isOwner){
- 					System.out.println("DEBUG: Matched command !regular");
+ 					log("RB: Matched command !regular");
  					if(msg.length < 2){
  						sendMessage(channel, "Syntax: \"!regular add/delete [name]\", \"!regular list\"");
  					}else if(msg.length  > 2){
@@ -1205,7 +1201,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !mod - Owner
  				if(msg[0].equalsIgnoreCase("!mod")  && isOwner){
- 					System.out.println("DEBUG: Matched command !mod");
+ 					log("RB: Matched command !mod");
  					if(msg.length < 2){
  						sendMessage(channel, "Syntax: \"!mod add/delete [name]\", \"!mod list\"");
  					}if(msg.length  > 2){
@@ -1235,7 +1231,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !owner - Owner
  				if(msg[0].equalsIgnoreCase("!owner") && isOwner){
- 					System.out.println("DEBUG: Matched command !owner");
+ 					log("RB: Matched command !owner");
  					if(msg.length < 2){
  						sendMessage(channel, "Syntax: \"!owner add/delete [name]\", \"!owner list\"");
  					}if(msg.length  > 2){
@@ -1265,7 +1261,7 @@ public class ReceiverBot extends PircBot {
  				
  				// !set - Owner
  				if(msg[0].equalsIgnoreCase("!set") && isOwner){
- 					System.out.println("DEBUG: Matched command !set");
+ 					log("RB: Matched command !set");
 					if(msg.length == 1){
 						sendMessage(channel, "Syntax: \"!set [option] [value]\". Options: topic, filters, throw, signedkicks, joinsparts, lastfm, steam, mode, chatlogging, maxlength");
 					}else if(msg[1].equalsIgnoreCase("topic")){
@@ -1373,7 +1369,7 @@ public class ReceiverBot extends PircBot {
  				
  				//!modchan - Mod
  				if(msg[0].equalsIgnoreCase("!modchan") && isOp){
- 						System.out.println("DEBUG: Matched command !modchan");
+ 						log("RB: Matched command !modchan");
  						if(channelInfo.getMode() == 2){
  							channelInfo.setMode(1);
  							sendMessage(channel, "Mode set to admin/owner/mod only.");
@@ -1388,7 +1384,7 @@ public class ReceiverBot extends PircBot {
  				
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin){
- 							System.out.println("DEBUG: Matched command !join");
+ 							log("RB: Matched command !join");
                             if(JSONUtil.krakenChannelExist(sender)){
                                 sendMessage(channel, "Joining channel #"+ sender +".");
                                 boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
@@ -1404,7 +1400,7 @@ public class ReceiverBot extends PircBot {
 				}
  				
  				if (msg[0].equalsIgnoreCase("!rejoin")){
- 					System.out.println("DEBUG: Matched command !rejoin");
+ 					log("RB: Matched command !rejoin");
  					if(msg.length > 1 && isAdmin){
  						if(msg[1].contains("#")){
 							sendMessage(channel, "Rejoining channel "+ msg[1] +".");
@@ -1522,7 +1518,7 @@ public class ReceiverBot extends PircBot {
 				if(msg[0].substring(0,1).equalsIgnoreCase("!")){
                     String value = channelInfo.getCommand(msg[0]);
                     if(value != null){
-                        System.out.println("DEBUG: Matched command " + msg[0]);
+                        log("RB: Matched command " + msg[0]);
                         if(msg.length > 1 && isOp){
                             String updatedMessage = fuseArray(msg, 1);
                             if(!updatedMessage.contains(",,")){
@@ -1553,11 +1549,11 @@ public class ReceiverBot extends PircBot {
 				this.joinChannel(channels[i]);
 			}
 		} catch (NickAlreadyInUseException e) {
-			System.out.println("ERROR: Nickname already in use - " + this.getNick() + " " + this.getServer());
+			logMain("RB: [ERROR] Nickname already in use - " + this.getNick() + " " + this.getServer());
 		} catch (IOException e) {
-			System.out.println("ERROR: Unable to connect to server - " + this.getNick() + " " + this.getServer());
+            logMain("RB: [ERROR] Unable to connect to server - " + this.getNick() + " " + this.getServer());
 		} catch (IrcException e) {
-			System.out.println("ERROR: Error connecting to server - " + this.getNick() + " " + this.getServer());
+            logMain("RB: [ERROR] Error connecting to server - " + this.getNick() + " " + this.getServer());
 		}
 		
 	}
@@ -1575,7 +1571,7 @@ public class ReceiverBot extends PircBot {
 		}
 
         if(this.getNick().equalsIgnoreCase(sender)){
-            System.out.println("DEBUG: Got self join for " + channel);
+            log("RB: Got self join for " + channel);
         }
 		
 //		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
@@ -1621,7 +1617,7 @@ public class ReceiverBot extends PircBot {
 		Channel channelInfo = getChannelObject(target);
 		
 		if(!BotManager.getInstance().verboseLogging)
-			System.out.println("onMessageSend: " + target + " " + getNick() + " : " + message);
+			logMain("SEND: " + target + " " + getNick() + " : " + message);
 
 		if(channelInfo != null){
 			//Call modules
@@ -1654,11 +1650,13 @@ public class ReceiverBot extends PircBot {
 	}
 	
     public void log(String line) {
-    	super.log(line);
-    	
-    	if(BotManager.getInstance().useGUI){
-    		BotManager.getInstance().getGUI().log(line);
-    	}
+        if (this.getVerbose()) {
+            logMain(System.currentTimeMillis() + " " + line);
+        }
+    }
+
+    public void logMain(String line) {
+        BotManager.getInstance().log(line);
     }
 
     private void startJoinCheck(){
@@ -1680,7 +1678,7 @@ public class ReceiverBot extends PircBot {
                     }
 
                     if(!inList){
-                        System.out.println("DEBUG: " + entry.getValue().getChannel() + " is not in the joined list.");
+                        log("RB: " + entry.getValue().getChannel() + " is not in the joined list.");
                         ReceiverBot.this.joinChannel(entry.getValue().getChannel());
                     }
 
@@ -1741,7 +1739,7 @@ public class ReceiverBot extends PircBot {
 				//System.out.println("Checking " + m + " against " + pattern.pattern());
 				Matcher match = pattern.matcher(m);
 				if(match.matches()){
-					System.out.println("DEBUG: Link match on " + pattern.pattern());
+					log("RB: Link match on " + pattern.pattern());
 					if(!ch.checkPermittedDomain(m))
 						return true;	
 				}
@@ -1752,18 +1750,11 @@ public class ReceiverBot extends PircBot {
 	}
 	
 	private boolean containsSymbol(String message, Channel ch){
-//        for(Pattern pattern: symbolsClassPatterns){
-//            Matcher match = pattern.matcher(message);
-//            if(match.find()){
-//                System.out.println("DEBUG: Symbol find on " + pattern.pattern());
-//                return true;
-//            }
-//        }
 
 		for(Pattern pattern: symbolsPatterns){
 			Matcher match = pattern.matcher(message);
 			if(match.find()){
-				System.out.println("DEBUG: Symbol match on " + pattern.pattern());	
+				log("RB: Symbol match on " + pattern.pattern());	
 				return true;
 			}
 
@@ -1794,7 +1785,7 @@ public class ReceiverBot extends PircBot {
 		for(Pattern reg:BotManager.getInstance().globalBannedWords){
 			Matcher match = reg.matcher(message.toLowerCase());
 			if(match.matches()){
-				System.out.println("DEBUG: Global banned word matched: " + reg.toString());
+				log("RB: Global banned word matched: " + reg.toString());
 				return true;
 			}
 		}
@@ -1815,11 +1806,12 @@ public class ReceiverBot extends PircBot {
 			return warningTODuration[count-1];
 	}
 	
-	private void secondaryTO(final String channel, final String name, final int duration){
+	private void secondaryTO(final String channel, final String name, final int duration, FilterType type){
 		Timer timer = new Timer();
 		int delay = 1000;
-		
-		System.out.println("DEBUG: Issuing a timeout on " + name + " in " + channel + " for " + duration);
+
+        String line = "RB: Issuing a timeout on " + name + " in " + channel + " for " + type.toString() + " (" + duration + ")";
+		logMain(line);
 		
 		timer.schedule(new TimerTask()
 	       {
@@ -1828,13 +1820,18 @@ public class ReceiverBot extends PircBot {
 	        }
 	      },delay);
 
+        //Send to subscribers
+        Channel channelInfo = getChannelObject(channel);
+        BotManager.getInstance().ws.sendToSubscribers(line, channelInfo);
+
 	}
 
-    private void secondaryBan(final String channel, final String name){
+    private void secondaryBan(final String channel, final String name, FilterType type){
         Timer timer = new Timer();
         int delay = 1000;
 
-        System.out.println("DEBUG: Issuing a ban on " + name + " in " + channel);
+        String line = "RB: Issuing a ban on " + name + " in " + channel + " for " + type.toString();
+        logMain(line);
 
         timer.schedule(new TimerTask()
         {
@@ -1842,6 +1839,10 @@ public class ReceiverBot extends PircBot {
                 ReceiverBot.this.sendMessage(channel,".ban " + name);
             }
         },delay);
+
+        //Send to subscribers
+        Channel channelInfo = getChannelObject(channel);
+        BotManager.getInstance().ws.sendToSubscribers(line, channelInfo);
 
     }
 	
@@ -1988,7 +1989,7 @@ public class ReceiverBot extends PircBot {
 		int difference = ((int) (System.currentTimeMillis()/1000)) - lastPing;
 		
 		if(difference > BotManager.getInstance().pingInterval){
-			System.out.println("DEBUG: Ping is stale. Last ping= " + lastPing + " Difference= " + difference);
+			log("RB: Ping is stale. Last ping= " + lastPing + " Difference= " + difference);
 			lastPing = -1;
 			return true;
 		}
