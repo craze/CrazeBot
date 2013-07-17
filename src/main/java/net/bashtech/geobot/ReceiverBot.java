@@ -144,7 +144,7 @@ public class ReceiverBot extends PircBot {
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message){
 				if(!BotManager.getInstance().verboseLogging)
-					System.out.println("MESSAGE: " + channel + " " + sender + " : " + message);
+					logMain("MSG: " + channel + " " + sender + " : " + message);
 				
 				Channel channelInfo = getChannelObject(channel);
                 String twitchName = channelInfo.getTwitchName();
@@ -254,8 +254,7 @@ public class ReceiverBot extends PircBot {
 				
  				//Global banned word filter
  				if(!isOp && this.isGlobalBannedWord(message)){
- 					this.secondaryBan(channel, sender, FilterType.GLOBALBAN);
- 					System.out.println("NOTICE: Global banned word timeout: " + sender + " in " + channel + " : " + message);
+ 					logMain("GLOBALBAN: Global banned word timeout: " + sender + " in " + channel + " : " + message);
                     logGlobalBan(channel, sender, message);
                     return;
  				}
