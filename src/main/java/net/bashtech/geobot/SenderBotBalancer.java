@@ -49,6 +49,7 @@ public class SenderBotBalancer {
 	public synchronized void sendMessage(String channel, String message){
 		//System.out.println("DEBUG: Sending message to instance - " + position);
 
+        System.out.println("SEND: " + message);
         message = MessageReplaceParser.parseMessage(channel, message);
         if(!message.startsWith("."))
             message = getBullet() + " " + message;

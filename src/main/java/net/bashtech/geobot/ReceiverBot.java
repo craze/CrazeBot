@@ -1825,7 +1825,7 @@ public class ReceiverBot extends PircBot {
 
         //Send to subscribers
         Channel channelInfo = getChannelObject(channel);
-        BotManager.getInstance().ws.sendToSubscribers(line, channelInfo);
+        //BotManager.getInstance().ws.sendToSubscribers(line, channelInfo);
 
 	}
 
@@ -1845,7 +1845,7 @@ public class ReceiverBot extends PircBot {
 
         //Send to subscribers
         Channel channelInfo = getChannelObject(channel);
-        BotManager.getInstance().ws.sendToSubscribers(line, channelInfo);
+        //BotManager.getInstance().ws.sendToSubscribers(line, channelInfo);
 
     }
 	
