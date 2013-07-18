@@ -254,6 +254,7 @@ public class ReceiverBot extends PircBot {
 				
  				//Global banned word filter
  				if(!isOp && this.isGlobalBannedWord(message)){
+                    this.secondaryBan(channel, sender, FilterType.GLOBALBAN);
  					logMain("GLOBALBAN: Global banned word timeout: " + sender + " in " + channel + " : " + message);
                     logGlobalBan(channel, sender, message);
                     return;
@@ -2053,7 +2054,7 @@ public class ReceiverBot extends PircBot {
     {
         String line = sender + "," + channel + ",\"" + message + "\"\n";
 
-        System.out.print(line);
+        //System.out.print(line);
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("globalbans.csv", true), "UTF-8"));
             out.write(line);
