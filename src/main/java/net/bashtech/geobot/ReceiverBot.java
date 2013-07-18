@@ -1077,6 +1077,10 @@ public class ReceiverBot extends PircBot {
  							}else if(channelInfo.isOffensive(fuseArray(msg, 2))){
  								sendMessage(channel,"Word already exists. " + "(" + phrase + ")");
  							}else{
+                                 if(phrase.startsWith("REGEX:") && !isAdmin){
+                                     sendMessage(channel, "You must have Admin status to add regex phrases.");
+                                     return;
+                                 }
  								channelInfo.addOffensive(phrase);
  								sendMessage(channel,"Word added. "+ "(" + phrase + ")");
  							}
