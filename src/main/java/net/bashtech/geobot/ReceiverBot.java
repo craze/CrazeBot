@@ -45,7 +45,7 @@ public class ReceiverBot extends PircBot {
     static ReceiverBot instance;
 
     private Pattern[] linkPatterns = new Pattern[4];
-	private Pattern[] symbolsPatterns = new Pattern[2];
+	private Pattern[] symbolsPatterns = new Pattern[1];
 	private int lastPing = -1;
 	private int[] warningTODuration = {10, 60, 600, 86400};
 	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
@@ -59,7 +59,7 @@ public class ReceiverBot extends PircBot {
         linkPatterns[3] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
 
         symbolsPatterns[0] = Pattern.compile("(\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|▀|▄|̰̦̮̠ę̟̹ͦͯͯ́ͮ̊̐͌̉͑ͨ̊́́̚|U̶̧ͩͭͧ͊̅̊ͥͩ̿̔̔ͥ͌ͬ͊͋ͬ҉|Ọ̵͇̖̖|A̴͍̥̳̠̞̹ͩ̋̆ͤͅ|E̡̛͚̺̖̪͈̲̻̠̰̳̐̿|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒|█)");
-        symbolsPatterns[1] = Pattern.compile("(۶|°|ຈ|๏̯͡|)");
+        //symbolsPatterns[1] = Pattern.compile("(۶|°|ຈ|๏̯͡|)");
 //		symbolsPatterns[0] = Pattern.compile(".*(░|░|▓|▀|▄|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒|█).*");
         // http://en.wikipedia.org/wiki/Unicode_block
 //        symbolsClassPatterns[0] = Pattern.compile("(\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes})");
