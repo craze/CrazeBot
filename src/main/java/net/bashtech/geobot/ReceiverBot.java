@@ -97,7 +97,7 @@ public class ReceiverBot extends PircBot {
 	@Override
 	protected void onConnect() {
 		//Force TMI to send USERCOLOR AND SPECIALUSER messages.
-		this.sendRawLine("JTVCLIENT");
+		this.sendRawLine("TWITCHCLIENT 2");
 	}
 
 	@Override
