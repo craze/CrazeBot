@@ -26,7 +26,17 @@ public class WSServer extends WebSocketServer {
 
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
+        String resource = conn.getResourceDescriptor().substring(1);
         System.out.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected." );
+
+        String log = "";
+        if(resource.equals(BotManager.getInstance().wsAdminPassword)){
+            log = "WS: " + conn.getRemoteSocketAddress().getAddress().getHostAddress() + " logged in as Admin";
+            System.out.println(log);
+            synchronized (adminFeed){
+                adminFeed.add(conn);
+            }
+        }
     }
 
     @Override
@@ -43,23 +53,6 @@ public class WSServer extends WebSocketServer {
 
         if(message.length() < 1)
             return;
-
-        if(message.trim().equalsIgnoreCase(BotManager.getInstance().wsAdminPassword)){
-            log = "WS: " + conn.getRemoteSocketAddress().getAddress().getHostAddress() + " logged in as Admin";
-            System.out.println(log);
-            synchronized (adminFeed){
-                adminFeed.add(conn);
-            }
-        }
-
-//        Channel ch = BotManager.getInstance().getChannel(message);
-//        if(ch != null){
-//            log = "WS: " + conn.getRemoteSocketAddress().getAddress().getHostAddress() + " logged in as " + ch.getTwitchName();
-//            synchronized (ch.wsSubscribers){
-//                ch.wsSubscribers.add(conn);
-//            }
-//            System.out.println("DEBUG: " + ch.wsSubscribers.size());
-//        }
 
         conn.send(log);
         sendToAdmin(log);
