@@ -25,15 +25,21 @@ import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 
 
-public class Main {
+public class Tester {
 
-	public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
-		String propertiesFile = "global.properties";
-		if(args.length > 0){
-			propertiesFile = args[0];
-		}
-		
-		BotManager bm = new BotManager(propertiesFile);
-	}
+    public static void main(String[] args){
+        Set<String> staff = new HashSet<String>();
+        Set<String> admins = new HashSet<String>();
+        Set<String> mods = new HashSet<String>();
+
+        Long chatter_count = JSONUtil.updateTMIUserList("twitch", staff, admins, mods);
+
+        for (String user : staff)
+            System.out.println(user);
+        for (String user : admins)
+            System.out.println(user);
+        for (String user : mods)
+            System.out.println(user);
+    }
 
 }

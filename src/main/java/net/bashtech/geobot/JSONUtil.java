@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 
 public class JSONUtil {
@@ -279,6 +280,41 @@ public class JSONUtil {
         }
 
         return false;
+
+    }
+
+    public static Long updateTMIUserList(String channel, Set<String> staff, Set<String> admins, Set<String> mods){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://tmi.twitch.tv/group/user/" + channel + "/chatters"));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            Long chatter_count = (Long)jsonObject.get("chatter_count");
+
+            JSONObject chatters = (JSONObject)jsonObject.get("chatters");
+
+
+            JSONArray staffJO = (JSONArray)chatters.get("staff");
+            for(Object user : staffJO){
+                staff.add((String)user);
+            }
+
+            JSONArray adminsJO = (JSONArray)chatters.get("admins");
+            for(Object user : adminsJO){
+                admins.add((String)user);
+            }
+
+            JSONArray modsJO = (JSONArray)chatters.get("moderators");
+            for(Object user : modsJO){
+                mods.add((String)user);
+            }
+
+            return chatter_count;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new Long(-1);
+        }
 
     }
 
