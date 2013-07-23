@@ -118,7 +118,7 @@ public class JSONUtil {
                 return trackName + " by " + artist;
 
             }else{
-                return "No music currently playing";
+                return "(Nothing)";
             }
         }catch (Exception ex){
             ex.printStackTrace();
