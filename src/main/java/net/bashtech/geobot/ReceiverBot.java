@@ -136,7 +136,7 @@ public class ReceiverBot extends PircBot {
 
 	@Override
 	protected void onAction(String sender, String login, String hostname, String target, String action) {
-		this.onMessage(target, sender, login, hostname, action);
+		this.onMessage(target, sender, login, hostname, "/me " + action);
 	}
 
 	@Override
@@ -260,6 +260,25 @@ public class ReceiverBot extends PircBot {
  				
  				// Voluntary Filters
  				if(channelInfo.useFilters){
+
+                     //Me filter
+                     if(!isRegular && channelInfo.getFilterMe()){
+                         if(msg[0].equalsIgnoreCase("/me")){
+                             int warningCount = 0;
+
+                             channelInfo.incWarningCount(sender, FilterType.ME);
+                             warningCount = channelInfo.getWarningCount(sender, FilterType.ME);
+                             this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.ME);
+
+                             if(channelInfo.checkSignKicks())
+                                 sendMessage(channel, sender + ", /me is not allowed in this channel - " + this.getWarningText(warningCount));
+
+                             return;
+
+                         }
+
+                     }
+
 					// Cap filter
  					String messageNoWS = message.replaceAll("\\s","");
 					int capsNumber = getCapsNumber(messageNoWS);
@@ -1282,7 +1301,15 @@ public class ReceiverBot extends PircBot {
 							channelInfo.setFiltersFeature(false);
 							sendMessage(channel, "Feature: Filters is off");
 						}
-					}else if(msg[1].equalsIgnoreCase("throw")){
+					}else if(msg[1].equalsIgnoreCase("filterme")){
+                        if(msg[2].equalsIgnoreCase("on")){
+                            channelInfo.setFilterMe(true);
+                            sendMessage(channel, "Feature: /me filter is on");
+                        }else if(msg[2].equalsIgnoreCase("off")){
+                            channelInfo.setFilterMe(false);
+                            sendMessage(channel, "Feature: /me filter is off");
+                        }
+                    }else if(msg[1].equalsIgnoreCase("throw")){
 						if(msg[2].equalsIgnoreCase("on")){
 							channelInfo.setThrow(true);
 							sendMessage(channel, "Feature: !throw is on");

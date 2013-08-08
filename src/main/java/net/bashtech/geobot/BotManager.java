@@ -122,7 +122,7 @@ public class BotManager {
 		for (Map.Entry<String, Channel> entry : channelList.entrySet())
 		{
             String channel = entry.getValue().getChannel();
-            if(!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1))){
+            if(!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1)) || entry.getValue().staticChannel){
                 log("BM: Joining channel " + channel);
                 receiverBot.joinChannel(channel);
             }else{

@@ -39,6 +39,9 @@ public class Channel {
 	
 	private String channel;
     private String twitchname;
+
+    boolean staticChannel;
+
 	private HashMap<String, String> commands = new HashMap<String, String>();
 	HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
@@ -78,6 +81,8 @@ public class Channel {
     public int commercialLength;
 
     private boolean filterColors;
+
+    private boolean filterMe;
 
 	private Set<String> offensiveWords = new HashSet<String>();
 	private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
@@ -441,6 +446,15 @@ public class Channel {
 
     public boolean getFilterColor(){
         return filterColors;
+    }
+
+    public void setFilterMe(boolean option){
+        filterMe = option;
+        config.setBoolean("filterMe", option);
+    }
+
+    public boolean getFilterMe(){
+        return filterMe;
     }
 	
 	//###################################################
@@ -1098,7 +1112,12 @@ public class Channel {
         if(!config.keyExists("filterColors")) {
             config.setBoolean("filterColors", false);
         }
-		
+        if(!config.keyExists("filterMe")) {
+            config.setBoolean("filterMe", false);
+        }
+        if(!config.keyExists("staticChannel")) {
+            config.setBoolean("staticChannel", false);
+        }
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1124,6 +1143,8 @@ public class Channel {
 		filterMaxLength = config.getInt("filterMaxLength");
         commercialLength = config.getInt("commercialLength");
         filterColors = Boolean.parseBoolean(config.getString("filterColors"));
+        filterMe = Boolean.parseBoolean(config.getString("filterMe"));
+        staticChannel = Boolean.parseBoolean(config.getString("staticChannel"));
 
 
 
