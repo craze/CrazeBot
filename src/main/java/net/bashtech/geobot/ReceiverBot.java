@@ -47,8 +47,6 @@ public class ReceiverBot extends PircBot {
     private Pattern[] linkPatterns = new Pattern[4];
 	private Pattern[] symbolsPatterns = new Pattern[1];
 	private int lastPing = -1;
-	private int[] warningTODuration = {10, 60, 600, 86400};
-	private String[] warningText = {"first warning (10 sec t/o)", "second warning (1 minute t/o)", "final warning (10 min t/o)", "(24hr timeout)"};
     Timer joinCheck;
 	
 	public ReceiverBot(String server, int port){
@@ -268,10 +266,10 @@ public class ReceiverBot extends PircBot {
 
                              channelInfo.incWarningCount(sender, FilterType.ME);
                              warningCount = channelInfo.getWarningCount(sender, FilterType.ME);
-                             this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.ME);
+                             this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.ME);
 
                              if(channelInfo.checkSignKicks())
-                                 sendMessage(channel, sender + ", /me is not allowed in this channel - " + this.getWarningText(warningCount));
+                                 sendMessage(channel, sender + ", /me is not allowed in this channel - " + this.getTimeoutText(warningCount, channelInfo));
 
                              return;
 
@@ -288,10 +286,10 @@ public class ReceiverBot extends PircBot {
 
                         channelInfo.incWarningCount(sender, FilterType.CAPS);
                         warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
-                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.CAPS);
+                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.CAPS);
 
 						if(channelInfo.checkSignKicks())
-							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getWarningText(warningCount));
+							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getTimeoutText(warningCount, channelInfo));
 
                         return;
 					}
@@ -306,10 +304,10 @@ public class ReceiverBot extends PircBot {
 
 								channelInfo.incWarningCount(sender, FilterType.LINK);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
-								this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.LINK);
+								this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.LINK);
 								
 							if(channelInfo.checkSignKicks())
-								sendMessage(channel, sender + ", please ask a moderator before posting links - " + this.getWarningText(warningCount));
+								sendMessage(channel, sender + ", please ask a moderator before posting links - " + this.getTimeoutText(warningCount, channelInfo));
                             return;
 						}
 
@@ -321,10 +319,10 @@ public class ReceiverBot extends PircBot {
 
                         channelInfo.incWarningCount(sender, FilterType.LENGTH);
                         warningCount = channelInfo.getWarningCount(sender, FilterType.LENGTH);
-                        this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.LENGTH);
+                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.LENGTH);
 
                         if(channelInfo.checkSignKicks())
-                            sendMessage(channel, sender + ", please don't spam long messages - " + this.getWarningText(warningCount));
+                            sendMessage(channel, sender + ", please don't spam long messages - " + this.getTimeoutText(warningCount, channelInfo));
 
                         return;
 					}
@@ -334,10 +332,10 @@ public class ReceiverBot extends PircBot {
 						int warningCount = 0;
 						channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
 						warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
-						this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.SYMBOLS);
+						this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.SYMBOLS);
 								
 						if(channelInfo.checkSignKicks())
-							sendMessage(channel, sender + ", please don't post spam in the chat - " + this.getWarningText(warningCount));
+							sendMessage(channel, sender + ", please don't post spam in the chat - " + this.getTimeoutText(warningCount, channelInfo));
 
                         return;
 					}
@@ -349,10 +347,10 @@ public class ReceiverBot extends PircBot {
 
                             channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
                             warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
-                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.OFFENSIVE);
+                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.OFFENSIVE);
 
                             if(channelInfo.checkSignKicks())
-                                sendMessage(channel, sender + ", disallowed word or phrase - " + this.getWarningText(warningCount));
+                                sendMessage(channel, sender + ", disallowed word or phrase - " + this.getTimeoutText(warningCount, channelInfo));
 
                             return;
 						}
@@ -366,10 +364,10 @@ public class ReceiverBot extends PircBot {
 
                             channelInfo.incWarningCount(sender, FilterType.EMOTES);
                             warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
-                            this.secondaryTO(channel, sender, this.getWarningTODuration(warningCount), FilterType.EMOTES);
+                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.EMOTES);
 
                             if(channelInfo.checkSignKicks())
-                                sendMessage(channel, sender + ", please don't spam emotes - " + this.getWarningText(warningCount));
+                                sendMessage(channel, sender + ", please don't spam emotes - " + this.getTimeoutText(warningCount, channelInfo));
 
                             return;
 							
@@ -1309,6 +1307,29 @@ public class ReceiverBot extends PircBot {
                             channelInfo.setFilterMe(false);
                             sendMessage(channel, "Feature: /me filter is off");
                         }
+                    }else if(msg[1].equalsIgnoreCase("enablewarnings")){
+                        if(msg[2].equalsIgnoreCase("on")){
+                            channelInfo.setEnableWarnings(true);
+                            sendMessage(channel, "Feature: Timeout warnings are on");
+                        }else if(msg[2].equalsIgnoreCase("off")){
+                            channelInfo.setEnableWarnings(false);
+                            sendMessage(channel, "Feature: Timeout warnings are off");
+                        }
+                    }else if(msg[1].equalsIgnoreCase("timeoutduration")){
+
+                        if(msg.length < 3){
+                            sendMessage(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
+                        }else{
+                            if(isInteger(msg[2])){
+                                int duration = Integer.parseInt(msg[2]);
+                                channelInfo.setTimeoutDuration(duration);
+                                sendMessage(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
+                            }else{
+                                sendMessage(channel, "You must specify an integer for the duration");
+                            }
+
+
+                        }
                     }else if(msg[1].equalsIgnoreCase("throw")){
 						if(msg[2].equalsIgnoreCase("on")){
 							channelInfo.setThrow(true);
@@ -1821,18 +1842,28 @@ public class ReceiverBot extends PircBot {
 		return false;
 	}
 	
-	private String getWarningText(int count){
-		if(count > (warningTODuration.length-1))
-			return warningText[warningTODuration.length-1];
-		else
-			return warningText[count-1];	
+	private String getTimeoutText(int count, Channel channel){
+        if(channel.getEnableWarnings()){
+            if(count > 1){
+                return "temp ban";
+            }else{
+                return "warning";
+            }
+        }else{
+            return "temp ban";
+        }
 	}
 	
-	private int getWarningTODuration(int count){
-		if(count > (warningTODuration.length-1))
-			return warningTODuration[warningTODuration.length-1];
-		else
-			return warningTODuration[count-1];
+	private int getTODuration(int count, Channel channel){
+        if(channel.getEnableWarnings()){
+            if(count > 1){
+                return channel.getTimeoutDuration();
+            }else{
+                return 10;
+            }
+        }else{
+            return channel.getTimeoutDuration();
+        }
 	}
 	
 	private void secondaryTO(final String channel, final String name, final int duration, FilterType type){

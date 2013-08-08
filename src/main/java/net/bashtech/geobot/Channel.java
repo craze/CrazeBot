@@ -89,6 +89,9 @@ public class Channel {
 
 	Map<String,EnumMap<FilterType, Integer>> warningCount;
 	Map<String, Long> warningTime;
+
+    private int timeoutDuration;
+    private boolean enableWarnings;
 	
 	Map<String, Long> commandCooldown;
 
@@ -455,6 +458,24 @@ public class Channel {
 
     public boolean getFilterMe(){
         return filterMe;
+    }
+
+    public void setEnableWarnings(boolean option){
+        enableWarnings = option;
+        config.setBoolean("enableWarnings", option);
+    }
+
+    public boolean getEnableWarnings(){
+        return enableWarnings;
+    }
+
+    public void setTimeoutDuration(int option){
+        timeoutDuration = option;
+        config.setInt("timeoutDuration", option);
+    }
+
+    public int getTimeoutDuration(){
+        return timeoutDuration;
     }
 	
 	//###################################################
@@ -1118,6 +1139,12 @@ public class Channel {
         if(!config.keyExists("staticChannel")) {
             config.setBoolean("staticChannel", false);
         }
+        if(!config.keyExists("enableWarnings")) {
+            config.setBoolean("enableWarnings", true);
+        }
+        if(!config.keyExists("timeoutDuration")) {
+            config.setInt("timeoutDuration", 600);
+        }
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1145,6 +1172,9 @@ public class Channel {
         filterColors = Boolean.parseBoolean(config.getString("filterColors"));
         filterMe = Boolean.parseBoolean(config.getString("filterMe"));
         staticChannel = Boolean.parseBoolean(config.getString("staticChannel"));
+
+        enableWarnings = Boolean.parseBoolean(config.getString("enableWarnings"));
+        timeoutDuration = config.getInt("timeoutDuration");
 
 
 
