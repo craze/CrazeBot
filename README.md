@@ -125,8 +125,8 @@ Filtered messages must match all three of the below settings:
     * chatlogging - Enables logging of chat conversations. Logs are stored at [http://btx.me/ackbot](http://btx.me/ackbot) and are publicly visible
     * commerciallength [30/60/90/120/150/180] - Lenth of commercials to run with
     * filterme - Toggle /me block filter
-    * enablewarning - Enabled a lesser timeout for first offensive of a filter (10 second timeout)
-    * timeoutduration - Sets the duration for filter offenses (after warning if enabled)
+    * enablewarning [on/off] - Enabled a lesser timeout for first offensive of a filter (10 second timeout)
+    * timeoutduration [seconds] - Sets the duration for filter offenses (after warning if enabled)
   
   
   * !regular add/delete/list [name] - Owner - Adds a "regular". Regulars don't need permission to post links 
