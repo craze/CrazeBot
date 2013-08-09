@@ -266,7 +266,7 @@ public class ReceiverBot extends PircBot {
 
                              channelInfo.incWarningCount(sender, FilterType.ME);
                              warningCount = channelInfo.getWarningCount(sender, FilterType.ME);
-                             this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.ME);
+                             this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.ME, message);
 
                              if(channelInfo.checkSignKicks())
                                  sendMessage(channel, sender + ", /me is not allowed in this channel - " + this.getTimeoutText(warningCount, channelInfo));
@@ -286,7 +286,7 @@ public class ReceiverBot extends PircBot {
 
                         channelInfo.incWarningCount(sender, FilterType.CAPS);
                         warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
-                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.CAPS);
+                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.CAPS, message);
 
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getTimeoutText(warningCount, channelInfo));
@@ -304,7 +304,7 @@ public class ReceiverBot extends PircBot {
 
 								channelInfo.incWarningCount(sender, FilterType.LINK);
 								warningCount = channelInfo.getWarningCount(sender, FilterType.LINK);
-								this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.LINK);
+								this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.LINK, message);
 								
 							if(channelInfo.checkSignKicks())
 								sendMessage(channel, sender + ", please ask a moderator before posting links - " + this.getTimeoutText(warningCount, channelInfo));
@@ -319,7 +319,7 @@ public class ReceiverBot extends PircBot {
 
                         channelInfo.incWarningCount(sender, FilterType.LENGTH);
                         warningCount = channelInfo.getWarningCount(sender, FilterType.LENGTH);
-                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.LENGTH);
+                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.LENGTH, message);
 
                         if(channelInfo.checkSignKicks())
                             sendMessage(channel, sender + ", please don't spam long messages - " + this.getTimeoutText(warningCount, channelInfo));
@@ -332,7 +332,7 @@ public class ReceiverBot extends PircBot {
 						int warningCount = 0;
 						channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
 						warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
-						this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.SYMBOLS);
+						this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.SYMBOLS, message);
 								
 						if(channelInfo.checkSignKicks())
 							sendMessage(channel, sender + ", please don't post spam in the chat - " + this.getTimeoutText(warningCount, channelInfo));
@@ -347,7 +347,7 @@ public class ReceiverBot extends PircBot {
 
                             channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
                             warningCount = channelInfo.getWarningCount(sender, FilterType.OFFENSIVE);
-                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.OFFENSIVE);
+                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.OFFENSIVE, message);
 
                             if(channelInfo.checkSignKicks())
                                 sendMessage(channel, sender + ", disallowed word or phrase - " + this.getTimeoutText(warningCount, channelInfo));
@@ -364,7 +364,7 @@ public class ReceiverBot extends PircBot {
 
                             channelInfo.incWarningCount(sender, FilterType.EMOTES);
                             warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
-                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.EMOTES);
+                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.EMOTES, message);
 
                             if(channelInfo.checkSignKicks())
                                 sendMessage(channel, sender + ", please don't spam emotes - " + this.getTimeoutText(warningCount, channelInfo));
@@ -1866,12 +1866,14 @@ public class ReceiverBot extends PircBot {
         }
 	}
 	
-	private void secondaryTO(final String channel, final String name, final int duration, FilterType type){
+	private void secondaryTO(final String channel, final String name, final int duration, FilterType type, String message){
 		Timer timer = new Timer();
 		int delay = 1000;
 
-        String line = "RB: Issuing a timeout on " + name + " in " + channel + " for " + type.toString() + " (" + duration + ")";
+        String line = "FILTER: Issuing a timeout on " + name + " in " + channel + " for " + type.toString() + " (" + duration + ")";
 		logMain(line);
+        line = "FILTER: Affected Message: " + message;
+        logMain(line);
 		
 		timer.schedule(new TimerTask()
 	       {
