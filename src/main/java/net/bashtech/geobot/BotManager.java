@@ -644,7 +644,7 @@ public class BotManager {
     public void log(String line){
         System.out.println(line);
 
-        if(wsEnabled && !line.startsWith("MSG:"))
+        if(wsEnabled && !line.startsWith("MSG:") && !line.startsWith("SEND:"))
             ws.sendToAdmin(line);
 
         if(useGUI){
