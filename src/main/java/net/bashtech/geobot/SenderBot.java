@@ -87,7 +87,7 @@ public class SenderBot extends PircBot {
 
     @Override
     protected void onPrivateMessage(String sender, String login, String hostname, String message) {
-        BotManager.getInstance().log("SB:" + sender + " " + message);
+        BotManager.getInstance().log("SB: " + sender + " " + message);
     }
 
 
