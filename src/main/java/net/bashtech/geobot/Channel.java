@@ -1284,11 +1284,11 @@ public class Channel {
 		
 		if(mode == -1){
 			this.setFiltersFeature(true);
-			this.setFilterEmotes(true);
+			this.setFilterEmotes(false);
 			this.setFilterEmotesMax(5);
 			this.setFilterSymbols(true);
 			this.setFilterCaps(false);
-			this.setFilterLinks(true);
+			this.setFilterLinks(false);
 			this.setFilterOffensive(true);
 			this.setSignKicks(false);
 			this.setTopicFeature(false);
