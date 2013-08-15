@@ -419,7 +419,7 @@ public class ReceiverBot extends PircBot {
 				
 				//Command cooldown check
 				if(msg[0].substring(0,1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])){
-					if(!isOwner)
+					if(!isOp)
 						return;
 				}
 
