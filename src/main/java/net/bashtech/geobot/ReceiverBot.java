@@ -290,21 +290,23 @@ public class ReceiverBot extends PircBot {
                      }
 
 					// Cap filter
- 					String messageNoWS = message.replaceAll("\\s","");
-					int capsNumber = getCapsNumber(messageNoWS);
-					int capsPercent = getCapsPercent(messageNoWS);
-					if(channelInfo.getFilterCaps() && !(isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
-						int warningCount = 0;
+                    if(channelInfo.getFilterCaps() && !isRegular){
+                        String messageNoWS = message.replaceAll("\\s","");
+                        int capsNumber = getCapsNumber(messageNoWS);
+                        int capsPercent = getCapsPercent(messageNoWS);
+                        if(channelInfo.getFilterCaps() && !(isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
+                            int warningCount = 0;
 
-                        channelInfo.incWarningCount(sender, FilterType.CAPS);
-                        warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
-                        this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.CAPS, message);
+                            channelInfo.incWarningCount(sender, FilterType.CAPS);
+                            warningCount = channelInfo.getWarningCount(sender, FilterType.CAPS);
+                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.CAPS, message);
 
-						if(channelInfo.checkSignKicks())
-							sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getTimeoutText(warningCount, channelInfo));
+                            if(channelInfo.checkSignKicks())
+                                sendMessage(channel, sender + ", please don't shout or talk in all caps - " + this.getTimeoutText(warningCount, channelInfo));
 
-                        return;
-					}
+                            return;
+                        }
+                    }
 					
 					// Link filter
 					if(channelInfo.getFilterLinks() && !(isRegular) && this.containsLink(message,channelInfo) ){
