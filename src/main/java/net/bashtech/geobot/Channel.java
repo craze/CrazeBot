@@ -61,6 +61,7 @@ public class Channel {
 	private Set<String> regulars = new HashSet<String>();
 	private Set<String> subscribers = new HashSet<String>();
 	private Set<String> moderators = new HashSet<String>();
+    Set<String> tagModerators = new HashSet<String>();
 	private Set<String> owners = new HashSet<String>();
 	private Set<String> permittedUsers = new HashSet<String>();
 	private ArrayList<String> permittedDomains = new ArrayList<String>();
@@ -567,7 +568,11 @@ public class Channel {
 	
 	//###################################################
 	
-	public boolean isModerator(String name){		
+	public boolean isModerator(String name){
+        synchronized (tagModerators){
+            if(tagModerators.contains(name))
+                return true;
+        }
 		synchronized (moderators) { 
 			if(moderators.contains(name.toLowerCase()))
 				return true;

@@ -91,11 +91,23 @@ public class ReceiverBot extends PircBot {
 		channelInfo = BotManager.getInstance().getChannel(channel);
 		return channelInfo;
 	}
-	
-	@Override
+
+    @Override
+    protected void onDeop(String channel, String sourceNick, String sourceLogin, String sourceHostname, String recipient) {
+        System.out.println("DEBUG: Got DEOP for " + recipient);
+        this.getChannelObject(channel).tagModerators.remove(recipient);
+    }
+
+    @Override
+    protected void onOp(String channel, String sourceNick, String sourceLogin, String sourceHostname, String recipient) {
+        System.out.println("DEBUG: Got OP for " + recipient);
+        this.getChannelObject(channel).tagModerators.add(recipient);
+    }
+
+    @Override
 	protected void onConnect() {
 		//Force TMI to send USERCOLOR AND SPECIALUSER messages.
-		this.sendRawLine("JTVCLIENT");
+		this.sendRawLine("TWITCHCLIENT 2");
 	}
 
 	@Override
@@ -163,10 +175,10 @@ public class ReceiverBot extends PircBot {
 				String[] msg = message.trim().split(" ");
 				
 				//Try to match to user in userlist.
-				User user = matchUser(sender, channel);
-				if(user == null){
-					user = new User("", sender);
-				}
+//				User user = matchUser(sender, channel);
+//				if(user == null){
+//					user = new User("", sender);
+//				}
 				
 				// ********************************************************************************
 				// ****************************** User Ranks **************************************
@@ -178,14 +190,14 @@ public class ReceiverBot extends PircBot {
 				boolean isRegular = false;
 				
 				//Check user level based on IRC mode.
-				try{
-					if(user.getPrefix().equalsIgnoreCase("~"))
-						isOwner = true;
-					if(user.getPrefix().equalsIgnoreCase("@") || user.isOp())
-						isOp = true;
-					if(user.getPrefix().equalsIgnoreCase("+"))
-						isRegular = true;
-				}catch(Exception e){}
+//				try{
+//					if(user.getPrefix().equalsIgnoreCase("~"))
+//						isOwner = true;
+//					if(user.getPrefix().equalsIgnoreCase("@") || user.isOp())
+//						isOp = true;
+//					if(user.getPrefix().equalsIgnoreCase("+"))
+//						isRegular = true;
+//				}catch(Exception e){}
 				
 				//Check for user level based on other factors.
 				if(BotManager.getInstance().isAdmin(sender))
@@ -380,11 +392,18 @@ public class ReceiverBot extends PircBot {
 				// ********************************************************************************
 				// ***************************** Poll Voting **************************************
 				// ********************************************************************************
-				if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus()){
-					//Poll is open and accepting votes.
-					channelInfo.getPoll().vote(sender, msg[0]);
-				}
-				
+//				if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus()){
+//					//Poll is open and accepting votes.
+//					channelInfo.getPoll().vote(sender, msg[0]);
+//				}
+
+                if(msg[0].equalsIgnoreCase("!vote")){
+                    log("RB: Matched command !vote (user entry)");
+                    if(channelInfo.getPoll() != null && channelInfo.getPoll().getStatus() && msg.length > 1){
+                        channelInfo.getPoll().vote(sender, msg[1]);
+                        return;
+                    }
+                }
 				// ********************************************************************************
 				// ***************************** Giveaway Voting **********************************
 				// ********************************************************************************
@@ -392,7 +411,7 @@ public class ReceiverBot extends PircBot {
 					//Giveaway is open and accepting entries.
 					channelInfo.getGiveaway().submitEntry(sender, msg[0]);
 				}
-				
+
 				
 				// ********************************************************************************
 				// ***************************** Raffle Entry *************************************
@@ -401,6 +420,7 @@ public class ReceiverBot extends PircBot {
 					log("RB: Matched command !raffle (user entry)");
 						if(channelInfo.raffle != null){
 							channelInfo.raffle.enter(sender);
+                            return;
 						}
 				}
 				// ********************************************************************************
@@ -428,21 +448,21 @@ public class ReceiverBot extends PircBot {
 						log("RB: Matched command !ping");
 						String time = new java.util.Date().toString();
 						sendMessage(channel, "Pong sent at " + time + " (" + this.fuseArray(msg, 1) + ")");
-						//return;
+                        return;
 				}
 				
 				// !lockouttest - All
 				if (msg[0].equalsIgnoreCase("!lockouttest")) {
 						log("RB: Matched command !lockouttest");
 						sendMessage(channel, sender + ", your message was received! You are NOT locked out of chat.");
-						//return;
+                        return;
 				}
 				
 				// !bothelp - All
 				if (msg[0].equalsIgnoreCase("!bothelp")) {
 						log("RB: Matched command !bothelp");
 						sendMessage(channel, BotManager.getInstance().bothelpMessage);
-						//return;
+                        return;
 				}
 				
 				// !viewers - All
@@ -453,7 +473,7 @@ public class ReceiverBot extends PircBot {
 					} catch (Exception e) {
 						sendMessage(channel, "Stream is not live.");
 					}
-					//return;
+                    return;
 				}
 				
 				// !bitrate - All
@@ -476,6 +496,7 @@ public class ReceiverBot extends PircBot {
 					} catch (Exception e) {
 						sendMessage(channel, "Error accessing Twitch API.");
 					}
+                    return;
 				}
 
 				// !music - All
@@ -496,7 +517,7 @@ public class ReceiverBot extends PircBot {
 					}else{
 						sendMessage(channel, "Steam ID not set. Do \"!set steam [ID]\" to configure. ID must be in SteamID64 format and profile must be public.");
 					}
-					
+                    return;
 				}
 				
 				// !game - All
@@ -520,8 +541,7 @@ public class ReceiverBot extends PircBot {
                             sendMessage(channel, "No game set.");
                         }
                     }
-
-					
+                    return;
 				}
 				
 				// !status - All
@@ -545,7 +565,7 @@ public class ReceiverBot extends PircBot {
                             sendMessage(channel, "Unable to query TwitchTV API.");
                         }
                     }
-
+                    return;
 				}
 
                 // !followme - Owner
@@ -553,14 +573,14 @@ public class ReceiverBot extends PircBot {
                     log("RB: Matched command !followme");
                     BotManager.getInstance().followChannel(twitchName);
                     sendMessage(channel, "Follow update sent.");
+                    return;
                 }
 				
 				// !commands - Op/Regular
 				if (msg[0].equalsIgnoreCase("!commands") && (isRegular || isOp)) {
 					log("RB: Matched command !commands");
 					sendMessage(channel, "Commands: " + channelInfo.getCommandList());
-
-					//return;
+                    return;
 				}
 				
 				// !throw - All
@@ -573,6 +593,7 @@ public class ReceiverBot extends PircBot {
 						}
 						sendMessage(channel, "(╯°□°）╯︵" + throwMessage);
 					}
+                    return;
 				}
 				
 				// !flip - All
@@ -586,6 +607,7 @@ public class ReceiverBot extends PircBot {
 						//sendMessage(channel, "(?°?°???" + throwMessage);
 						sendMessage(channel, throwMessage + "TABLEFLIP");
 					}
+                    return;
 				}
 				
 				// !topic
@@ -612,7 +634,7 @@ public class ReceiverBot extends PircBot {
 						}
 
 					}
-					//return;
+                    return;
 				}
 				
 				// !link
@@ -630,7 +652,7 @@ public class ReceiverBot extends PircBot {
                             String url = "http://lmgtfy.com/?q=" + encodedQuery;
 							sendMessage(channel, "Link to \"" + rawQuery + "\" -> " + JSONUtil.shortenURL(url));
 					}
-					//return;
+                    return;
 				}
 				
 				// !commercial
@@ -640,7 +662,7 @@ public class ReceiverBot extends PircBot {
 						channelInfo.runCommercial();
 						//sendMessage(channel, "Running a 30 second commercial. Thank you for supporting the channel!");
 					}
-					//return;
+                    return;
 				}
 				
 				// !command - Ops
@@ -669,6 +691,7 @@ public class ReceiverBot extends PircBot {
 
 							}
 					}
+                    return;
 				}
  				
 				// !repeat - Ops
@@ -727,6 +750,7 @@ public class ReceiverBot extends PircBot {
 
                         }
 					}
+                     return;
 				}
 
                 // !schedule - Ops
@@ -792,6 +816,7 @@ public class ReceiverBot extends PircBot {
 
                         }
                     }
+                    return;
                 }
 
 
@@ -817,7 +842,7 @@ public class ReceiverBot extends PircBot {
 									sendMessage(channel, "Poll is alreay running.");
 								}else{
 									channelInfo.getPoll().setStatus(true);
-									sendMessage(channel, "Poll started.");
+									sendMessage(channel, "Poll started. Type: !vote <option> to start voting.");
 								}
 							}
 						}else if(msg[1].equalsIgnoreCase("stop")){ 
@@ -840,6 +865,7 @@ public class ReceiverBot extends PircBot {
 						
 					   }
 					}
+                    return;
 				}
 				
 				// !giveaway - Ops
@@ -890,6 +916,7 @@ public class ReceiverBot extends PircBot {
 						
 					   }
 					}
+                    return;
 				}
 				
 				// !raffle - Ops
@@ -933,6 +960,7 @@ public class ReceiverBot extends PircBot {
 							channelInfo.raffle.enter(sender);
 						}
 					}
+                    return;
 				}
 				
 				// !random - Ops
@@ -955,6 +983,7 @@ public class ReceiverBot extends PircBot {
 								sendMessage(channel,"Tails!");
 						}
 					}
+                    return;
 				}
 	
 				// ********************************************************************************
@@ -1002,6 +1031,7 @@ public class ReceiverBot extends PircBot {
 				if(msg[0].equalsIgnoreCase("!clear") && isOp){
 					log("RB: Matched command !clear");
 					sendMessage(channel, ".clear");
+                    return;
 				}
  				
  				// !links - Owner
@@ -1018,6 +1048,7 @@ public class ReceiverBot extends PircBot {
  							sendMessage(channel, "Link filter: " + channelInfo.getFilterLinks());
  						}
  					}
+                     return;
  				}
  				
  				// !permit - Allows users to post 1 link
@@ -1033,6 +1064,7 @@ public class ReceiverBot extends PircBot {
  							sendMessage(channel, msg[1] + " is a regular and does not need to be permitted.");
  						}
  					}
+                     return;
  				}
  				
  				
@@ -1064,6 +1096,7 @@ public class ReceiverBot extends PircBot {
  						}
  						sendMessage(channel, tempList);
  					}
+                     return;
  				}
  				
  				// !banphrase - Owner
@@ -1112,6 +1145,7 @@ public class ReceiverBot extends PircBot {
 // 							}
  						}
  					}
+                     return;
  				}
 				
  				// !caps - Owner
@@ -1145,6 +1179,7 @@ public class ReceiverBot extends PircBot {
  							sendMessage(channel, "Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
  						}
  					}
+                     return;
  				}
  				
  				// !emotes - Owner
@@ -1168,6 +1203,7 @@ public class ReceiverBot extends PircBot {
  							sendMessage(channel, "Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax());
  						}
  					}
+                     return;
  				}
  				
  				// !symbols - Owner
@@ -1186,6 +1222,7 @@ public class ReceiverBot extends PircBot {
  							sendMessage(channel, "Symbols filter=" + channelInfo.getFilterSymbols());
  						}
  					}
+                     return;
  				}
  				
  				// !regular - Owner
@@ -1216,6 +1253,7 @@ public class ReceiverBot extends PircBot {
  						}
  						sendMessage(channel, tempList);
  					}
+                     return;
  				}
  				
  				// !mod - Owner
@@ -1246,6 +1284,7 @@ public class ReceiverBot extends PircBot {
  						}
  						sendMessage(channel, tempList);
  					}
+                     return;
  				}
  				
  				// !owner - Owner
@@ -1276,6 +1315,7 @@ public class ReceiverBot extends PircBot {
  						}
  						sendMessage(channel, tempList);
  					}
+                     return;
  				}
  				
  				// !set - Owner
@@ -1414,6 +1454,7 @@ public class ReceiverBot extends PircBot {
                             sendMessage(channel, "Commercial length is " + channelInfo.getCommercialLength() + " seconds.");
                         }
                     }
+                     return;
  				}
  				
  				
@@ -1429,24 +1470,25 @@ public class ReceiverBot extends PircBot {
  						}else{
  							sendMessage(channel, "Mode can only be changed by bot admin.");
  						}
+                     return;
  				}
  				
  				
  				//!join
  				if (msg[0].equalsIgnoreCase("!join") && BotManager.getInstance().publicJoin){
- 							log("RB: Matched command !join");
-                            if(JSONUtil.krakenChannelExist(sender)){
-                                sendMessage(channel, "Joining channel #"+ sender +".");
-                                boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
-                                if(joinStatus){
-                                    sendMessage(channel, "Channel #"+ sender +" joined.");
-                                }else{
-                                    sendMessage(channel, "Already in channel #"+ sender +".");
-                                }
-                            }else{
-                                sendMessage(channel, "Unable to join " + sender + ". Is your channel on Twitch?");
-                            }
-
+                    log("RB: Matched command !join");
+                    if(JSONUtil.krakenChannelExist(sender)){
+                        sendMessage(channel, "Joining channel #"+ sender +".");
+                        boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
+                        if(joinStatus){
+                            sendMessage(channel, "Channel #"+ sender +" joined.");
+                        }else{
+                            sendMessage(channel, "Already in channel #"+ sender +".");
+                        }
+                    }else{
+                        sendMessage(channel, "Unable to join " + sender + ". Is your channel on Twitch?");
+                    }
+                     return;
 				}
  				
  				if (msg[0].equalsIgnoreCase("!rejoin")){
@@ -1473,7 +1515,7 @@ public class ReceiverBot extends PircBot {
 							sendMessage(channel, "Bot is not assigned to channel #"+ sender +"."); 							
 						}
  					}
-
+                     return;
 				}
  				
 				// ********************************************************************************
@@ -1490,6 +1532,7 @@ public class ReceiverBot extends PircBot {
  					}
  					
  					sendMessage(channel, "Channels: " + channelString);
+                     return;
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-join") && msg.length > 1 && isAdmin) {
@@ -1506,8 +1549,7 @@ public class ReceiverBot extends PircBot {
  						}else{
  							sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
  						}
- 						
- 
+                     return;
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-leave") && msg.length > 1 && isAdmin) {
@@ -1518,7 +1560,7 @@ public class ReceiverBot extends PircBot {
  					}else{
  						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
  					}
- 						
+                     return;
  				}
  				
 // 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && isAdmin) {
@@ -1529,10 +1571,12 @@ public class ReceiverBot extends PircBot {
  				if (msg[0].equalsIgnoreCase("!bm-reconnect") && isAdmin) {
  					sendMessage(channel, "Reconnecting all servers.");
  					BotManager.getInstance().reconnectAllBotsSoft();
+                     return;
  				}
  				 				
  				if (msg[0].equalsIgnoreCase("!bm-global") && isAdmin) {
  					BotManager.getInstance().sendGlobal(message.substring(11), sender);
+                     return;
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-reload") && msg.length > 1 && isAdmin) {
@@ -1543,22 +1587,26 @@ public class ReceiverBot extends PircBot {
  					}else{
  						sendMessage(channel, "Invalid channel format. Must be in format #channelname.");
  					}
- 						
+                     return;
  				}
  				
  				if (msg[0].equalsIgnoreCase("!bm-color") && msg.length > 1 && isAdmin) {
  					sendMessage(channel, ".color " + msg[1]);
+                    sendMessage(channel, "Color set to " + msg[1]);
+                     return;
  				}
  				
  				
  				if (msg[0].equalsIgnoreCase("!bm-gbtest") && msg.length > 1 && isAdmin) {
  					for(int i=0; i < Integer.parseInt(msg[1]); i++)
  						sendMessage(channel, ".timeout kappa123 1");
+                     return;
  				}
 
                 if (msg[0].equalsIgnoreCase("!bm-loadglobalfilter") && isAdmin) {
                     BotManager.getInstance().loadGlobalBannedWords();
                     sendMessage(channel, "Global banned filter reloaded.");
+                    return;
                 }
  				
 				// ********************************************************************************
