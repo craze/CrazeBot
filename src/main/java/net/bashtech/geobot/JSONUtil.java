@@ -106,7 +106,6 @@ public class JSONUtil {
             JSONObject jsonObject = (JSONObject) obj;
 
             JSONObject recenttracks = (JSONObject)(jsonObject.get("recenttracks"));
-
             if(recenttracks.get("track") instanceof JSONArray){
                 JSONArray track = (JSONArray) recenttracks.get("track");
 

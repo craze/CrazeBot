@@ -605,7 +605,7 @@ public class BotManager {
 
 
             conn.setFixedLengthStreamingMode(postData.getBytes().length);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
             conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
             conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);

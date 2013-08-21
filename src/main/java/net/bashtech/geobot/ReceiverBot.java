@@ -61,7 +61,7 @@ public class ReceiverBot extends PircBot {
 
         this.setName(BotManager.getInstance().getInstance().nick);
 		this.setLogin("ReceiverGeoBot");
-		
+
 		this.setVerbose(BotManager.getInstance().verboseLogging);
 		try {
 			this.connect(server, port, BotManager.getInstance().getInstance().password);

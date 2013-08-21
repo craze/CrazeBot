@@ -19,6 +19,7 @@
 package net.bashtech.geobot;
 
 import org.java_websocket.WebSocket;
+import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -312,11 +313,11 @@ public class Channel {
 	}
 
     public void updateGame(String game) throws IOException{
-        System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/channels/" + this.channel.substring(1), "channel[game]=" + game));
+        System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/channels/" + this.channel.substring(1), "{\"channel\": {\"game\": \"" + JSONObject.escape(game) + "\"}}"));
     }
 
     public void updateStatus(String status) throws IOException{
-        System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/channels/" + this.channel.substring(1), "channel[status]=" + status));
+        System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/channels/" + this.channel.substring(1), "{\"channel\": {\"status\": \"" + JSONObject.escape(status) + "\"}}"));
     }
 	
 	public String getTopicTime(){
