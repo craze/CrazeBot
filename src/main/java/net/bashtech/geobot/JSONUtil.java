@@ -195,9 +195,16 @@ public class JSONUtil {
             ex.printStackTrace();
             return url;
         }
+    }
 
+    public static String urlEncode(String data){
+        try {
+            data = URLEncoder.encode(data, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-
+        return data;
     }
 
     public static boolean krakenIsLive(String channel){

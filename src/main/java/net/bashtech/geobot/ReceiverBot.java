@@ -570,7 +570,16 @@ public class ReceiverBot extends PircBot {
                     return;
 				}
 
-                // !followme - Owner
+                // !tweet
+                if (msg[0].equalsIgnoreCase("!tweet")) {
+                    log("RB: Matched command !tweet");
+                    String url = "https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, channelInfo.getClickToTweetFormat()));
+                    sendMessage(channel, "Current Click to Tweet is " + JSONUtil.shortenURL(url));
+                    return;
+                }
+
+
+        // !followme - Owner
                 if (msg[0].equalsIgnoreCase("!followme") && isOwner) {
                     log("RB: Matched command !followme");
                     BotManager.getInstance().followChannel(twitchName);
@@ -1454,6 +1463,14 @@ public class ReceiverBot extends PircBot {
                             }
                         }else{
                             sendMessage(channel, "Commercial length is " + channelInfo.getCommercialLength() + " seconds.");
+                        }
+                    }else if(msg[1].equalsIgnoreCase("tweet")){
+                        if(msg.length < 3){
+                            sendMessage(channel, "ClickToTweet format: " + channelInfo.getClickToTweetFormat());
+                        }else{
+                            String format = fuseArray(msg, 2);
+                            channelInfo.setClickToTweetFormat(format);
+                            sendMessage(channel, "ClickToTweet format: " + channelInfo.getClickToTweetFormat());
                         }
                     }
                      return;

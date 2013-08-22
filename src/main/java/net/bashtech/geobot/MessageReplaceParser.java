@@ -46,7 +46,8 @@ public class MessageReplaceParser {
             message = message.replace("(_STEAM_STORE_)", JSONUtil.steam(ci.getSteam(),"store"));
         if(message.contains("(_BOT_HELP_)"))
             message = message.replace("(_BOT_HELP_)", BotManager.getInstance().bothelpMessage);
-
+        if(message.contains("(_CHANNEL_URL_)"))
+            message = message.replace("(_CHANNEL_URL_)", "twitch.tv/" + channel.substring(1));
         return message;
     }
 }

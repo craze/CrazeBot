@@ -81,6 +81,7 @@ public class Channel {
 	public boolean logChat;
 	public long messageCount;
     public int commercialLength;
+    String clickToTweetFormat;
 
     private boolean filterColors;
 
@@ -916,6 +917,15 @@ public class Channel {
 	}
 	
 	// #################################################
+
+    public String getClickToTweetFormat(){
+        return clickToTweetFormat;
+    }
+
+    public void setClickToTweetFormat(String string){
+        clickToTweetFormat = string;
+        config.setString("clickToTweetFormat", clickToTweetFormat);
+    }
 	
 	public int getWarningCount(String name, FilterType type){
 		if(warningCount.containsKey(name.toLowerCase()) && warningCount.get(name.toLowerCase()).containsKey(type))
@@ -1151,6 +1161,9 @@ public class Channel {
         if(!config.keyExists("timeoutDuration")) {
             config.setInt("timeoutDuration", 600);
         }
+        if(!config.keyExists("clickToTweetFormat")) {
+            config.setString("clickToTweetFormat", "Check out (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
+        }
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1178,6 +1191,7 @@ public class Channel {
         filterColors = Boolean.parseBoolean(config.getString("filterColors"));
         filterMe = Boolean.parseBoolean(config.getString("filterMe"));
         staticChannel = Boolean.parseBoolean(config.getString("staticChannel"));
+        clickToTweetFormat = config.getString("clickToTweetFormat");
 
         enableWarnings = Boolean.parseBoolean(config.getString("enableWarnings"));
         timeoutDuration = config.getInt("timeoutDuration");
