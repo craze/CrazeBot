@@ -48,6 +48,11 @@ public class MessageReplaceParser {
             message = message.replace("(_BOT_HELP_)", BotManager.getInstance().bothelpMessage);
         if(message.contains("(_CHANNEL_URL_)"))
             message = message.replace("(_CHANNEL_URL_)", "twitch.tv/" + channel.substring(1));
+        if(message.contains("(_TWEET_URL_)")){
+            String url = JSONUtil.shortenURL("https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, ci.getClickToTweetFormat())));
+            message = message.replace("(_TWEET_URL_)", url);
+        }
+
         return message;
     }
 }

@@ -125,8 +125,9 @@ Filtered messages must match all three of the below settings:
     * chatlogging - Enables logging of chat conversations. Logs are stored at [http://btx.me/ackbot](http://btx.me/ackbot) and are publicly visible
     * commerciallength [30/60/90/120/150/180] - Lenth of commercials to run with
     * filterme - Toggle /me block filter
-    * enablewarning [on/off] - Enabled a lesser timeout for first offensive of a filter (10 second timeout)
+    * enablewarnings [on/off] - Enabled a lesser timeout for first offensive of a filter (10 second timeout)
     * timeoutduration [seconds] - Sets the duration for filter offenses (after warning if enabled)
+    * tweet [String w/ replacements] - Format for Click to tweet message.
   
   
   * !regular add/delete/list [name] - Owner - Adds a "regular". Regulars don't need permission to post links 
@@ -137,7 +138,8 @@ Filtered messages must match all three of the below settings:
 
   * !poll create [vote options] - Ops - Creates a new poll with specified options. (ex "!poll create pie cake") 
   * !poll start/stop - Ops - Starts or stops the poll 
-  * !poll results - Ops - Displays poll results 
+  * !poll results - Ops - Displays poll results
+  * !vote [option] - All - Votes in the poll.
   
   
   * !giveaway create max-number [duration] - Ops - Creates a number-selection based giveaway with numbers from 1 - max. Duration is an optional value in seconds after which the giveaway will stop. Specifying a duration will auto-start the giveaway and stop will not need to be executed 
@@ -187,6 +189,7 @@ Adding dynamic data to bot message is also supported via string substitutions. T
   * (\_STEAM\_STORE\_) : Link to Steam store for the game you are playing (Steam account must be configured)
   * (\_SONG\_) : Scrobbled Last.fm track name and artist (Last.fm account must be configured)
   * (\_BOT\_HELP\_) : Bot's help message. See bothelpMessage in global.properties.
+  * (\_TWEET\_URL\_) : Click to tweet URL See !set tweet.
 
   Example:
   !command add info I am (\_PROFILE\_) and I'm playing (\_STEAM\_GAME\_) on (\_STEAM\_SERVER\_) listening to (\_SONG\_)

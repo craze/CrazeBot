@@ -570,13 +570,13 @@ public class ReceiverBot extends PircBot {
                     return;
 				}
 
-                // !tweet
-                if (msg[0].equalsIgnoreCase("!tweet")) {
-                    log("RB: Matched command !tweet");
-                    String url = "https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, channelInfo.getClickToTweetFormat()));
-                    sendMessage(channel, "Current Click to Tweet is " + JSONUtil.shortenURL(url));
-                    return;
-                }
+//                // !tweet
+//                if (msg[0].equalsIgnoreCase("!tweet")) {
+//                    log("RB: Matched command !tweet");
+//                    String url = "https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, channelInfo.getClickToTweetFormat()));
+//                    sendMessage(channel, "Current Click to Tweet is " + JSONUtil.shortenURL(url));
+//                    return;
+//                }
 
 
         // !followme - Owner
@@ -1469,8 +1469,13 @@ public class ReceiverBot extends PircBot {
                             sendMessage(channel, "ClickToTweet format: " + channelInfo.getClickToTweetFormat());
                         }else{
                             String format = fuseArray(msg, 2);
-                            channelInfo.setClickToTweetFormat(format);
-                            sendMessage(channel, "ClickToTweet format: " + channelInfo.getClickToTweetFormat());
+                            if(!format.contains("(_TWEET_URL_)")){
+                                channelInfo.setClickToTweetFormat(format);
+                                sendMessage(channel, "ClickToTweet format: " + channelInfo.getClickToTweetFormat());
+                            }else{
+                                sendMessage(channel, "_TWEET_URL_ is not allowed.");
+                            }
+
                         }
                     }
                      return;
