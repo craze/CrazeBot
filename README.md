@@ -109,11 +109,11 @@ Filtered messages must match all three of the below settings:
   * !banphrase delete [word string] - Removes string from filter
 
   * !symbols on/off - Turns symbols filter on/off. Covers ASCII symbols, unicode classes for box drawings, block elements and geometric shapes also select other spammed characters.
+  Filtered messages must match both of the below settings:
 
-  Filtered messages must match all 2 of the below settings:
-
-  * !symbols percent [int (0-100)] - >= this percentage of symbols allowed per line
-  * !symbols min [int] - >= this number of symbols per line
+  * !symbols percent [int (0-100)] - >= percentage of symbols
+  * !symbols min [int] - >= number of symbols per line
+  * !caps status - Displays the current values
 
   * !emotes on/off - Owner - Toggle emote spam filtering on and off 
   * !emotes max [int] - Max number of emotes allowed 
