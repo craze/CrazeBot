@@ -45,7 +45,7 @@ public class ReceiverBot extends PircBot {
     static ReceiverBot instance;
 
     private Pattern[] linkPatterns = new Pattern[4];
-	private Pattern[] symbolsPatterns = new Pattern[1];
+	private Pattern[] symbolsPatterns = new Pattern[2];
 	private int lastPing = -1;
     Timer joinCheck;
 	
@@ -57,7 +57,8 @@ public class ReceiverBot extends PircBot {
         //linkPatterns[2] = Pattern.compile(".*[-A-Za-z0-9]+(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in|gl)(\\s+|/|$|,|\\.|\\?).*");
         linkPatterns[3] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
 
-        symbolsPatterns[0] = Pattern.compile("(\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|▀|▄|̰̦̮̠ę̟̹ͦͯͯ́ͮ̊̐͌̉͑ͨ̊́́̚|U̶̧ͩͭͧ͊̅̊ͥͩ̿̔̔ͥ͌ͬ͊͋ͬ҉|Ọ̵͇̖̖|A̴͍̥̳̠̞̹ͩ̋̆ͤͅ|E̡̛͚̺̖̪͈̲̻̠̰̳̐̿|ส้้้้้้้้้้้้้้้้้้้้|ส็็็็็็็็็็็็็็็|ǝ|ส็็็็็็็็็็็็็็็็็็็็็็็็็|ส้้้้้้้้้|ส็็็็็็็็็็็็็็็็็็็|กิิิิิิิิิิิิิิิิิิิิ|ก้้้้้้้้้้้้้้้้้้้้|กิิิิิิิิิิิิิิิ|▒|█)");
+        symbolsPatterns[0] = Pattern.compile("(\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|▀|▄|̰̦̮̠ę̟̹ͦͯͯ́ͮ̊̐͌̉͑ͨ̊́́̚|U̶̧ͩͭͧ͊̅̊ͥͩ̿̔̔ͥ͌ͬ͊͋ͬ҉|Ọ̵͇̖̖|A̴͍̥̳̠̞̹ͩ̋̆ͤͅ|E̡̛͚̺̖̪͈̲̻̠̰̳̐̿)");
+        symbolsPatterns[1] = Pattern.compile("[!-/:-@\\[-`{-~]");
 
         this.setName(BotManager.getInstance().getInstance().nick);
 		this.setLogin("ReceiverGeoBot");
@@ -293,7 +294,9 @@ public class ReceiverBot extends PircBot {
                     if(channelInfo.getFilterCaps() && !isRegular){
                         String messageNoWS = message.replaceAll("\\s","");
                         int capsNumber = getCapsNumber(messageNoWS);
-                        int capsPercent = getCapsPercent(messageNoWS);
+                        double capsPercent = ((double)capsNumber / messageNoWS.length()) * 100;
+                        System.out.println(capsNumber);
+                        System.out.println(capsPercent);
                         if(channelInfo.getFilterCaps() && !(isRegular) && message.length() >= channelInfo.getfilterCapsMinCharacters() && capsPercent >= channelInfo.getfilterCapsPercent() && capsNumber >= channelInfo.getfilterCapsMinCapitals()){
                             int warningCount = 0;
 
@@ -342,16 +345,23 @@ public class ReceiverBot extends PircBot {
 					}
 					
 					// Symbols filter
-					if(channelInfo.getFilterSymbols() && !(isRegular) && this.containsSymbol(message,channelInfo) ){
-						int warningCount = 0;
-						channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
-						warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
-						this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.SYMBOLS, message);
-								
-						if(channelInfo.checkSignKicks())
-							sendMessage(channel, sender + ", please don't post spam in the chat - " + this.getTimeoutText(warningCount, channelInfo));
+					if(channelInfo.getFilterSymbols() && !(isRegular)){
+                        String messageNoWS = message.replaceAll("\\s","");
+                        int count = getSymbolsNumber(messageNoWS);
+                        double percent = (double)count / messageNoWS.length();
+                        System.out.println(count);
+                        System.out.println(percent);
+                        if(count > channelInfo.getFilterSymbolsMin() && (percent * 100 > channelInfo.getFilterSymbolsPercent())){
+                            int warningCount = 0;
+                            channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
+                            warningCount = channelInfo.getWarningCount(sender, FilterType.SYMBOLS);
+                            this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.SYMBOLS, message);
 
-                        return;
+                            if(channelInfo.checkSignKicks())
+                                sendMessage(channel, sender + ", please don't spam symbols - " + this.getTimeoutText(warningCount, channelInfo));
+
+                            return;
+                        }
 					}
 					
 					//Offensive filter
@@ -1216,25 +1226,53 @@ public class ReceiverBot extends PircBot {
  					}
                      return;
  				}
- 				
- 				// !symbols - Owner
- 				if(msg[0].equalsIgnoreCase("!symbols") && isOwner){
- 					log("RB: Matched command !symbols");
- 					if(msg.length == 1){
- 						sendMessage(channel, "Syntax: \"!symbols on/off\"");
- 					}else if(msg.length > 1){
- 						if(msg[1].equalsIgnoreCase("on")){
- 							channelInfo.setFilterSymbols(true);
- 							sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
- 						}else if(msg[1].equalsIgnoreCase("off")){
- 							channelInfo.setFilterSymbols(false);
- 							sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
- 						}else if(msg[1].equalsIgnoreCase("status")){
- 							sendMessage(channel, "Symbols filter=" + channelInfo.getFilterSymbols());
- 						}
- 					}
-                     return;
- 				}
+
+                // !symbols - Owner
+                if(msg[0].equalsIgnoreCase("!symbols") && isOwner){
+                    log("RB: Matched command !symbols");
+                    if(msg.length == 1){
+                        sendMessage(channel, "Syntax: \"!symbols on/off\", \"!symbols percent/min [value]\", \"!symbols status\"");
+                    }else if(msg.length > 1){
+                        if(msg[1].equalsIgnoreCase("on")){
+                            channelInfo.setFilterSymbols(true);
+                            sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
+                        }else if(msg[1].equalsIgnoreCase("off")){
+                            channelInfo.setFilterSymbols(false);
+                            sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
+                        }else if(msg[1].equalsIgnoreCase("percent")){
+                            if(msg.length > 2 && isInteger(msg[2])){
+                                channelInfo.setFilterSymbolsPercent(Integer.parseInt(msg[2]));
+                                sendMessage(channel, "Symbols filter percent: " + channelInfo.getFilterSymbolsPercent());
+                            }
+                        }else if(msg[1].equalsIgnoreCase("min")){
+                            if(msg.length > 2 && isInteger(msg[2])){
+                                channelInfo.setFilterSymbolsMin(Integer.parseInt(msg[2]));
+                                sendMessage(channel, "Symbols filter min symbols: " + channelInfo.getFilterSymbolsMin());
+                            }
+                        }else if(msg[1].equalsIgnoreCase("status")){
+                            sendMessage(channel, "Symbols filter=" + channelInfo.getFilterSymbols() + ", percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
+                        }
+                    }
+                    return;
+                }
+// 				// !symbols - Owner
+// 				if(msg[0].equalsIgnoreCase("!symbols") && isOwner){
+// 					log("RB: Matched command !symbols");
+// 					if(msg.length == 1){
+// 						sendMessage(channel, "Syntax: \"!symbols on/off\"");
+// 					}else if(msg.length > 1){
+// 						if(msg[1].equalsIgnoreCase("on")){
+// 							channelInfo.setFilterSymbols(true);
+// 							sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
+// 						}else if(msg[1].equalsIgnoreCase("off")){
+// 							channelInfo.setFilterSymbols(false);
+// 							sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
+// 						}else if(msg[1].equalsIgnoreCase("status")){
+// 							sendMessage(channel, "Symbols filter=" + channelInfo.getFilterSymbols());
+// 						}
+// 					}
+//                     return;
+// 				}
  				
  				// !regular - Owner
  				if(msg[0].equalsIgnoreCase("!regular") && isOwner){
@@ -1809,6 +1847,16 @@ public class ReceiverBot extends PircBot {
         },delay,delay);
 
     }
+
+    private int getSymbolsNumber(String s){
+        int symbols = 0;
+        for(Pattern p : symbolsPatterns){
+            Matcher m = p.matcher(s);
+            while(m.find())
+                symbols += 1;
+        }
+        return symbols;
+    }
 	
 	private int getCapsNumber(String s){
 		int caps = 0;
@@ -1822,17 +1870,17 @@ public class ReceiverBot extends PircBot {
 		return caps;
 	}
 	
-	private int getCapsPercent(String s){
-		int caps = 0;
-		for (int i=0; i<s.length(); i++)
-		{
-			if (Character.isUpperCase(s.charAt(i))){
-					caps++;
-			}
-		}
-		
-		return (int)(((double)caps)/s.length()*100);
-	}
+//	private int getCapsPercent(String s){
+//		int caps = 0;
+//		for (int i=0; i<s.length(); i++)
+//		{
+//			if (Character.isUpperCase(s.charAt(i))){
+//					caps++;
+//			}
+//		}
+//
+//		return (int)(((double)caps)/s.length()*100);
+//	}
 
 	private int countConsecutiveCapitals(String s){
 		int caps = 0;

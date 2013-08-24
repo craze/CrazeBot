@@ -55,6 +55,8 @@ public class Channel {
 	private boolean filterOffensive;
 	private boolean filterEmotes;
 	private boolean filterSymbols;
+    private int filterSymbolsPercent;
+    private int filterSymbolsMin;
 	private int filterEmotesMax;
 	private int filterMaxLength;
 	private String topic;
@@ -345,6 +347,24 @@ public class Channel {
 	}
 	
 	//#####################################################
+
+    public int getFilterSymbolsMin(){
+        return filterSymbolsMin;
+    }
+
+    public int getFilterSymbolsPercent(){
+        return filterSymbolsPercent;
+    }
+
+    public void setFilterSymbolsMin(int symbols){
+        filterSymbolsMin = symbols;
+        config.setInt("filterSymbolsMin", filterSymbolsMin);
+    }
+
+    public void setFilterSymbolsPercent(int symbols){
+        filterSymbolsPercent = symbols;
+        config.setInt("filterSymbolsPercent", filterSymbolsPercent);
+    }
 	
 	public boolean getFilterCaps(){
 		return filterCaps;
@@ -1164,6 +1184,14 @@ public class Channel {
         if(!config.keyExists("clickToTweetFormat")) {
             config.setString("clickToTweetFormat", "Check out (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
         }
+
+        if(!config.keyExists("filterSymbolsPercent")) {
+            config.setInt("filterSymbolsPercent", 50);
+        }
+
+        if(!config.keyExists("filterSymbolsMin")) {
+            config.setInt("filterSymbolsMin", 5);
+        }
 		channel = config.getString("channel");
 		filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
 		filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1172,7 +1200,11 @@ public class Channel {
 		filterLinks = Boolean.parseBoolean(config.getString("filterLinks"));
 		filterOffensive = Boolean.parseBoolean(config.getString("filterOffensive"));
 		filterEmotes = Boolean.parseBoolean(config.getString("filterEmotes"));
+
 		filterSymbols = Boolean.parseBoolean(config.getString("filterSymbols"));
+        filterSymbolsPercent = Integer.parseInt(config.getString("filterSymbolsPercent"));
+        filterSymbolsMin = Integer.parseInt(config.getString("filterSymbolsMin"));
+
 		filterEmotesMax = Integer.parseInt(config.getString("filterEmotesMax"));
 		//announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
 		announceJoinParts = false;
