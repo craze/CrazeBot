@@ -324,4 +324,56 @@ public class JSONUtil {
 
     }
 
+    public static Long getSourceRes(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://usher.twitch.tv/find/" + channel + ".json?type=any"));
+
+            JSONArray outerArray = (JSONArray) obj;
+
+            for(Object transcodeObject : outerArray){
+                JSONObject transcode = (JSONObject)transcodeObject;
+
+                String display = (String)transcode.get("display");
+                Long video_height = (Long)transcode.get("video_height");
+
+                if(display.equalsIgnoreCase("source"))
+                    return video_height;
+            }
+
+
+            return new Long(0);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new Long(0);
+        }
+
+    }
+
+    public static Double getSourceBitrate(String channel){
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://usher.twitch.tv/find/" + channel + ".json?type=any"));
+
+            JSONArray outerArray = (JSONArray) obj;
+
+            for(Object transcodeObject : outerArray){
+                JSONObject transcode = (JSONObject)transcodeObject;
+
+                String display = (String)transcode.get("display");
+                Double bitrate = (Double)transcode.get("bitrate");
+
+                if(display.equalsIgnoreCase("source"))
+                    return bitrate;
+            }
+
+
+            return new Double(0);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new Double(0);
+        }
+
+    }
+
 }
