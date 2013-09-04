@@ -546,7 +546,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !game - All
-				if (msg[0].equalsIgnoreCase("!game")) {
+				if (msg[0].equalsIgnoreCase("!game") && BotManager.getInstance().twitchCommands) {
 					log("RB: Matched command !game");
                     if(isOwner && msg.length > 1){
                         String game = this.fuseArray(msg, 1);
@@ -570,7 +570,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !status - All
-				if (msg[0].equalsIgnoreCase("!status")) {
+				if (msg[0].equalsIgnoreCase("!status") && BotManager.getInstance().twitchCommands) {
                     log("RB: Matched command !status");
                     if(isOwner && msg.length > 1){
                         String status = this.fuseArray(msg, 1);
@@ -603,7 +603,7 @@ public class ReceiverBot extends PircBot {
 
 
         // !followme - Owner
-                if (msg[0].equalsIgnoreCase("!followme") && isOwner) {
+                if (msg[0].equalsIgnoreCase("!followme") && isOwner && BotManager.getInstance().twitchCommands) {
                     log("RB: Matched command !followme");
                     BotManager.getInstance().followChannel(twitchName);
                     sendMessage(channel, "Follow update sent.");
@@ -630,31 +630,34 @@ public class ReceiverBot extends PircBot {
                     return;
 				}
 				
-				// !flip - All
-				if(msg[0].equalsIgnoreCase("!flip") && (channelInfo.checkThrow() || isRegular)){
-					log("RB: Matched command !flip");
-					if(msg.length > 1){
-						String throwMessage = "";
-						for(int i=1;i<msg.length;i++){
-							throwMessage += msg[i] + " ";
-						}
-						//sendMessage(channel, "(?°?°???" + throwMessage);
-						sendMessage(channel, throwMessage + "TABLEFLIP");
-					}
-                    return;
-				}
+//				// !flip - All
+//				if(msg[0].equalsIgnoreCase("!flip") && (channelInfo.checkThrow() || isRegular)){
+//					log("RB: Matched command !flip");
+//					if(msg.length > 1){
+//						String throwMessage = "";
+//						for(int i=1;i<msg.length;i++){
+//							throwMessage += msg[i] + " ";
+//						}
+//						//sendMessage(channel, "(?°?°???" + throwMessage);
+//						sendMessage(channel, throwMessage + "TABLEFLIP");
+//					}
+//                    return;
+//				}
 				
 				// !topic
 				if(msg[0].equalsIgnoreCase("!topic") && channelInfo.useTopic){
 					log("RB: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-							String status = JSONUtil.krakenStatus(twitchName);
-							if(status.length() > 0)
-								sendMessage(channel, status);
-							else
-								sendMessage(channel, "Unable to query TwitchTV API.");
-							
+                            if(BotManager.getInstance().twitchCommands){
+                                String status = JSONUtil.krakenStatus(twitchName);
+                                if(status.length() > 0)
+                                    sendMessage(channel, status);
+                                else
+                                    sendMessage(channel, "Unable to query TwitchTV API.");
+                            }else{
+                                sendMessage(channel, "Topic not set");
+                            }
 						}else{
 							sendMessage(channel, "Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
 						}
@@ -690,7 +693,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !commercial
-				if(msg[0].equalsIgnoreCase("!commercial")){
+				if(msg[0].equalsIgnoreCase("!commercial") && BotManager.getInstance().twitchCommands){
 					log("RB: Matched command !commercial");
 					if(isOwner){
 						channelInfo.runCommercial();
@@ -1032,12 +1035,6 @@ public class ReceiverBot extends PircBot {
  					if(msg[0].equalsIgnoreCase("-m")){
  						sendMessage(channel, ".slowoff");
  					}
- 					if(msg[0].equalsIgnoreCase("+f")){
- 						sendMessage(channel, ".followers");
- 					} 
- 					if(msg[0].equalsIgnoreCase("-f")){
- 						sendMessage(channel, ".followersoff");
- 					} 
  					if(msg[0].equalsIgnoreCase("+s")){
  						sendMessage(channel, ".subscribers");
  					} 
@@ -1268,24 +1265,6 @@ public class ReceiverBot extends PircBot {
                     }
                     return;
                 }
-// 				// !symbols - Owner
-// 				if(msg[0].equalsIgnoreCase("!symbols") && isOwner){
-// 					log("RB: Matched command !symbols");
-// 					if(msg.length == 1){
-// 						sendMessage(channel, "Syntax: \"!symbols on/off\"");
-// 					}else if(msg.length > 1){
-// 						if(msg[1].equalsIgnoreCase("on")){
-// 							channelInfo.setFilterSymbols(true);
-// 							sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
-// 						}else if(msg[1].equalsIgnoreCase("off")){
-// 							channelInfo.setFilterSymbols(false);
-// 							sendMessage(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
-// 						}else if(msg[1].equalsIgnoreCase("status")){
-// 							sendMessage(channel, "Symbols filter=" + channelInfo.getFilterSymbols());
-// 						}
-// 					}
-//                     return;
-// 				}
  				
  				// !regular - Owner
  				if(msg[0].equalsIgnoreCase("!regular") && isOwner){

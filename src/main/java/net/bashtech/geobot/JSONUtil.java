@@ -72,6 +72,9 @@ public class JSONUtil {
 
             String status = (String)jsonObject.get("status");
 
+            if(status == null)
+                status = "(Not set)";
+
             return status;
         }catch (Exception ex){
             ex.printStackTrace();
@@ -88,6 +91,9 @@ public class JSONUtil {
             JSONObject jsonObject = (JSONObject) obj;
 
             String game = (String)jsonObject.get("game");
+
+            if(game == null)
+                game = "(Not set)";
 
             return game;
         }catch (Exception ex){
