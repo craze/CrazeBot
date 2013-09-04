@@ -129,6 +129,8 @@ public class Channel {
 	//##############################################################
 	
 	public String getCommand(String key){
+        key = key.toLowerCase();
+
 		if(commands.containsKey(key)){
 			return commands.get(key);
 		}else{
@@ -137,6 +139,8 @@ public class Channel {
 	}
 	
 	public void setCommand(String key, String command){
+        key = key.toLowerCase();
+
 		if(commands.containsKey(key)){
 			commands.remove(key);
 			commands.put(key, command);
@@ -1235,7 +1239,7 @@ public class Channel {
 
 		for(int i = 0; i < commandsKey.length; i++){
 			if(commandsKey[i].length() > 1){
-				commands.put(commandsKey[i], commandsValue[i]);
+				commands.put(commandsKey[i].toLowerCase(), commandsValue[i]);
 			}
 		}
 		
