@@ -234,6 +234,9 @@ public class JSONUtil {
     }
 
     public static boolean krakenChannelExist(String channel){
+        if(BotManager.getInstance().twitchChannels == false)
+            return true;
+
         try{
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
@@ -251,6 +254,9 @@ public class JSONUtil {
     }
 
     public static boolean krakenOutdatedChannel(String channel){
+        if(BotManager.getInstance().twitchChannels == false)
+            return true;
+
         try{
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));

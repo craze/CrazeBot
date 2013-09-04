@@ -68,7 +68,7 @@ public class BotManager {
     int wsPort;
     String wsAdminPassword;
 
-    boolean twitchCommands;
+    boolean twitchChannels;
 
     // API KEYS
     public String bitlyAPIKey;
@@ -251,8 +251,8 @@ public class BotManager {
             config.setString("wsAdminPassword", "");
         }
 
-        if(!config.keyExists("twitchCommands")) {
-            config.setBoolean("twitchCommands", true);
+        if(!config.keyExists("twitchChannels")) {
+            config.setBoolean("twitchChannels", true);
         }
         // ********
 				
@@ -273,7 +273,7 @@ public class BotManager {
         wsPort = config.getInt("wsPort");
         wsAdminPassword = config.getString("wsAdminPassword");
 
-        twitchCommands = config.getBoolean("twitchCommands");
+        twitchChannels = config.getBoolean("twitchChannels");
 
 
         // API KEYS

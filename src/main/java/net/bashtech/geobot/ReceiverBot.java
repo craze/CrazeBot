@@ -546,7 +546,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !game - All
-				if (msg[0].equalsIgnoreCase("!game") && BotManager.getInstance().twitchCommands) {
+				if (msg[0].equalsIgnoreCase("!game") && BotManager.getInstance().twitchChannels) {
 					log("RB: Matched command !game");
                     if(isOwner && msg.length > 1){
                         String game = this.fuseArray(msg, 1);
@@ -570,7 +570,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !status - All
-				if (msg[0].equalsIgnoreCase("!status") && BotManager.getInstance().twitchCommands) {
+				if (msg[0].equalsIgnoreCase("!status") && BotManager.getInstance().twitchChannels) {
                     log("RB: Matched command !status");
                     if(isOwner && msg.length > 1){
                         String status = this.fuseArray(msg, 1);
@@ -603,7 +603,7 @@ public class ReceiverBot extends PircBot {
 
 
         // !followme - Owner
-                if (msg[0].equalsIgnoreCase("!followme") && isOwner && BotManager.getInstance().twitchCommands) {
+                if (msg[0].equalsIgnoreCase("!followme") && isOwner && BotManager.getInstance().twitchChannels) {
                     log("RB: Matched command !followme");
                     BotManager.getInstance().followChannel(twitchName);
                     sendMessage(channel, "Follow update sent.");
@@ -649,7 +649,7 @@ public class ReceiverBot extends PircBot {
 					log("RB: Matched command !topic");
 					if(msg.length < 2 || !isOp){
 						if(channelInfo.getTopic().equalsIgnoreCase("")){
-                            if(BotManager.getInstance().twitchCommands){
+                            if(BotManager.getInstance().twitchChannels){
                                 String status = JSONUtil.krakenStatus(twitchName);
                                 if(status.length() > 0)
                                     sendMessage(channel, status);
@@ -693,7 +693,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !commercial
-				if(msg[0].equalsIgnoreCase("!commercial") && BotManager.getInstance().twitchCommands){
+				if(msg[0].equalsIgnoreCase("!commercial") && BotManager.getInstance().twitchChannels){
 					log("RB: Matched command !commercial");
 					if(isOwner){
 						channelInfo.runCommercial();
