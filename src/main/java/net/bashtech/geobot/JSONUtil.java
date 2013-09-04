@@ -255,7 +255,7 @@ public class JSONUtil {
 
     public static boolean krakenOutdatedChannel(String channel){
         if(BotManager.getInstance().twitchChannels == false)
-            return true;
+            return false;
 
         try{
             JSONParser parser = new JSONParser();
