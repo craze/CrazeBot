@@ -476,7 +476,7 @@ public class ReceiverBot extends PircBot {
 				}
 				
 				// !viewers - All
-				if (msg[0].equalsIgnoreCase("!viewers") || msg[0].equalsIgnoreCase("!lurkers")) {
+				if ((msg[0].equalsIgnoreCase("!viewers") || msg[0].equalsIgnoreCase("!lurkers")) && BotManager.getInstance().twitchChannels){
 					log("RB: Matched command !viewers");
 					try {
 						sendMessage(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
