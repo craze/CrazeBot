@@ -141,7 +141,12 @@ public class ReceiverBot extends PircBot {
 						System.out.println("RAW: CLEARCHAT");
 				}
 
-			}
+			}else if(msg[0].equalsIgnoreCase("HISTORYEND")){
+                String channel = msg[1];
+                Channel ci = BotManager.getInstance().getChannel("#" + channel);
+                ci.active = true;
+                System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
+            }
 		}
 	}
 
@@ -157,6 +162,10 @@ public class ReceiverBot extends PircBot {
 				
 				Channel channelInfo = getChannelObject(channel);
                 String twitchName = channelInfo.getTwitchName();
+
+                if(!channelInfo.active){
+                    System.out.println("DEBUG: Channel not active, message ignored.");
+                }
 
 				if(!sender.equalsIgnoreCase(this.getNick()))
 					channelInfo.messageCount++; //Inc message count

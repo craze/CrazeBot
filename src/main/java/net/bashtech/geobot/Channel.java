@@ -41,6 +41,8 @@ public class Channel {
 	private String channel;
     private String twitchname;
 
+    boolean active;
+
     boolean staticChannel;
 
 	private HashMap<String, String> commands = new HashMap<String, String>();
@@ -110,6 +112,8 @@ public class Channel {
 		commandCooldown = new HashMap<String, Long>();
 
         twitchname = channel.substring(1);
+
+        active = !BotManager.getInstance().ignoreHistory;
 	}
 	
 	public Channel(String name, int mode){

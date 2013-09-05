@@ -62,6 +62,7 @@ public class BotManager {
 	ReceiverBot receiverBot;
 	SenderBotBalancer sbb;
     String bothelpMessage;
+    boolean ignoreHistory;
 
     WSServer ws;
     boolean wsEnabled;
@@ -254,6 +255,10 @@ public class BotManager {
         if(!config.keyExists("twitchChannels")) {
             config.setBoolean("twitchChannels", true);
         }
+
+        if(!config.keyExists("ignoreHistory")) {
+            config.setBoolean("ignoreHistory", true);
+        }
         // ********
 				
 		nick = config.getString("nick");
@@ -274,6 +279,7 @@ public class BotManager {
         wsAdminPassword = config.getString("wsAdminPassword");
 
         twitchChannels = config.getBoolean("twitchChannels");
+        ignoreHistory = config.getBoolean("ignoreHistory");
 
 
         // API KEYS
