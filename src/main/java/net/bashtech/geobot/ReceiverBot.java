@@ -165,6 +165,7 @@ public class ReceiverBot extends PircBot {
 
                 if(!channelInfo.active){
                     System.out.println("DEBUG: Channel not active, message ignored.");
+                    return;
                 }
 
 				if(!sender.equalsIgnoreCase(this.getNick()))
