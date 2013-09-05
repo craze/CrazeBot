@@ -113,7 +113,7 @@ public class Channel {
 
         twitchname = channel.substring(1);
 
-        active = !BotManager.getInstance().ignoreHistory;
+        //active = !BotManager.getInstance().ignoreHistory;
 	}
 	
 	public Channel(String name, int mode){

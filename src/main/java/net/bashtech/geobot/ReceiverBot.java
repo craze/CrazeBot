@@ -1734,6 +1734,10 @@ public class ReceiverBot extends PircBot {
 
         if(this.getNick().equalsIgnoreCase(sender)){
             log("RB: Got self join for " + channel);
+            if(BotManager.getInstance().ignoreHistory){
+                System.out.println("DEBUG: Marking " + channel + " as inactive.");
+                channelInfo.active = false;
+            }
         }
 		
 //		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
