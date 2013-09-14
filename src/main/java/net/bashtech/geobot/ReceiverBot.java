@@ -357,8 +357,7 @@ public class ReceiverBot extends PircBot {
                         String messageNoWS = message.replaceAll("\\s","");
                         int count = getSymbolsNumber(messageNoWS);
                         double percent = (double)count / messageNoWS.length();
-                        System.out.println(count);
-                        System.out.println(percent);
+
                         if(count > channelInfo.getFilterSymbolsMin() && (percent * 100 > channelInfo.getFilterSymbolsPercent())){
                             int warningCount = 0;
                             channelInfo.incWarningCount(sender, FilterType.SYMBOLS);
