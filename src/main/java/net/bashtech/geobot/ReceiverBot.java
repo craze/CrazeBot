@@ -1111,7 +1111,7 @@ public class ReceiverBot extends PircBot {
  				// !pd - Owner
  				if(msg[0].equalsIgnoreCase("!pd") && isOwner){
  					log("RB: Matched command !pd");
- 					if(msg.length <= 2){
+ 					if(msg.length == 1){
  						sendMessage(channel, "Syntax: \"!pd add/delete [domain]\" and \"!pd list\"");
  					}else if(msg.length  > 2){
  						if(msg[1].equalsIgnoreCase("add")){
