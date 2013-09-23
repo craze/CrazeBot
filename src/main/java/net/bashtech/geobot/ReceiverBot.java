@@ -560,6 +560,8 @@ public class ReceiverBot extends PircBot {
                     if(isOwner && msg.length > 1){
                         String game = this.fuseArray(msg, 1);
                         game.trim();
+                        if(game.equals("-"))
+                            game = "";
                         try{
                             channelInfo.updateGame(game);
                             sendMessage(channel, "Game update sent.");
