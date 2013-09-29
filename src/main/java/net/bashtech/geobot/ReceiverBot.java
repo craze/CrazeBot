@@ -181,6 +181,10 @@ public class ReceiverBot extends PircBot {
 					//System.out.println("Message from bot");
 					return;
 				}
+
+                //Ignore channel messages from JTV
+                if(sender.equals("jtv"))
+                    return;
 				
 				//Split message on spaces.
 				String[] msg = message.trim().split(" ");
