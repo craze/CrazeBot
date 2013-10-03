@@ -57,29 +57,7 @@ public class ReconnectTimer extends TimerTask{
 				System.out.println("Threading execption occured - " + rb.getNick() + " " + rb.getServer());
 			}
 		}
-		
-		ArrayList<SenderBot> sblist = SenderBotBalancer.getInstance().getBotInstances();
-		for(SenderBot sb : sblist){
-			if(!sb.isConnected() || (sb.checkStalePing() && BotManager.getInstance().monitorPings)){
-				try {
-					System.out.println("INFO: Attempting to reconnect receiver");
-					sb.disconnect();
-					Thread.currentThread().sleep(20000);
-					if(!sb.isConnected())
-						sb.reconnect();
-				} catch (NickAlreadyInUseException e) {
-					System.out.println("Nickname already in use - " + sb.getNick() + " " + sb.getServer());
-				} catch (IOException e) {
-					System.out.println("Unable to connect to server - " + sb.getNick() + " " + sb.getServer());
-				} catch (IrcException e) {
-					System.out.println("Error connecting to server - " + sb.getNick() + " " + sb.getServer());
-				} catch (InterruptedException e) {
-					System.out.println("Threading execption occured - " + sb.getNick() + " " + sb.getServer());
-				}
-			}
-			
-		}
-		
+
 	}
 
 }

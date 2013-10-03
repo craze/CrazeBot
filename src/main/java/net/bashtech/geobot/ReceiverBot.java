@@ -49,6 +49,9 @@ public class ReceiverBot extends PircBot {
 	private int lastPing = -1;
     Timer joinCheck;
 
+    private char bullet[] = {'>','+', '-', '~'};
+    private int bulletPos = 0;
+
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
 	
 	public ReceiverBot(String server, int port){
@@ -1785,11 +1788,13 @@ public class ReceiverBot extends PircBot {
 				b.onSelfMessage(channelInfo, this.getNick(), message);
 			}
 		}
-		
-		//Send message to the balancer
-		SenderBotBalancer.getInstance().sendMessage(target, message);
-	
-		return false;
+
+        if(!message.startsWith(".")){
+            message = MessageReplaceParser.parseMessage(target, message);
+            message = getBullet() + " " + message;
+        }
+
+		return true;
 	}
 
 	@Override
@@ -2204,5 +2209,16 @@ public class ReceiverBot extends PircBot {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public char getBullet(){
+        if(bulletPos == bullet.length)
+            bulletPos = 0;
+
+        char rt = bullet[bulletPos];
+        bulletPos++;
+
+        return rt;
+
     }
 }

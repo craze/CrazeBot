@@ -58,9 +58,7 @@ public class BotManager {
 	List<String> emoteSet;
 	List<Pattern> globalBannedWords;
 	boolean verboseLogging;
-	public int senderInstances;
 	ReceiverBot receiverBot;
-	SenderBotBalancer sbb;
     String bothelpMessage;
     boolean ignoreHistory;
 
@@ -113,11 +111,6 @@ public class BotManager {
                 e.printStackTrace();
             }
         }
-
-        //Spinup senders
-        sbb = new SenderBotBalancer();
-        sbb.setInstanceNumber(senderInstances);
-        sbb.spinUp();
 
 
         receiverBot = new ReceiverBot(server, port);
@@ -205,10 +198,6 @@ public class BotManager {
 		if(!config.keyExists("verboseLogging")) {
 			config.setBoolean("verboseLogging", false);
 		}
-		
-		if(!config.keyExists("senderInstances")) {
-			config.setInt("senderInstances", 10);
-		}
 
         if(!config.keyExists("bothelpMessage")) {
             config.setString("bothelpMessage", "http://bashtech.net/twitch/geobot.php");
@@ -271,7 +260,6 @@ public class BotManager {
 		pingInterval = config.getInt("pingInterval");
 		publicJoin = config.getBoolean("publicJoin");
 		verboseLogging = config.getBoolean("verboseLogging");
-		senderInstances = config.getInt("senderInstances");
         bothelpMessage = config.getString("bothelpMessage");
 
         wsEnabled = config.getBoolean("wsEnabled");
@@ -431,7 +419,7 @@ public class BotManager {
 				continue;
 
 			String globalMsg = "> Global: " + message + " (from " + sender + " to " + tempChannel.getChannel() + ")";
-			SenderBotBalancer.getInstance().sendMessage(tempChannel.getChannel(), globalMsg);			
+			ReceiverBot.getInstance().sendMessage(tempChannel.getChannel(), globalMsg);
 		}
 	}
 	
