@@ -48,6 +48,8 @@ public class ReceiverBot extends PircBot {
 	private Pattern[] symbolsPatterns = new Pattern[2];
 	private int lastPing = -1;
     Timer joinCheck;
+
+    private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
 	
 	public ReceiverBot(String server, int port){
         ReceiverBot.setInstance(this);
@@ -96,12 +98,14 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onDeop(String channel, String sourceNick, String sourceLogin, String sourceHostname, String recipient) {
+        recipient = recipient.replace(":", "");
         System.out.println("DEBUG: Got DEOP for " + recipient);
         this.getChannelObject(channel).tagModerators.remove(recipient);
     }
 
     @Override
     protected void onOp(String channel, String sourceNick, String sourceLogin, String sourceHostname, String recipient) {
+        recipient = recipient.replace(":", "");
         System.out.println("DEBUG: Got OP for " + recipient);
         this.getChannelObject(channel).tagModerators.add(recipient);
     }
@@ -116,39 +120,8 @@ public class ReceiverBot extends PircBot {
 	protected void onPrivateMessage(String sender, String login,
 			String hostname, String message) {
 
-		String[] msg = message.trim().split(" ");
-		
-		if(msg.length > 0){
-			if(msg[0].equalsIgnoreCase("SPECIALUSER")){
-				String user = msg[1];
-				String tag = msg[2];
-				
-				if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
-					BotManager.getInstance().addTagAdmin(user);
-				if(tag.equalsIgnoreCase("staff"))
-					BotManager.getInstance().addTagStaff(user);
-//				if(BotManager.getInstance().botMode == 1 && tag.equalsIgnoreCase("subscriber"))
-//					channelInfoGlobal.addSubscriber(user);
-			}else if(msg[0].equalsIgnoreCase("USERCOLOR")){
-				String user = msg[1];
-				String color = msg[2];
-			}else if(msg[0].equalsIgnoreCase("CLEARCHAT")){
-				if(msg.length > 1){
-					String user = msg[1];
-					if(!BotManager.getInstance().verboseLogging)
-						System.out.println("RAW: CLEARCHAT " + user);
-				}else{
-					if(!BotManager.getInstance().verboseLogging)
-						System.out.println("RAW: CLEARCHAT");
-				}
-
-			}else if(msg[0].equalsIgnoreCase("HISTORYEND")){
-                String channel = msg[1];
-                Channel ci = BotManager.getInstance().getChannel("#" + channel);
-                ci.active = true;
-                System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
-            }
-		}
+            if(sender.equals("jtv"))
+                onAdministrativeMessage(message);
 	}
 
 	@Override
@@ -157,7 +130,7 @@ public class ReceiverBot extends PircBot {
 	}
 
 	@Override
-	public void onMessage(String channel, String sender, String login, String hostname, String message){
+	protected void onMessage(String channel, String sender, String login, String hostname, String message){
 				if(!BotManager.getInstance().verboseLogging)
 					logMain("MSG: " + channel + " " + sender + " : " + message);
 				
@@ -183,9 +156,20 @@ public class ReceiverBot extends PircBot {
 					return;
 				}
 
-                //Ignore channel messages from JTV
-                if(sender.equals("jtv"))
+                //Handle future administrative messages from JTV
+                if(sender.equals("jtv")){
+                    onAdministrativeMessage(message);
                     return;
+                }
+
+                //Handle twitchnotify
+                if(sender.equals("twitchnotify")){
+                    Matcher m = twitchnotifySubscriberPattern.matcher(message);
+                    if(m.matches()){
+                        onNewSubscriber(channel, m.group(1));
+                    }
+                }
+
 				
 				//Split message on spaces.
 				String[] msg = message.trim().split(" ");
@@ -204,17 +188,7 @@ public class ReceiverBot extends PircBot {
 				boolean isOwner = false;
 				boolean isOp = false;
 				boolean isRegular = false;
-				
-				//Check user level based on IRC mode.
-//				try{
-//					if(user.getPrefix().equalsIgnoreCase("~"))
-//						isOwner = true;
-//					if(user.getPrefix().equalsIgnoreCase("@") || user.isOp())
-//						isOp = true;
-//					if(user.getPrefix().equalsIgnoreCase("+"))
-//						isRegular = true;
-//				}catch(Exception e){}
-				
+
 				//Check for user level based on other factors.
 				if(BotManager.getInstance().isAdmin(sender))
 					isAdmin = true;
@@ -1705,6 +1679,44 @@ public class ReceiverBot extends PircBot {
 
 	}
 
+    protected void onAdministrativeMessage(String message){
+        String[] msg = message.trim().split(" ");
+
+        if(msg.length > 0){
+            if(msg[0].equalsIgnoreCase("SPECIALUSER")){
+                String user = msg[1];
+                String tag = msg[2];
+
+                if(tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
+                    BotManager.getInstance().addTagAdmin(user);
+                if(tag.equalsIgnoreCase("staff"))
+                    BotManager.getInstance().addTagStaff(user);
+//				if(tag.equalsIgnoreCase("subscriber"))
+//					channelInfoGlobal.addSubscriber(user);
+            }else if(msg[0].equalsIgnoreCase("USERCOLOR")){
+                String user = msg[1];
+                String color = msg[2];
+            }else if(msg[0].equalsIgnoreCase("CLEARCHAT")){
+                if(msg.length > 1){
+                    String user = msg[1];
+                    if(!BotManager.getInstance().verboseLogging)
+                        System.out.println("RAW: CLEARCHAT " + user);
+                }else{
+                    if(!BotManager.getInstance().verboseLogging)
+                        System.out.println("RAW: CLEARCHAT");
+                }
+            }else if(msg[0].equalsIgnoreCase("HISTORYEND")){
+                String channel = msg[1];
+                Channel ci = BotManager.getInstance().getChannel("#" + channel);
+                ci.active = true;
+                System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
+            }
+        }
+    }
+
+    protected void onNewSubscriber(String channel, String username){
+        System.out.println("RB: New subscriber in " + channel + " " + username);
+    }
 
 	@Override
 	public void onDisconnect(){		 
@@ -1745,18 +1757,6 @@ public class ReceiverBot extends PircBot {
                 channelInfo.active = false;
             }
         }
-		
-//		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
-//			return;
-//
-//		String prefix = "";
-//
-//		if(BotManager.getInstance().isTagStaff(sender))
-//			prefix = " [Staff] ";
-//		else if(BotManager.getInstance().isTagAdmin(sender))
-//			prefix = " [Admin] ";
-//
-//		sendMessage(channel, "> " + prefix + sender + " entered the room.");
     }
 
     public void onPart(String channel, String sender, String login, String hostname) {	
@@ -1770,18 +1770,6 @@ public class ReceiverBot extends PircBot {
 		for(BotModule b:BotManager.getInstance().getModules()){
 			b.onPart(channelInfo, sender, login, hostname);
 		}
-		
-//		if(!channelInfo.getAnnounceJoinParts() || this.getNick().equalsIgnoreCase(sender))
-//			return;
-//
-//		String prefix = "";
-//
-//		if(BotManager.getInstance().isTagStaff(sender))
-//			prefix = " [Staff] ";
-//		else if(BotManager.getInstance().isTagAdmin(sender))
-//			prefix = " [Admin] ";
-//
-//		sendMessage(channel, "> " + prefix + sender + " left the room.");
     }
     
 	@Override
@@ -1881,18 +1869,6 @@ public class ReceiverBot extends PircBot {
 		
 		return caps;
 	}
-	
-//	private int getCapsPercent(String s){
-//		int caps = 0;
-//		for (int i=0; i<s.length(); i++)
-//		{
-//			if (Character.isUpperCase(s.charAt(i))){
-//					caps++;
-//			}
-//		}
-//
-//		return (int)(((double)caps)/s.length()*100);
-//	}
 
 	private int countConsecutiveCapitals(String s){
 		int caps = 0;
@@ -2106,32 +2082,6 @@ public class ReceiverBot extends PircBot {
 		
 		return "";
 	}
-
-	/*	private String getStreamList(String key, Channel channelInfo) throws Exception{
-		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
-		URLConnection uc = feedSource.openConnection();
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(uc.getInputStream());
-		doc.getDocumentElement().normalize();
-
-		NodeList nList = doc.getElementsByTagName("stream");
-		if(nList.getLength() < 1)
-			throw new Exception();
-
-		for (int temp = 0; temp < nList.getLength(); temp++) {
-
-		   Node nNode = nList.item(temp);
-		   if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-		      Element eElement = (Element) nNode;
-
-		      return getTagValue(key, eElement);
-
-		   }
-		}
-
-		return "";
-	}*/
 
     private static String getTagValue(String sTag, Element eElement) {
         NodeList nlList = eElement.getElementsByTagName(sTag).item(0).getChildNodes();
