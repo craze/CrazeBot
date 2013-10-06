@@ -220,6 +220,22 @@ public class ReceiverBot extends PircBot {
                     log("RB: " + sender + " is regular.");
 				}
 
+
+                //!{botname} command
+                if (msg[0].equalsIgnoreCase("!" + this.getName())){
+                    if(msg.length >= 2){
+
+                        String[] newMsg = new String[msg.length - 1];
+                        for(int i = 1; i < msg.length; i++){
+                            newMsg[i-1] = msg[i];
+                        }
+                        msg = newMsg;
+
+                        System.out.println("DEBUG: Command rewritten as  " + fuseArray(msg, 0));
+                    }
+
+                }
+
                 //Impersonation command
                 if (isAdmin && msg[0].equalsIgnoreCase("!imp")){
                     if(msg.length >= 3){
@@ -386,24 +402,6 @@ public class ReceiverBot extends PircBot {
 					}
 
  				}
-
-                //!{botname} command
-                if (msg[0].equalsIgnoreCase("!" + this.getName())){
-                    if(msg.length >= 2){
-
-                        String[] newMsg = new String[msg.length - 1];
-                        for(int i = 1; i < msg.length; i++){
-                            newMsg[i-1] = msg[i];
-                        }
-                        msg = newMsg;
-
-                        System.out.println("DEBUG: Command rewritten as  " + fuseArray(msg, 0));
-                    }
-
-                }
-
-
-
 
                 // ********************************************************************************
 				// ***************************** Poll Voting **************************************
