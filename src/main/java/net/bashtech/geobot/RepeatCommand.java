@@ -22,29 +22,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class RepeatCommand {
-	String key;
-	int delay;
-	Timer timer;
-	long lastMessageCount;
-	int messageDifference;
+    String key;
+    int delay;
+    Timer timer;
+    long lastMessageCount;
+    int messageDifference;
     boolean active;
     TimerTask task;
     String channel;
 
     public RepeatCommand(String _channel, String _key, int _delay, int _messageDifference, boolean _active){
-		key = _key;
-		delay = _delay; //In seconds
-		lastMessageCount = 0;
-		messageDifference = _messageDifference;
+        key = _key;
+        delay = _delay; //In seconds
+        lastMessageCount = 0;
+        messageDifference = _messageDifference;
         active = _active;
         channel = _channel;
-		
-		timer = new Timer();
+
+        timer = new Timer();
 
         if(active)
-		    timer.scheduleAtFixedRate( new RepeatCommandTask(channel, key, messageDifference), (delay * 1000), (delay * 1000));
+            timer.scheduleAtFixedRate( new RepeatCommandTask(channel, key, messageDifference), (delay * 1000), (delay * 1000));
 
-	}
+    }
 
     public void setStatus(boolean status){
         if(status == active)
@@ -56,35 +56,35 @@ public class RepeatCommand {
             timer.scheduleAtFixedRate( new RepeatCommandTask(channel, key, messageDifference), (delay * 1000), (delay * 1000));
             active = true;
         }else if(status == false){
-           timer.cancel();
+            timer.cancel();
             active = false;
         }
     }
-	
-	private class RepeatCommandTask extends TimerTask{
-		private String key;
-		private String channel;
-		private int messageDifference;
-		
-		public RepeatCommandTask(String _channel, String _key, int _messageDifference){
-			key = _key;
-			channel = _channel;
-			messageDifference = _messageDifference;
-		}
-		
-        public void run() {
-        	Channel channelInfo = BotManager.getInstance().getChannel(channel);
-        	if(channelInfo.messageCount - RepeatCommand.this.lastMessageCount >= messageDifference){
-        		String command = channelInfo.getCommand(key);
-            	ReceiverBot.getInstance().sendMessage(channel, command);
-            	
-            	if(key.equalsIgnoreCase("!commercial"))
-            		channelInfo.runCommercial();
-        	}else{
-        		System.out.println("DEBUG: No messages received since last send - " + key);
-        	}
-        	
-        	lastMessageCount = channelInfo.messageCount;
+
+    private class RepeatCommandTask extends TimerTask{
+        private String key;
+        private String channel;
+        private int messageDifference;
+
+        public RepeatCommandTask(String _channel, String _key, int _messageDifference){
+            key = _key;
+            channel = _channel;
+            messageDifference = _messageDifference;
         }
-	}
+
+        public void run() {
+            Channel channelInfo = BotManager.getInstance().getChannel(channel);
+            if(channelInfo.messageCount - RepeatCommand.this.lastMessageCount >= messageDifference){
+                String command = channelInfo.getCommand(key);
+                ReceiverBot.getInstance().sendMessage(channel, command);
+
+                if(key.equalsIgnoreCase("!commercial"))
+                    channelInfo.runCommercial();
+            }else{
+                System.out.println("DEBUG: No messages received since last send - " + key);
+            }
+
+            lastMessageCount = channelInfo.messageCount;
+        }
+    }
 }
