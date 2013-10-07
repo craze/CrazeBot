@@ -19,6 +19,8 @@
 package net.bashtech.geobot;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
@@ -26,6 +28,9 @@ import org.jibble.pircbot.PircBot;
 
 public class SenderBot extends PircBot {
 	private int lastPing = -1;
+
+    private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
+    private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
 	
 	public SenderBot(String server, int port){
 		
@@ -88,6 +93,21 @@ public class SenderBot extends PircBot {
     @Override
     protected void onPrivateMessage(String sender, String login, String hostname, String message) {
         BotManager.getInstance().log("SB: " + sender + " " + message);
+
+        Matcher m = banNoticePattern.matcher(message);
+        if(m.matches()){
+            String channel = "#" + m.group(1);
+            BotManager.getInstance().log("SB: Detected ban in " + channel + ". Parting..");
+            BotManager.getInstance().removeChannel(channel);
+        }
+
+        m = toNoticePattern.matcher(message);
+        if(m.matches()){
+            String channel = "#" + m.group(1);
+            BotManager.getInstance().log("SB: Detected timeout in " + channel + ". Parting..");
+            BotManager.getInstance().removeChannel(channel);
+        }
+
     }
 
 
