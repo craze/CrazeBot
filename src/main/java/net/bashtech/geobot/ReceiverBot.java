@@ -53,6 +53,8 @@ public class ReceiverBot extends PircBot {
     private int bulletPos = 0;
 
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
+    private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
+    private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
 	
 	public ReceiverBot(String server, int port){
         ReceiverBot.setInstance(this);
@@ -120,8 +122,22 @@ public class ReceiverBot extends PircBot {
 	}
 
 	@Override
-	protected void onPrivateMessage(String sender, String login,
-			String hostname, String message) {
+	protected void onPrivateMessage(String sender, String login, String hostname, String message) {
+        BotManager.getInstance().log("RB PM: " + sender + " " + message);
+
+        Matcher m = banNoticePattern.matcher(message);
+        if(m.matches()){
+            String channel = "#" + m.group(1);
+            BotManager.getInstance().log("SB: Detected ban in " + channel + ". Parting..");
+            BotManager.getInstance().removeChannel(channel);
+        }
+
+        m = toNoticePattern.matcher(message);
+        if(m.matches()){
+            String channel = "#" + m.group(1);
+            BotManager.getInstance().log("SB: Detected timeout in " + channel + ". Parting..");
+            BotManager.getInstance().removeChannel(channel);
+        }
 
             if(sender.equals("jtv"))
                 onAdministrativeMessage(message);
