@@ -815,6 +815,10 @@ public class Channel {
 			}
 		}
 	}
+
+    public boolean isBannedPhrase(String phrase){
+        return offensiveWords.contains(phrase);
+    }
 	
 	public boolean isOffensive(String word){
 

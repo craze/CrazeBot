@@ -1160,7 +1160,7 @@ public class ReceiverBot extends PircBot {
  							String phrase = fuseArray(msg, 2);
  							if(phrase.contains(",,")){
  								sendMessage(channel,"Cannot contain double commas (,,)");
- 							}else if(channelInfo.isOffensive(fuseArray(msg, 2))){
+ 							}else if(channelInfo.isBannedPhrase(fuseArray(msg, 2))){
  								sendMessage(channel,"Word already exists. " + "(" + phrase + ")");
  							}else{
                                  if(phrase.startsWith("REGEX:") && !isAdmin){
