@@ -81,7 +81,7 @@ public class RepeatCommand {
             	if(key.equalsIgnoreCase("!commercial"))
             		channelInfo.runCommercial();
         	}else{
-        		System.out.println("DEBUG: No messages received since last send - " + key);
+        		//System.out.println("DEBUG: No messages received since last send - " + key);
         	}
         	
         	lastMessageCount = channelInfo.messageCount;
