@@ -70,6 +70,7 @@ public class ReceiverBot extends PircBot {
 
         this.setName(BotManager.getInstance().getInstance().nick);
 		this.setLogin("ReceiverGeoBot");
+        this.setMessageDelay(0);
 
 		this.setVerbose(BotManager.getInstance().verboseLogging);
 		try {
