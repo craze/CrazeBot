@@ -334,13 +334,14 @@ public class BotManager {
 		Channel tempChan = channelList.get(name.toLowerCase());
 
         //Stop timers
+        System.out.println("Stopping timers");
         Iterator itr = tempChan.commandsRepeat.entrySet().iterator();
         while(itr.hasNext()){
             Map.Entry pairs = (Map.Entry)itr.next();
             ((RepeatCommand)pairs.getValue()).setStatus(false);
         }
         Iterator itr2 = tempChan.commandsSchedule.entrySet().iterator();
-        while(itr.hasNext()){
+        while(itr2.hasNext()){
             Map.Entry pairs = (Map.Entry)itr2.next();
             ((ScheduledCommand)pairs.getValue()).setStatus(false);
         }

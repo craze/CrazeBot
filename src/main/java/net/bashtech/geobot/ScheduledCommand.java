@@ -49,6 +49,7 @@ public class ScheduledCommand {
             s.start();
             active = true;
         }else if(status == false){
+            System.out.println("Stopping timer");
             s.stop();
             active = false;
         }

@@ -56,6 +56,7 @@ public class RepeatCommand {
             timer.scheduleAtFixedRate( new RepeatCommandTask(channel, key, messageDifference), (delay * 1000), (delay * 1000));
             active = true;
         }else if(status == false){
+            System.out.println("Stopping timer");
             timer.cancel();
             active = false;
         }
