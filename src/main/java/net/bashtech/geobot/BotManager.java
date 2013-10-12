@@ -20,14 +20,7 @@ package net.bashtech.geobot;
 
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.Timer;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import net.bashtech.geobot.gui.BotGUI;
@@ -339,8 +332,20 @@ public class BotManager {
 		}
 		
 		Channel tempChan = channelList.get(name.toLowerCase());
-		receiverBot.partChannel(name.toLowerCase());
 
+        //Stop timers
+        Iterator itr = tempChan.commandsRepeat.entrySet().iterator();
+        while(itr.hasNext()){
+            Map.Entry pairs = (Map.Entry)itr.next();
+            ((RepeatCommand)pairs.getValue()).setStatus(false);
+        }
+        Iterator itr2 = tempChan.commandsSchedule.entrySet().iterator();
+        while(itr.hasNext()){
+            Map.Entry pairs = (Map.Entry)itr2.next();
+            ((ScheduledCommand)pairs.getValue()).setStatus(false);
+        }
+
+		receiverBot.partChannel(name.toLowerCase());
 		channelList.remove(name.toLowerCase());
 		
 		writeChannelList();
