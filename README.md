@@ -86,8 +86,8 @@ Examples:
 
 \*\* **Replace the spaces in crontab syntax with _**
 
- * `!autoreply list` - Ops - Lists currently autoreplies
- * `!autoreply add [*patten*] [response]` - Ops - Adds an autoreply triggers by \*pattern\* with the desired response. Use * to denote wildcards and _ to denote spaces in the pattern.
+ * `!autoreply list` - Ops - Lists current autoreplies
+ * `!autoreply add [*patten*] [response]` - Ops - Adds an autoreply triggered by \*pattern\* with the desired response. Use * to denote wildcards and _ to denote spaces in the pattern.
  * `!autoreply remove [number]` - Ops - Removes the autoreply with that index number. Do !autoreply list for those values.
 
 ###  Settings
