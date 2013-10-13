@@ -316,10 +316,19 @@ public class Channel {
     public void addAutoReply(String trigger, String response){
         trigger = trigger.replaceAll(",,", ""); response.replaceAll(",,","");
 
-        if(!trigger.startsWith("REGEX:"))
-            trigger = trigger.replaceAll("\\*", ".*");
-        else
+        if(!trigger.startsWith("REGEX:")){
+            String[] parts = trigger.split("\\*");
+            trigger = ".*";
+
+            for(int i=0; i<parts.length; i++){
+                if(parts[i].length() < 1)
+                    continue;
+
+                    trigger += Pattern.quote(parts[i]) + ".*";
+            }
+        }else{
             trigger = trigger.replaceAll("REGEX:", "");
+        }
 
         autoReplyTrigger.add(Pattern.compile(trigger, Pattern.CASE_INSENSITIVE));
         autoReplyResponse.add(response);
@@ -328,9 +337,9 @@ public class Channel {
     }
 
     public boolean removeAutoReply(int pos){
-        pos = pos -1;
+        pos = pos - 1;
 
-        if(autoReplyTrigger.size() < pos - 1)
+        if(pos > autoReplyTrigger.size() - 1)
             return false;
 
         autoReplyTrigger.remove(pos);
@@ -852,7 +861,7 @@ public class Channel {
                     Pattern tempP = Pattern.compile(line);
                     offensiveWordsRegex.add(tempP);
                 }else{
-                    String line = "(?i).*" + Pattern.quote(w) + ".*";
+                    String line = ".*" + Pattern.quote(w) + ".*";
                     System.out.println("ReAdding: " + line);
                     Pattern tempP = Pattern.compile(line);
                     offensiveWordsRegex.add(tempP);

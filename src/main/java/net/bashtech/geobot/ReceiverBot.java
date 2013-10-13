@@ -893,7 +893,8 @@ public class ReceiverBot extends PircBot {
                     if(msg.length < 3 && isOp){
                         if(msg.length > 1 && msg[1].equalsIgnoreCase("list")){
                             for(int i=0; i<channelInfo.autoReplyTrigger.size(); i++){
-                                send(channel, "[" + (i + 1) + "] " + channelInfo.autoReplyTrigger.get(i).toString() + " ---> " + channelInfo.autoReplyResponse.get(i));
+                                String cleanedTrigger = channelInfo.autoReplyTrigger.get(i).toString().replaceAll("\\.\\*","*").replaceAll("\\\\Q","").replaceAll("\\\\E","");
+                                send(channel, "[" + (i + 1) + "] " + cleanedTrigger + " ---> " + channelInfo.autoReplyResponse.get(i));
                             }
                         }else{
                             send(channel, "Syntax: \"!autoreply add/delete/list [pattern] [response]\"");
