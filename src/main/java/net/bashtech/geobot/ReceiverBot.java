@@ -44,7 +44,7 @@ public class ReceiverBot extends PircBot {
 
     static ReceiverBot instance;
 
-    private String prefix = "!";
+    private String prefix = BotManager.getInstance().prefix;
 
     private Pattern[] linkPatterns = new Pattern[5];
 	private Pattern[] symbolsPatterns = new Pattern[2];
