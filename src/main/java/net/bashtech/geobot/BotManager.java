@@ -18,89 +18,83 @@
 
 package net.bashtech.geobot;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.regex.Pattern;
-
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
 import net.bashtech.geobot.modules.Logger;
 import org.java_websocket.WebSocketImpl;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.regex.Pattern;
+
 public class BotManager {
-	
-	static BotManager instance;
-	
-	String nick;
-	String server;
-	int port;
-	String password;
-	String localAddress;
-	boolean publicJoin;
-	boolean monitorPings;
-	int pingInterval;
-	boolean useGUI;
-	BotGUI gui;
-	Map<String,Channel> channelList;
-	Set<String> admins;
-	private PropertiesFile config;
-	private Set<BotModule> modules;
-	private Set<String> tagAdmins;
-	private Set<String> tagStaff;
-	List<String> emoteSet;
-	List<Pattern> globalBannedWords;
-	boolean verboseLogging;
-	ReceiverBot receiverBot;
-    String bothelpMessage;
-    boolean ignoreHistory;
-    String prefix;
 
-    WSServer ws;
-    boolean wsEnabled;
-    int wsPort;
-    String wsAdminPassword;
-
-    boolean twitchChannels;
-
+    static BotManager instance;
     // API KEYS
     public String bitlyAPIKey;
     public String bitlyLogin;
     public String LastFMAPIKey;
     public String SteamAPIKey;
-
     public String krakenOAuthToken;
     public String krakenClientID;
+    String nick;
+    String server;
+    int port;
+    String password;
+    String localAddress;
+    boolean publicJoin;
+    boolean monitorPings;
+    int pingInterval;
+    boolean useGUI;
+    BotGUI gui;
+    Map<String, Channel> channelList;
+    Set<String> admins;
+    List<String> emoteSet;
+    List<Pattern> globalBannedWords;
+    boolean verboseLogging;
+    ReceiverBot receiverBot;
+    String bothelpMessage;
+    boolean ignoreHistory;
+    String prefix;
+    WSServer ws;
+    boolean wsEnabled;
+    int wsPort;
+    String wsAdminPassword;
+    boolean twitchChannels;
+    private PropertiesFile config;
+    private Set<BotModule> modules;
+    private Set<String> tagAdmins;
+    private Set<String> tagStaff;
     // ********
-	
-	private String _propertiesFile;
-	
+    private String _propertiesFile;
 
-	public BotManager(String propertiesFile){
-		BotManager.setInstance(this);
-		_propertiesFile = propertiesFile;
-		channelList = new HashMap<String,Channel>();
-		admins = new HashSet<String>();
-		modules = new HashSet<BotModule>();
-		tagAdmins = new HashSet<String>();
-		tagStaff = new HashSet<String>();
-		emoteSet = new LinkedList<String>();
-		globalBannedWords = new LinkedList<Pattern>();
-		
-		loadGlobalProfile();
-		
-		if(useGUI){
-			gui = new BotGUI();
-		}
+
+    public BotManager(String propertiesFile) {
+        BotManager.setInstance(this);
+        _propertiesFile = propertiesFile;
+        channelList = new HashMap<String, Channel>();
+        admins = new HashSet<String>();
+        modules = new HashSet<BotModule>();
+        tagAdmins = new HashSet<String>();
+        tagStaff = new HashSet<String>();
+        emoteSet = new LinkedList<String>();
+        globalBannedWords = new LinkedList<Pattern>();
+
+        loadGlobalProfile();
+
+        if (useGUI) {
+            gui = new BotGUI();
+        }
 
         //Start WebSocket server
-        if(wsEnabled){
+        if (wsEnabled) {
             WebSocketImpl.DEBUG = false;
             ws = null;
             try {
                 ws = new WSServer(wsPort);
                 ws.start();
-                System.out.println( "WebSocket server started on port: " + ws.getPort() );
+                System.out.println("WebSocket server started on port: " + ws.getPort());
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -109,155 +103,300 @@ public class BotManager {
 
         receiverBot = new ReceiverBot(server, port);
         List<String> outdatedChannels = new LinkedList<String>();
-		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-		{
+        for (Map.Entry<String, Channel> entry : channelList.entrySet()) {
             String channel = entry.getValue().getChannel();
-            if(!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1)) || entry.getValue().staticChannel){
+            if (!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1)) || entry.getValue().staticChannel) {
                 log("BM: Joining channel " + channel);
                 receiverBot.joinChannel(channel);
-            }else{
+            } else {
                 outdatedChannels.add(channel);
             }
 
-		}
+        }
 
         //Remove outdatedChannels
-        for(String channel : outdatedChannels){
+        for (String channel : outdatedChannels) {
             log("BM: Removing channel: " + channel);
             this.removeChannel(channel);
         }
 
-		//Start timer to check for bot disconnects
-		Timer reconnectTimer = new Timer();
-		reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
+        //Start timer to check for bot disconnects
+        Timer reconnectTimer = new Timer();
+        reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 
-		// Load modules
-		this.registerModule(new Logger());
-	}
-	
+        // Load modules
+        this.registerModule(new Logger());
+    }
 
-	private void loadGlobalProfile(){
-		config = new PropertiesFile(_propertiesFile);
-		
-		log("BM: Reading global file > " + _propertiesFile);
-		try {
-			config.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		if(!config.keyExists("nick")) {
-			config.setString("nick", "");
-		}
-		if(!config.keyExists("server")) {
-			config.setString("server", "");
-		}
-		
-		if(!config.keyExists("password")) {
-			config.setString("password", "");
-		}
-		
-		if(!config.keyExists("port")) {
-			config.setInt("port", 6667);
-		}
-		
-		if(!config.keyExists("channelList")) {
-			config.setString("channelList", "");
-		}
-		
-		if(!config.keyExists("adminList")) {
-			config.setString("adminList", "");
-		}
+    public static BotManager getInstance() {
+        return instance;
+    }
 
-		if(!config.keyExists("publicJoin")) {
-			config.setBoolean("publicJoin", false);
-		}
-		
-		if(!config.keyExists("monitorPings")) {
-			config.setBoolean("monitorPings", false);
-		}
-		
-		if(!config.keyExists("pingInterval")) {
-			config.setInt("pingInterval", 350);
-		}
-		
-		if(!config.keyExists("useGUI")) {
-			config.setBoolean("useGUI", false);
-		}
-		
-		if(!config.keyExists("localAddress")) {
-			config.setString("localAddress", "");
-		}
-		
-		if(!config.keyExists("verboseLogging")) {
-			config.setBoolean("verboseLogging", false);
-		}
+    public static void setInstance(BotManager bm) {
+        if (instance == null) {
+            instance = bm;
+        }
+    }
 
-        if(!config.keyExists("bothelpMessage")) {
+    public static String getRemoteContent(String urlString) {
+        String dataIn = "";
+        try {
+            URL url = new URL(urlString);
+            //System.out.println("DEBUG: Getting data from " + url.toString());
+            URLConnection conn = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null)
+                dataIn += inputLine;
+            in.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return dataIn;
+    }
+
+    public static String getRemoteContentTwitch(String urlString, int krakenVersion) {
+        String dataIn = "";
+        try {
+            URL url = new URL(urlString);
+            //System.out.println("DEBUG: Getting data from " + url.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            if (BotManager.getInstance().krakenClientID.length() > 0)
+                conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
+
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
+
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null)
+                    dataIn += inputLine;
+                in.close();
+            } catch (IOException exerr) {
+                String inputLine;
+
+                InputStream errorStream = conn.getErrorStream();
+                if (errorStream != null) {
+                    BufferedReader inE = new BufferedReader(new InputStreamReader(errorStream));
+                    while ((inputLine = inE.readLine()) != null)
+                        dataIn += inputLine;
+                    inE.close();
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return dataIn;
+    }
+
+    public static String postRemoteDataTwitch(String urlString, String postData, int krakenVersion) {
+        URL url;
+        HttpURLConnection conn;
+
+        try {
+            url = new URL(urlString);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+
+
+            conn.setFixedLengthStreamingMode(postData.getBytes().length);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
+            conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
+            conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
+
+            PrintWriter out = new PrintWriter(conn.getOutputStream());
+            out.print(postData);
+            out.close();
+
+            String response = "";
+
+            Scanner inStream = new Scanner(conn.getInputStream());
+
+            while (inStream.hasNextLine())
+                response += (inStream.nextLine());
+
+            System.out.println(conn.getResponseCode());
+            System.out.println(response);
+            return response;
+
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return "";
+    }
+
+    public static String putRemoteData(String urlString, String postData) throws IOException {
+        URL url;
+        HttpURLConnection conn;
+
+        try {
+            url = new URL(urlString);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("PUT");
+
+
+            conn.setFixedLengthStreamingMode(postData.getBytes().length);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
+            conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
+            conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
+
+            PrintWriter out = new PrintWriter(conn.getOutputStream());
+            out.print(postData);
+            out.close();
+
+            String response = "";
+
+            Scanner inStream = new Scanner(conn.getInputStream());
+
+            while (inStream.hasNextLine())
+                response += (inStream.nextLine());
+
+            System.out.println(conn.getResponseCode());
+            System.out.println(response);
+            return response;
+
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+
+        return "";
+    }
+
+    private void loadGlobalProfile() {
+        config = new PropertiesFile(_propertiesFile);
+
+        log("BM: Reading global file > " + _propertiesFile);
+        try {
+            config.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (!config.keyExists("nick")) {
+            config.setString("nick", "");
+        }
+        if (!config.keyExists("server")) {
+            config.setString("server", "");
+        }
+
+        if (!config.keyExists("password")) {
+            config.setString("password", "");
+        }
+
+        if (!config.keyExists("port")) {
+            config.setInt("port", 6667);
+        }
+
+        if (!config.keyExists("channelList")) {
+            config.setString("channelList", "");
+        }
+
+        if (!config.keyExists("adminList")) {
+            config.setString("adminList", "");
+        }
+
+        if (!config.keyExists("publicJoin")) {
+            config.setBoolean("publicJoin", false);
+        }
+
+        if (!config.keyExists("monitorPings")) {
+            config.setBoolean("monitorPings", false);
+        }
+
+        if (!config.keyExists("pingInterval")) {
+            config.setInt("pingInterval", 350);
+        }
+
+        if (!config.keyExists("useGUI")) {
+            config.setBoolean("useGUI", false);
+        }
+
+        if (!config.keyExists("localAddress")) {
+            config.setString("localAddress", "");
+        }
+
+        if (!config.keyExists("verboseLogging")) {
+            config.setBoolean("verboseLogging", false);
+        }
+
+        if (!config.keyExists("bothelpMessage")) {
             config.setString("bothelpMessage", "http://bashtech.net/twitch/geobot.php");
         }
 
         // API KEYS
 
-        if(!config.keyExists("bitlyAPIKey")) {
+        if (!config.keyExists("bitlyAPIKey")) {
             config.setString("bitlyAPIKey", "");
         }
 
-        if(!config.keyExists("bitlyLogin")) {
+        if (!config.keyExists("bitlyLogin")) {
             config.setString("bitlyLogin", "");
         }
 
-        if(!config.keyExists("LastFMAPIKey")) {
+        if (!config.keyExists("LastFMAPIKey")) {
             config.setString("LastFMAPIKey", "");
         }
 
-        if(!config.keyExists("SteamAPIKey")) {
+        if (!config.keyExists("SteamAPIKey")) {
             config.setString("SteamAPIKey", "");
         }
 
-        if(!config.keyExists("krakenOAuthToken")) {
+        if (!config.keyExists("krakenOAuthToken")) {
             config.setString("krakenOAuthToken", "");
         }
 
-        if(!config.keyExists("krakenClientID")) {
+        if (!config.keyExists("krakenClientID")) {
             config.setString("krakenClientID", "");
         }
 
-        if(!config.keyExists("wsPort")) {
+        if (!config.keyExists("wsPort")) {
             config.setInt("wsPort", 8887);
         }
 
-        if(!config.keyExists("wsEnabled")) {
+        if (!config.keyExists("wsEnabled")) {
             config.setBoolean("wsEnabled", false);
         }
 
-        if(!config.keyExists("wsAdminPassword")) {
+        if (!config.keyExists("wsAdminPassword")) {
             config.setString("wsAdminPassword", "");
         }
 
-        if(!config.keyExists("twitchChannels")) {
+        if (!config.keyExists("twitchChannels")) {
             config.setBoolean("twitchChannels", true);
         }
 
-        if(!config.keyExists("ignoreHistory")) {
+        if (!config.keyExists("ignoreHistory")) {
             config.setBoolean("ignoreHistory", true);
         }
 
-        if(!config.keyExists("commandPrefix")) {
+        if (!config.keyExists("commandPrefix")) {
             config.setString("commandPrefix", "!");
         }
         // ********
-				
-		nick = config.getString("nick");
-		server = config.getString("server");
-		port = Integer.parseInt(config.getString("port"));
-		localAddress = config.getString("localAddress");
-		password = config.getString("password");
-		useGUI = config.getBoolean("useGUI");
-		monitorPings = config.getBoolean("monitorPings");
-		pingInterval = config.getInt("pingInterval");
-		publicJoin = config.getBoolean("publicJoin");
-		verboseLogging = config.getBoolean("verboseLogging");
+
+        nick = config.getString("nick");
+        server = config.getString("server");
+        port = Integer.parseInt(config.getString("port"));
+        localAddress = config.getString("localAddress");
+        password = config.getString("password");
+        useGUI = config.getBoolean("useGUI");
+        monitorPings = config.getBoolean("monitorPings");
+        pingInterval = config.getInt("pingInterval");
+        publicJoin = config.getBoolean("publicJoin");
+        verboseLogging = config.getBoolean("verboseLogging");
         bothelpMessage = config.getString("bothelpMessage");
         prefix = config.getString("commandPrefix").charAt(0) + "";
 
@@ -281,388 +420,234 @@ public class BotManager {
 
         // ********
 
-		for(String s:config.getString("channelList").split(",")) {
-			System.out.println("DEBUG: Adding channel " + s);
-			if(s.length() > 1){
-				channelList.put(s.toLowerCase(),new Channel(s));
-			}
-		}
-		
-		for(String s:config.getString("adminList").split(",")) {
-			if(s.length() > 1){
-				admins.add(s.toLowerCase());
-			}
-		}
-		
-		loadEmotes();
-		loadGlobalBannedWords();
-		
-		if(server.length() < 1){
-			System.exit(1);
-		}
-	}
-	
-	public synchronized Channel getChannel(String channel){
-		if(channelList.containsKey(channel.toLowerCase())){
+        for (String s : config.getString("channelList").split(",")) {
+            System.out.println("DEBUG: Adding channel " + s);
+            if (s.length() > 1) {
+                channelList.put(s.toLowerCase(), new Channel(s));
+            }
+        }
 
-			return channelList.get(channel.toLowerCase());
-		}else{
-			return null;
-		}
-	}
-	
-	public synchronized boolean addChannel(String name, int mode){
-		if(channelList.containsKey(name.toLowerCase())){
-			System.out.println("INFO: Already in channel " + name);
-			return false;
-		}
-		Channel tempChan = new Channel(name.toLowerCase(), mode);
-		
-		channelList.put(name.toLowerCase(), tempChan);
+        for (String s : config.getString("adminList").split(",")) {
+            if (s.length() > 1) {
+                admins.add(s.toLowerCase());
+            }
+        }
 
-		log("BM: Joining channel " + tempChan.getChannel());
-		receiverBot.joinChannel(tempChan.getChannel());
+        loadEmotes();
+        loadGlobalBannedWords();
 
-		log("BM: Joined channel " + tempChan.getChannel());
+        if (server.length() < 1) {
+            System.exit(1);
+        }
+    }
 
-		writeChannelList();
+    public synchronized Channel getChannel(String channel) {
+        if (channelList.containsKey(channel.toLowerCase())) {
 
-		return true;
-	}
+            return channelList.get(channel.toLowerCase());
+        } else {
+            return null;
+        }
+    }
 
-	public synchronized void removeChannel(String name){
-		if(!channelList.containsKey(name.toLowerCase())){
-			log("BM: Not in channel " + name);
-			return;
-		}
-		
-		Channel tempChan = channelList.get(name.toLowerCase());
+    public synchronized boolean addChannel(String name, int mode) {
+        if (channelList.containsKey(name.toLowerCase())) {
+            System.out.println("INFO: Already in channel " + name);
+            return false;
+        }
+        Channel tempChan = new Channel(name.toLowerCase(), mode);
+
+        channelList.put(name.toLowerCase(), tempChan);
+
+        log("BM: Joining channel " + tempChan.getChannel());
+        receiverBot.joinChannel(tempChan.getChannel());
+
+        log("BM: Joined channel " + tempChan.getChannel());
+
+        writeChannelList();
+
+        return true;
+    }
+
+    public synchronized void removeChannel(String name) {
+        if (!channelList.containsKey(name.toLowerCase())) {
+            log("BM: Not in channel " + name);
+            return;
+        }
+
+        Channel tempChan = channelList.get(name.toLowerCase());
 
         //Stop timers
         System.out.println("Stopping timers");
         Iterator itr = tempChan.commandsRepeat.entrySet().iterator();
-        while(itr.hasNext()){
-            Map.Entry pairs = (Map.Entry)itr.next();
-            ((RepeatCommand)pairs.getValue()).setStatus(false);
+        while (itr.hasNext()) {
+            Map.Entry pairs = (Map.Entry) itr.next();
+            ((RepeatCommand) pairs.getValue()).setStatus(false);
         }
         Iterator itr2 = tempChan.commandsSchedule.entrySet().iterator();
-        while(itr2.hasNext()){
-            Map.Entry pairs = (Map.Entry)itr2.next();
-            ((ScheduledCommand)pairs.getValue()).setStatus(false);
+        while (itr2.hasNext()) {
+            Map.Entry pairs = (Map.Entry) itr2.next();
+            ((ScheduledCommand) pairs.getValue()).setStatus(false);
         }
 
-		receiverBot.partChannel(name.toLowerCase());
-		channelList.remove(name.toLowerCase());
-		
-		writeChannelList();
-	}
-	
-	public synchronized void reloadChannel(String name){
-		if(!channelList.containsKey(name.toLowerCase())){
-			log("BM: Not in channel " + name);
-			return;
-		}
-		
-		channelList.get(name.toLowerCase()).reload();
-	}
-	
-	public boolean rejoinChannel(String name){
-		if(!channelList.containsKey(name.toLowerCase())){
-			log("BM: Not in channel " + name);
-			return false;
-		}
-		
-		Channel tempChan = channelList.get(name.toLowerCase());
-		receiverBot.partChannel(tempChan.getChannel());
-		receiverBot.joinChannel(tempChan.getChannel());
+        receiverBot.partChannel(name.toLowerCase());
+        channelList.remove(name.toLowerCase());
 
-			
-		return true;
-	}
-
-	
-	public synchronized void reconnectAllBotsSoft(){
-		receiverBot.disconnect();
-	}
-	
-	
-	private synchronized void writeChannelList(){
-		String channelString = "";
-		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-		{	
-			channelString += entry.getKey() + ","; 
-		}
-		
-		config.setString("channelList", channelString);
-	}
-	
-	public static void setInstance(BotManager bm){
-		if(instance == null){
-			instance = bm;
-		}
-	}
-	
-	public static BotManager getInstance(){
-		return instance;
-	}
-	
-	public void registerModule(BotModule module){
-		modules.add(module);
-	}
-	
-	public Set<BotModule> getModules(){
-		return modules;
-	}
-	
-	public BotGUI getGUI(){
-		return gui;
-	}
-	
-	public String getLocalAddress(){
-		return localAddress;
-	}
-	
-	public void sendGlobal(String message, String sender){
-		for (Map.Entry<String, Channel> entry : channelList.entrySet())
-		{	
-			Channel tempChannel = (Channel)entry.getValue();
-			if(tempChannel.getMode() == 0)
-				continue;
-
-			String globalMsg = "> Global: " + message + " (from " + sender + " to " + tempChannel.getChannel() + ")";
-			ReceiverBot.getInstance().sendMessage(tempChannel.getChannel(), globalMsg);
-		}
-	}
-	
-	public boolean isAdmin(String nick){
-		if(admins.contains(nick.toLowerCase()))
-			return true;
-		else
-			return false;
-	}
-	
-	public boolean isTagAdmin(String name){
-		return tagAdmins.contains(name.toLowerCase());
-	}
-	
-	public boolean isTagStaff(String name){
-		return tagStaff.contains(name.toLowerCase());
-	}
-	
-	public void addTagAdmin(String name){
-		tagAdmins.add(name.toLowerCase());
-	}
-	
-	public void addTagStaff(String name){
-		tagStaff.add(name.toLowerCase());
-	}
-	
-	private void loadEmotes(){
-		emoteSet.clear();
-		File f = new File("emotes.cfg");
-		if(!f.exists())
-			try {
-				f.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				Scanner in = new Scanner(f, "UTF-8");
-				
-				while (in.hasNextLine()){
-					emoteSet.add(in.nextLine().trim());
-			      }
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-	}
-	
-	public void loadGlobalBannedWords(){
-        globalBannedWords.clear();
-		File f = new File("globalbannedwords.cfg");
-		if(!f.exists())
-			try {
-				f.createNewFile();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				Scanner in = new Scanner(f, "UTF-8");
-				
-				while (in.hasNextLine()){
-					String line = ".*" + Pattern.quote(in.nextLine().trim().toLowerCase()) + ".*";
-					System.out.println(line);
-					Pattern tempP = Pattern.compile(line);
-					globalBannedWords.add(tempP);
-			      }
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-	}
-
-    public static String getRemoteContent(String urlString){
-        String dataIn = "";
-        try{
-            URL url = new URL(urlString);
-            //System.out.println("DEBUG: Getting data from " + url.toString());
-            URLConnection conn = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null)
-                dataIn += inputLine;
-            in.close();
-
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-
-        return dataIn;
+        writeChannelList();
     }
 
-    public static String getRemoteContentTwitch(String urlString, int krakenVersion){
-        String dataIn = "";
-        try{
-            URL url = new URL(urlString);
-            //System.out.println("DEBUG: Getting data from " + url.toString());
-            HttpURLConnection conn =(HttpURLConnection)url.openConnection();
+    public synchronized void reloadChannel(String name) {
+        if (!channelList.containsKey(name.toLowerCase())) {
+            log("BM: Not in channel " + name);
+            return;
+        }
 
-            if(BotManager.getInstance().krakenClientID.length() > 0)
-                conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
+        channelList.get(name.toLowerCase()).reload();
+    }
 
-            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
+    public boolean rejoinChannel(String name) {
+        if (!channelList.containsKey(name.toLowerCase())) {
+            log("BM: Not in channel " + name);
+            return false;
+        }
 
-            try{
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String inputLine;
-                while ((inputLine = in.readLine()) != null)
-                    dataIn += inputLine;
-                in.close();
-            }catch (IOException exerr){
-                String inputLine;
+        Channel tempChan = channelList.get(name.toLowerCase());
+        receiverBot.partChannel(tempChan.getChannel());
+        receiverBot.joinChannel(tempChan.getChannel());
 
-                InputStream errorStream = conn.getErrorStream();
-                if(errorStream != null){
-                    BufferedReader inE = new BufferedReader(new InputStreamReader(errorStream));
-                    while ((inputLine = inE.readLine()) != null)
-                        dataIn += inputLine;
-                    inE.close();
-                }
+
+        return true;
+    }
+
+    public synchronized void reconnectAllBotsSoft() {
+        receiverBot.disconnect();
+    }
+
+    private synchronized void writeChannelList() {
+        String channelString = "";
+        for (Map.Entry<String, Channel> entry : channelList.entrySet()) {
+            channelString += entry.getKey() + ",";
+        }
+
+        config.setString("channelList", channelString);
+    }
+
+    public void registerModule(BotModule module) {
+        modules.add(module);
+    }
+
+    public Set<BotModule> getModules() {
+        return modules;
+    }
+
+    public BotGUI getGUI() {
+        return gui;
+    }
+
+    public String getLocalAddress() {
+        return localAddress;
+    }
+
+    public void sendGlobal(String message, String sender) {
+        for (Map.Entry<String, Channel> entry : channelList.entrySet()) {
+            Channel tempChannel = (Channel) entry.getValue();
+            if (tempChannel.getMode() == 0)
+                continue;
+
+            String globalMsg = "> Global: " + message + " (from " + sender + " to " + tempChannel.getChannel() + ")";
+            ReceiverBot.getInstance().sendMessage(tempChannel.getChannel(), globalMsg);
+        }
+    }
+
+    public boolean isAdmin(String nick) {
+        if (admins.contains(nick.toLowerCase()))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isTagAdmin(String name) {
+        return tagAdmins.contains(name.toLowerCase());
+    }
+
+    public boolean isTagStaff(String name) {
+        return tagStaff.contains(name.toLowerCase());
+    }
+
+    public void addTagAdmin(String name) {
+        tagAdmins.add(name.toLowerCase());
+    }
+
+    public void addTagStaff(String name) {
+        tagStaff.add(name.toLowerCase());
+    }
+
+    private void loadEmotes() {
+        emoteSet.clear();
+        File f = new File("emotes.cfg");
+        if (!f.exists())
+            try {
+                f.createNewFile();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
             }
-        }catch(Exception ex){
-            ex.printStackTrace();
+        try {
+            Scanner in = new Scanner(f, "UTF-8");
+
+            while (in.hasNextLine()) {
+                emoteSet.add(in.nextLine().trim());
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
-        return dataIn;
     }
 
-    public static String postRemoteDataTwitch(String urlString, String postData, int krakenVersion){
-        URL url;
-        HttpURLConnection conn;
+    public void loadGlobalBannedWords() {
+        globalBannedWords.clear();
+        File f = new File("globalbannedwords.cfg");
+        if (!f.exists())
+            try {
+                f.createNewFile();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        try {
+            Scanner in = new Scanner(f, "UTF-8");
 
-        try{
-            url=new URL(urlString);
-
-            conn=(HttpURLConnection)url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-
-
-            conn.setFixedLengthStreamingMode(postData.getBytes().length);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v" + krakenVersion + "+json");
-            conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
-            conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
-
-            PrintWriter out = new PrintWriter(conn.getOutputStream());
-            out.print(postData);
-            out.close();
-
-            String response= "";
-
-            Scanner inStream = new Scanner(conn.getInputStream());
-
-            while(inStream.hasNextLine())
-                response+=(inStream.nextLine());
-
-            System.out.println(conn.getResponseCode());
-            System.out.println(response);
-            return response;
-
-        }
-        catch(MalformedURLException ex){
-            ex.printStackTrace();
-        }
-        catch(IOException ex){
-            ex.printStackTrace();
+            while (in.hasNextLine()) {
+                String line = ".*" + Pattern.quote(in.nextLine().trim().toLowerCase()) + ".*";
+                System.out.println(line);
+                Pattern tempP = Pattern.compile(line);
+                globalBannedWords.add(tempP);
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
-        return "";
     }
 
-    public static String putRemoteData(String urlString, String postData) throws IOException{
-        URL url;
-        HttpURLConnection conn;
-
-        try{
-            url=new URL(urlString);
-
-            conn=(HttpURLConnection)url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("PUT");
-
-
-            conn.setFixedLengthStreamingMode(postData.getBytes().length);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Accept", "application/vnd.twitchtv.v2+json");
-            conn.setRequestProperty("Authorization", "OAuth " + BotManager.getInstance().krakenOAuthToken);
-            conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);
-
-            PrintWriter out = new PrintWriter(conn.getOutputStream());
-            out.print(postData);
-            out.close();
-
-            String response= "";
-
-            Scanner inStream = new Scanner(conn.getInputStream());
-
-            while(inStream.hasNextLine())
-                response+=(inStream.nextLine());
-
-            System.out.println(conn.getResponseCode());
-            System.out.println(response);
-            return response;
-
-        }
-        catch(MalformedURLException ex){
-            ex.printStackTrace();
-        }
-
-        return "";
-    }
-
-    public void followChannel(String channel){
-        try{
+    public void followChannel(String channel) {
+        try {
             System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/users/" + this.nick + "/follows/channels/" + channel, ""));
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void log(String line){
+    public void log(String line) {
         System.out.println(line);
 
-        if(wsEnabled && !line.startsWith("MSG:") && !line.startsWith("SEND:"))
+        if (wsEnabled && !line.startsWith("MSG:") && !line.startsWith("SEND:"))
             ws.sendToAdmin(line);
 
-        if(useGUI){
+        if (useGUI) {
             getGUI().log(line);
         }
     }
-	
+
 }

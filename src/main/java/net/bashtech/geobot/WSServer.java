@@ -16,53 +16,53 @@ public class WSServer extends WebSocketServer {
 
     private Set<WebSocket> adminFeed = new HashSet<WebSocket>();
 
-    public WSServer( int port ) throws UnknownHostException {
-        super( new InetSocketAddress( port ) );
+    public WSServer(int port) throws UnknownHostException {
+        super(new InetSocketAddress(port));
     }
 
-    public WSServer( InetSocketAddress address ) {
-        super( address );
+    public WSServer(InetSocketAddress address) {
+        super(address);
     }
 
     @Override
-    public void onOpen( WebSocket conn, ClientHandshake handshake ) {
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
         String resource = conn.getResourceDescriptor().substring(1);
-        System.out.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected." );
+        System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected.");
 
         String log = "";
-        if(resource.equals(BotManager.getInstance().wsAdminPassword)){
+        if (resource.equals(BotManager.getInstance().wsAdminPassword)) {
             log = "WS: " + conn.getRemoteSocketAddress().getAddress().getHostAddress() + " logged in as Admin";
             System.out.println(log);
-            synchronized (adminFeed){
+            synchronized (adminFeed) {
                 adminFeed.add(conn);
             }
         }
     }
 
     @Override
-    public void onClose( WebSocket conn, int code, String reason, boolean remote ) {
-        System.out.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected." );
-        synchronized (adminFeed){
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected.");
+        synchronized (adminFeed) {
             adminFeed.remove(conn);
         }
     }
 
     @Override
-    public void onMessage( WebSocket conn, String message ) {
+    public void onMessage(WebSocket conn, String message) {
         String log = "";
 
-        if(message.length() < 1)
+        if (message.length() < 1)
             return;
 
         conn.send(log);
         sendToAdmin(log);
-        System.out.println( conn + ": " + message );
+        System.out.println(conn + ": " + message);
     }
 
     @Override
-    public void onError( WebSocket conn, Exception ex ) {
+    public void onError(WebSocket conn, Exception ex) {
         ex.printStackTrace();
-        if( conn != null ) {
+        if (conn != null) {
             // some errors like port binding failed may not be assignable to a specific websocket
         }
     }
@@ -70,27 +70,25 @@ public class WSServer extends WebSocketServer {
     /**
      * Sends <var>text</var> to all currently connected WebSocket clients.
      *
-     * @param text
-     *            The String to send across the network.
-     * @throws InterruptedException
-     *             When socket related I/O errors occur.
+     * @param text The String to send across the network.
+     * @throws InterruptedException When socket related I/O errors occur.
      */
-    public void sendToAll( String text ) {
+    public void sendToAll(String text) {
         Collection<WebSocket> con = connections();
-        synchronized ( con ) {
-            for( WebSocket c : con ) {
-                c.send( text );
+        synchronized (con) {
+            for (WebSocket c : con) {
+                c.send(text);
             }
         }
     }
 
-    public void sendToAdmin( String text ) {
-        synchronized ( adminFeed ) {
-            for( WebSocket c : adminFeed ) {
-                if(c.isOpen())
-                    try{
-                        c.send( text );
-                    }catch (Exception e){
+    public void sendToAdmin(String text) {
+        synchronized (adminFeed) {
+            for (WebSocket c : adminFeed) {
+                if (c.isOpen())
+                    try {
+                        c.send(text);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
             }
@@ -98,18 +96,18 @@ public class WSServer extends WebSocketServer {
     }
 
     public void sendToSubscribers(String text, Channel channelInfo) {
-        synchronized ( channelInfo.wsSubscribers ) {
+        synchronized (channelInfo.wsSubscribers) {
             Iterator<WebSocket> iterator = channelInfo.wsSubscribers.iterator();
             while (iterator.hasNext()) {
                 WebSocket element = iterator.next();
 
-                if(element.isOpen()){
-                    try{
-                        element.send( text );
-                    }catch (Exception e){
+                if (element.isOpen()) {
+                    try {
+                        element.send(text);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     iterator.remove();
                 }
 

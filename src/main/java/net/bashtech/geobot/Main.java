@@ -17,24 +17,23 @@
 */
 
 package net.bashtech.geobot;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 
+import java.io.IOException;
+
 
 public class Main {
 
-	public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
-		String propertiesFile = "global.properties";
-		if(args.length > 0){
-			propertiesFile = args[0];
-		}
-		
-		BotManager bm = new BotManager(propertiesFile);
-	}
+    public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
+        String propertiesFile = "global.properties";
+        if (args.length > 0) {
+            propertiesFile = args[0];
+        }
+
+        BotManager bm = new BotManager(propertiesFile);
+    }
 
     public static boolean isInteger(String str) {
         if (str == null) {

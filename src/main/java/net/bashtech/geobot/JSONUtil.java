@@ -43,76 +43,76 @@ public class JSONUtil {
 //        System.out.println("Viewers: " + viewers);
 //    }
 
-    public static Long krakenViewers(String channel){
-        try{
+    public static Long krakenViewers(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/streams/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            JSONObject stream = (JSONObject)(jsonObject.get("stream"));
-            if(stream == null)
+            JSONObject stream = (JSONObject) (jsonObject.get("stream"));
+            if (stream == null)
                 return (long) 0;
 
-            Long viewers = (Long)stream.get("viewers");
+            Long viewers = (Long) stream.get("viewers");
             return viewers;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return (long) 0;
         }
 
     }
 
-    public static String krakenStatus(String channel){
-        try{
+    public static String krakenStatus(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            String status = (String)jsonObject.get("status");
+            String status = (String) jsonObject.get("status");
 
-            if(status == null)
+            if (status == null)
                 status = "(Not set)";
 
             return status;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "(Error querying API)";
         }
 
     }
 
-    public static String krakenGame(String channel){
-        try{
+    public static String krakenGame(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            String game = (String)jsonObject.get("game");
+            String game = (String) jsonObject.get("game");
 
-            if(game == null)
+            if (game == null)
                 game = "(Not set)";
 
             return game;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "(Error querying API)";
         }
 
     }
 
-    public static String lastFM(String user){
+    public static String lastFM(String user) {
         String api_key = BotManager.getInstance().LastFMAPIKey;
-        try{
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=" + user + "&format=json&limit=1&api_key=" + api_key));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            JSONObject recenttracks = (JSONObject)(jsonObject.get("recenttracks"));
-            if(recenttracks.get("track") instanceof JSONArray){
+            JSONObject recenttracks = (JSONObject) (jsonObject.get("recenttracks"));
+            if (recenttracks.get("track") instanceof JSONArray) {
                 JSONArray track = (JSONArray) recenttracks.get("track");
 
                 JSONObject index0 = (JSONObject) track.get(0);
@@ -122,60 +122,60 @@ public class JSONUtil {
 
                 return trackName + " by " + artist;
 
-            }else{
+            } else {
                 return "(Nothing)";
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "(Error querying API)";
         }
 
     }
 
-    public static String steam(String userID, String retValues){
+    public static String steam(String userID, String retValues) {
         String api_key = BotManager.getInstance().SteamAPIKey;
 
-        try{
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?steamids=" + userID + "&key=" + api_key));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            JSONObject response = (JSONObject)(jsonObject.get("response"));
+            JSONObject response = (JSONObject) (jsonObject.get("response"));
             JSONArray players = (JSONArray) response.get("players");
 
-            if(players.size() > 0){
+            if (players.size() > 0) {
                 JSONObject index0 = (JSONObject) players.get(0);
                 String profileurl = (String) index0.get("profileurl");
                 String gameextrainfo = (String) index0.get("gameextrainfo");
                 String gameserverip = (String) index0.get("gameserverip");
                 String gameid = (String) index0.get("gameid");
 
-                if(retValues.equals("profile"))
+                if (retValues.equals("profile"))
                     return JSONUtil.shortenURL(profileurl);
-                else if(retValues.equals("game"))
+                else if (retValues.equals("game"))
                     return (gameextrainfo != null ? gameextrainfo : "(unavailable)");
-                else if(retValues.equals("server"))
+                else if (retValues.equals("server"))
                     return (gameserverip != null ? gameserverip : "(unavailable)");
-                else if(retValues.equals("store"))
+                else if (retValues.equals("store"))
                     return (gameid != null ? "http://store.steampowered.com/app/" + gameid : "(unavailable)");
                 else
-                    return "Profile: " + JSONUtil.shortenURL(profileurl) + ( gameextrainfo != null ? ", Game: " + gameextrainfo : "") + ( gameserverip != null ? ", Server: " + gameserverip : "");
+                    return "Profile: " + JSONUtil.shortenURL(profileurl) + (gameextrainfo != null ? ", Game: " + gameextrainfo : "") + (gameserverip != null ? ", Server: " + gameserverip : "");
 
-            }else{
+            } else {
                 return "Error querying API";
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "Error querying API";
         }
     }
 
-    public static String shortenURL(String url){
+    public static String shortenURL(String url) {
         String login = BotManager.getInstance().bitlyLogin;
         String api_key = BotManager.getInstance().bitlyAPIKey;
 
-        try{
+        try {
             String encodedURL = "";
             try {
                 encodedURL = URLEncoder.encode(url, "UTF-8");
@@ -190,20 +190,20 @@ public class JSONUtil {
             JSONObject jsonObject = (JSONObject) obj;
             String status_txt = (String) jsonObject.get("status_txt");
 
-            if(status_txt.equalsIgnoreCase("OK")){
+            if (status_txt.equalsIgnoreCase("OK")) {
                 JSONObject data = (JSONObject) jsonObject.get("data");
                 String shortenedUrl = (String) data.get("url");
                 return shortenedUrl;
-            }else{
+            } else {
                 return url;
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return url;
         }
     }
 
-    public static String urlEncode(String data){
+    public static String urlEncode(String data) {
         try {
             data = URLEncoder.encode(data, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -213,51 +213,51 @@ public class JSONUtil {
         return data;
     }
 
-    public static boolean krakenIsLive(String channel){
-        try{
+    public static boolean krakenIsLive(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/streams/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+            JSONObject stream = (JSONObject) (jsonObject.get("stream"));
 
-            if(stream != null)
+            if (stream != null)
                 return true;
             else
                 return false;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }
 
     }
 
-    public static boolean krakenChannelExist(String channel){
-        if(BotManager.getInstance().twitchChannels == false)
+    public static boolean krakenChannelExist(String channel) {
+        if (BotManager.getInstance().twitchChannels == false)
             return true;
 
-        try{
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            Long _id = (Long)jsonObject.get("_id");
+            Long _id = (Long) jsonObject.get("_id");
 
             return (_id != null);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //ex.printStackTrace();
             return false;
         }
 
     }
 
-    public static boolean krakenOutdatedChannel(String channel){
-        if(BotManager.getInstance().twitchChannels == false)
+    public static boolean krakenOutdatedChannel(String channel) {
+        if (BotManager.getInstance().twitchChannels == false)
             return false;
 
-        try{
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
 
@@ -265,15 +265,15 @@ public class JSONUtil {
 
             Object statusO = jsonObject.get("status");
             Long status;
-            if(statusO != null){
+            if (statusO != null) {
                 status = (Long) statusO;
-                if(status == 422 || status == 404){
+                if (status == 422 || status == 404) {
                     System.out.println("Channel " + channel + " returned status: " + status + ". Parting channel.");
                     return true;
                 }
             }
 
-            String updatedAtString = (String)jsonObject.get("updated_at");
+            String updatedAtString = (String) jsonObject.get("updated_at");
             //System.out.println("Time: " + updatedAtString);
 
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -282,18 +282,18 @@ public class JSONUtil {
 
             try {
                 Date then = format.parse(updatedAtString);
-                long differenceSec = (long) (System.currentTimeMillis()/1000) - (then.getTime()/1000);
-                differenceDay = (long)(differenceSec / 86400);
-            }catch (Exception exi){
+                long differenceSec = (long) (System.currentTimeMillis() / 1000) - (then.getTime() / 1000);
+                differenceDay = (long) (differenceSec / 86400);
+            } catch (Exception exi) {
                 exi.printStackTrace();
             }
 
-            if(differenceDay > 30){
+            if (differenceDay > 30) {
                 System.out.println("Channel " + channel + " not updated in " + differenceDay + " days. Parting channel.");
                 return true;
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return false;
         }
 
@@ -301,87 +301,87 @@ public class JSONUtil {
 
     }
 
-    public static Long updateTMIUserList(String channel, Set<String> staff, Set<String> admins, Set<String> mods){
-        try{
+    public static Long updateTMIUserList(String channel, Set<String> staff, Set<String> admins, Set<String> mods) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("http://tmi.twitch.tv/group/user/" + channel + "/chatters"));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            Long chatter_count = (Long)jsonObject.get("chatter_count");
+            Long chatter_count = (Long) jsonObject.get("chatter_count");
 
-            JSONObject chatters = (JSONObject)jsonObject.get("chatters");
+            JSONObject chatters = (JSONObject) jsonObject.get("chatters");
 
 
-            JSONArray staffJO = (JSONArray)chatters.get("staff");
-            for(Object user : staffJO){
-                staff.add((String)user);
+            JSONArray staffJO = (JSONArray) chatters.get("staff");
+            for (Object user : staffJO) {
+                staff.add((String) user);
             }
 
-            JSONArray adminsJO = (JSONArray)chatters.get("admins");
-            for(Object user : adminsJO){
-                admins.add((String)user);
+            JSONArray adminsJO = (JSONArray) chatters.get("admins");
+            for (Object user : adminsJO) {
+                admins.add((String) user);
             }
 
-            JSONArray modsJO = (JSONArray)chatters.get("moderators");
-            for(Object user : modsJO){
-                mods.add((String)user);
+            JSONArray modsJO = (JSONArray) chatters.get("moderators");
+            for (Object user : modsJO) {
+                mods.add((String) user);
             }
 
             return chatter_count;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return new Long(-1);
         }
 
     }
 
-    public static Long getSourceRes(String channel){
-        try{
+    public static Long getSourceRes(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("http://usher.twitch.tv/find/" + channel + ".json?type=any"));
 
             JSONArray outerArray = (JSONArray) obj;
 
-            for(Object transcodeObject : outerArray){
-                JSONObject transcode = (JSONObject)transcodeObject;
+            for (Object transcodeObject : outerArray) {
+                JSONObject transcode = (JSONObject) transcodeObject;
 
-                String display = (String)transcode.get("display");
-                Long video_height = (Long)transcode.get("video_height");
+                String display = (String) transcode.get("display");
+                Long video_height = (Long) transcode.get("video_height");
 
-                if(display.equalsIgnoreCase("source"))
+                if (display.equalsIgnoreCase("source"))
                     return video_height;
             }
 
 
             return new Long(0);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return new Long(0);
         }
 
     }
 
-    public static Double getSourceBitrate(String channel){
-        try{
+    public static Double getSourceBitrate(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("http://usher.twitch.tv/find/" + channel + ".json?type=any"));
 
             JSONArray outerArray = (JSONArray) obj;
 
-            for(Object transcodeObject : outerArray){
-                JSONObject transcode = (JSONObject)transcodeObject;
+            for (Object transcodeObject : outerArray) {
+                JSONObject transcode = (JSONObject) transcodeObject;
 
-                String display = (String)transcode.get("display");
-                Double bitrate = (Double)transcode.get("bitrate");
+                String display = (String) transcode.get("display");
+                Double bitrate = (Double) transcode.get("bitrate");
 
-                if(display.equalsIgnoreCase("source"))
+                if (display.equalsIgnoreCase("source"))
                     return bitrate;
             }
 
 
             return new Double(0);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return new Double(0);
         }

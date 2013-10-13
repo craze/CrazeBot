@@ -21,34 +21,34 @@ package net.bashtech.geobot;
 
 public class MessageReplaceParser {
 
-    public static String parseMessage(String channel, String message){
+    public static String parseMessage(String channel, String message) {
         Channel ci = BotManager.getInstance().getChannel(channel);
 
-        if(message.contains("(_GAME_)"))
+        if (message.contains("(_GAME_)"))
             message = message.replace("(_GAME_)", JSONUtil.krakenGame(channel.substring(1)));
-        if(message.contains("(_STATUS_)"))
+        if (message.contains("(_STATUS_)"))
             message = message.replace("(_STATUS_)", JSONUtil.krakenStatus(channel.substring(1)));
-        if(message.contains("(_VIEWERS_)"))
+        if (message.contains("(_VIEWERS_)"))
             message = message.replace("(_VIEWERS_)", "" + JSONUtil.krakenViewers(channel.substring(1)));
-        if(message.contains("(_CHATTERS_)"))
+        if (message.contains("(_CHATTERS_)"))
             message = message.replace("(_CHATTERS_)", "" + ReceiverBot.getInstance().getUsers(channel).length);
-        if(message.contains("(_SONG_)"))
+        if (message.contains("(_SONG_)"))
             message = message.replace("(_SONG_)", JSONUtil.lastFM(ci.getLastfm()));
-        if(message.contains("(_SONG_)"))
+        if (message.contains("(_SONG_)"))
             message = message.replace("(_SONG_)", JSONUtil.lastFM(ci.getLastfm()));
-        if(message.contains("(_STEAM_PROFILE_)"))
-            message = message.replace("(_STEAM_PROFILE_)", JSONUtil.steam(ci.getSteam(),"profile"));
-        if(message.contains("(_STEAM_GAME_)"))
-            message = message.replace("(_STEAM_GAME_)", JSONUtil.steam(ci.getSteam(),"game"));
-        if(message.contains("(_STEAM_SERVER_)"))
-            message = message.replace("(_STEAM_SERVER_)", JSONUtil.steam(ci.getSteam(),"server"));
-        if(message.contains("(_STEAM_STORE_)"))
-            message = message.replace("(_STEAM_STORE_)", JSONUtil.steam(ci.getSteam(),"store"));
-        if(message.contains("(_BOT_HELP_)"))
+        if (message.contains("(_STEAM_PROFILE_)"))
+            message = message.replace("(_STEAM_PROFILE_)", JSONUtil.steam(ci.getSteam(), "profile"));
+        if (message.contains("(_STEAM_GAME_)"))
+            message = message.replace("(_STEAM_GAME_)", JSONUtil.steam(ci.getSteam(), "game"));
+        if (message.contains("(_STEAM_SERVER_)"))
+            message = message.replace("(_STEAM_SERVER_)", JSONUtil.steam(ci.getSteam(), "server"));
+        if (message.contains("(_STEAM_STORE_)"))
+            message = message.replace("(_STEAM_STORE_)", JSONUtil.steam(ci.getSteam(), "store"));
+        if (message.contains("(_BOT_HELP_)"))
             message = message.replace("(_BOT_HELP_)", BotManager.getInstance().bothelpMessage);
-        if(message.contains("(_CHANNEL_URL_)"))
+        if (message.contains("(_CHANNEL_URL_)"))
             message = message.replace("(_CHANNEL_URL_)", "twitch.tv/" + channel.substring(1));
-        if(message.contains("(_TWEET_URL_)")){
+        if (message.contains("(_TWEET_URL_)")) {
             String url = JSONUtil.shortenURL("https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, ci.getClickToTweetFormat())));
             message = message.replace("(_TWEET_URL_)", url);
         }

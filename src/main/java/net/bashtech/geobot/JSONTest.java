@@ -1,6 +1,5 @@
 package net.bashtech.geobot;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -14,32 +13,20 @@ import java.util.Scanner;
 
 public class JSONTest {
     public static void main(String[] args) {
-
-
-/*        System.out.println("tal: " + JSONTest.krakenIsLive("talutha"));
-        System.out.println("bwana: " + JSONTest.krakenIsLive("bwana"));
-        System.out.println("lirik: " + JSONTest.krakenIsLive("lirik"));
-        System.out.println("dansgaming: " + JSONTest.krakenIsLive("dansgaming"));
-        System.out.println("giantwaffle: " + JSONTest.krakenIsLive("giantwaffle"));
-
-        System.out.println("bgeorge" + JSONUtil.krakenChannelExist("bgeorge"));
-        System.out.println("bwana" + JSONUtil.krakenChannelExist("bwana"));
-        System.out.println("dylanlive" + JSONUtil.krakenChannelExist("dylanlive"));
-        System.out.println("communitychat" + JSONUtil.krakenChannelExist("communitychat"));*/
-
+        //Tester
     }
 
 
-    public static String putRemoteData(String urlString, String postData){
+    public static String putRemoteData(String urlString, String postData) {
         String krakenOAuthToken = "";
 
         URL url;
         HttpURLConnection conn;
 
-        try{
-            url=new URL(urlString);
+        try {
+            url = new URL(urlString);
 
-            conn=(HttpURLConnection)url.openConnection();
+            conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
 
@@ -52,42 +39,40 @@ public class JSONTest {
             out.print(postData);
             out.close();
 
-            String response= "";
+            String response = "";
 
             Scanner inStream = new Scanner(conn.getInputStream());
 
-            while(inStream.hasNextLine())
-                response+=(inStream.nextLine());
+            while (inStream.hasNextLine())
+                response += (inStream.nextLine());
 
             System.out.println(conn.getResponseCode());
             System.out.println(response);
             return response;
 
-        }
-        catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }
-        catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
 
         return "";
     }
 
-    public static boolean krakenIsLive(String channel){
-        try{
+    public static boolean krakenIsLive(String channel) {
+        try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/streams/" + channel));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            JSONObject stream = (JSONObject)(jsonObject.get("stream"));
+            JSONObject stream = (JSONObject) (jsonObject.get("stream"));
 
-            if(stream != null)
+            if (stream != null)
                 return true;
             else
                 return false;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }

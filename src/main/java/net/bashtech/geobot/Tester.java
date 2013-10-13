@@ -17,17 +17,14 @@
 */
 
 package net.bashtech.geobot;
-import java.io.IOException;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.jibble.pircbot.IrcException;
-import org.jibble.pircbot.NickAlreadyInUseException;
 
 
 public class Tester {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Set<String> staff = new HashSet<String>();
         Set<String> admins = new HashSet<String>();
         Set<String> mods = new HashSet<String>();

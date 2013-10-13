@@ -28,7 +28,7 @@ public class ScheduledCommand {
     int messageDifference;
     boolean active;
 
-    public ScheduledCommand(String _channel, String _key, String _pattern, int _messageDifference, boolean _active){
+    public ScheduledCommand(String _channel, String _key, String _pattern, int _messageDifference, boolean _active) {
         key = _key;
         pattern = _pattern; //In seconds
         lastMessageCount = 0;
@@ -38,29 +38,29 @@ public class ScheduledCommand {
         s = new Scheduler();
         System.out.println("Scheduling " + key + " on " + pattern);
         s.schedule(pattern, new ScheduledCommandTask(_channel, key, messageDifference));
-        if(active)
+        if (active)
             s.start();
     }
 
-    public void setStatus(boolean status){
-        if(status == active)
+    public void setStatus(boolean status) {
+        if (status == active)
             return;
-        else if(status == true){
+        else if (status == true) {
             s.start();
             active = true;
-        }else if(status == false){
+        } else if (status == false) {
             System.out.println("Stopping timer");
             s.stop();
             active = false;
         }
     }
 
-    private class ScheduledCommandTask implements Runnable{
+    private class ScheduledCommandTask implements Runnable {
         private String key;
         private String channel;
         private int messageDifference;
 
-        public ScheduledCommandTask(String _channel, String _key, int _messageDifference){
+        public ScheduledCommandTask(String _channel, String _key, int _messageDifference) {
             key = _key;
             channel = _channel;
             messageDifference = _messageDifference;
@@ -68,13 +68,13 @@ public class ScheduledCommand {
 
         public void run() {
             Channel channelInfo = BotManager.getInstance().getChannel(channel);
-            if(channelInfo.messageCount - ScheduledCommand.this.lastMessageCount >= messageDifference){
+            if (channelInfo.messageCount - ScheduledCommand.this.lastMessageCount >= messageDifference) {
                 String command = channelInfo.getCommand(key);
                 ReceiverBot.getInstance().send(channel, command);
 
-                if(key.equalsIgnoreCase("!commercial"))
+                if (key.equalsIgnoreCase("!commercial"))
                     channelInfo.runCommercial();
-            }else{
+            } else {
                 //System.out.println("DEBUG: No messages received since last send - " + key);
             }
 

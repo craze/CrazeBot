@@ -1,23 +1,8 @@
 package net.bashtech.geobot;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Logger;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public final class PropertiesFile {
 
@@ -289,7 +274,7 @@ public final class PropertiesFile {
      * <blockquote><pre>
      * PropertiesFile settings = new PropertiesFile("settings.properties");
      * Map<String, String> mappedSettings;
-     * 
+     * <p/>
      * try {
      * 	 mappedSettings = settings.returnMap();
      * } catch (Exception ex) {
@@ -394,8 +379,8 @@ public final class PropertiesFile {
      * Remove a key from the file if it exists.
      * This will save() which will invoke a load() on the file.
      *
-     * @see #save()
      * @param var The <code>key</code> that will be removed from the file
+     * @see #save()
      */
     public void removeKey(String var) {
         Boolean changed = false;
@@ -440,9 +425,9 @@ public final class PropertiesFile {
     /**
      * Checks the existance of a <code>key</code>.
      *
-     * @see #containsKey(java.lang.String)
      * @param key The <code>key</code> in question of existance.
      * @return <code>Boolean</code> - True for existance, false for <code>key</code> found.
+     * @see #containsKey(java.lang.String)
      */
     public boolean keyExists(String key) {
         try {
@@ -456,8 +441,8 @@ public final class PropertiesFile {
      * Returns the value of the <code>key</code> given as a <code>String</code>,
      * however we do not set a string if no <code>key</code> is found.
      *
-     * @see #getProperty(java.lang.String)
      * @param key The <code>key</code> we will retrieve the property from, if no <code>key</code> is found default to "" or empty.
+     * @see #getProperty(java.lang.String)
      */
     public String getString(String key) {
         if (this.containsKey(key)) {
@@ -471,11 +456,11 @@ public final class PropertiesFile {
      * Returns the value of the <code>key</code> given as a <code>String</code>.
      * If it is not found, it will invoke saving the default <code>value</code> to the properties file.
      *
-     * @see #setString(java.lang.String, java.lang.String)
-     * @see #getProperty(java.lang.String)
-     * @param key The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
+     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
      * @param value The default value that we will be setting if no prior <code>key</code> is found.
      * @return java.lang.String Either we will return the default value or a prior existing value depending on existance.
+     * @see #setString(java.lang.String, java.lang.String)
+     * @see #getProperty(java.lang.String)
      */
     public String getString(String key, String value) {
         if (this.containsKey(key)) {
@@ -489,9 +474,9 @@ public final class PropertiesFile {
     /**
      * Save the value given as a <code>String</code> on the specified key.
      *
-     * @see #save()
-     * @param key The <code>key</code> that we will be addressing the <code>value</code> to.
+     * @param key   The <code>key</code> that we will be addressing the <code>value</code> to.
      * @param value The <code>value</code> we will be setting inside the <code>.[properties]</code> file.
+     * @see #save()
      */
     public void setString(String key, String value) {
         props.put(key, value);
@@ -503,8 +488,8 @@ public final class PropertiesFile {
      * Returns the value of the <code>key</code> given in a Integer,
      * however we do not set a string if no <code>key</code> is found.
      *
-     * @see #getProperty(String var)
      * @param key The <code>key</code> we will retrieve the property from, if no <code>key</code> is found default to 0
+     * @see #getProperty(String var)
      */
     public int getInt(String key) {
         if (this.containsKey(key)) {
@@ -517,10 +502,10 @@ public final class PropertiesFile {
     /**
      * Returns the int value of a key
      *
-     * @see #setInt(String key, int value)
-     * @param key The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
+     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
      * @param value The default value that we will be setting if no prior <code>key</code> is found.
      * @return <code>Integer</code> - Either we will return the default value or a prior existing value depending on existance.
+     * @see #setInt(String key, int value)
      */
     public int getInt(String key, int value) {
         if (this.containsKey(key)) {
@@ -535,9 +520,9 @@ public final class PropertiesFile {
     /**
      * Save the value given as a <code>int</code> on the specified key.
      *
-     * @see #save()
-     * @param key The <code>key</code> that we will be addressing the <code>value</code> to.
+     * @param key   The <code>key</code> that we will be addressing the <code>value</code> to.
      * @param value The <code>value</code> we will be setting inside the <code>.[properties]</code> file.
+     * @see #save()
      */
     public void setInt(String key, int value) {
         props.put(key, String.valueOf(value));
@@ -549,8 +534,8 @@ public final class PropertiesFile {
      * Returns the value of the <code>key</code> given in a Double,
      * however we do not set a string if no <code>key</code> is found.
      *
-     * @see #getProperty(String var)
      * @param key The <code>key</code> we will retrieve the property from, if no <code>key</code> is found default to 0.0
+     * @see #getProperty(String var)
      */
     public double getDouble(String key) {
         if (this.containsKey(key)) {
@@ -563,10 +548,10 @@ public final class PropertiesFile {
     /**
      * Returns the double value of a key
      *
-     * @see #setDouble(String key, double value)
-     * @param key The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
+     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
      * @param value The default value that we will be setting if no prior <code>key</code> is found.
      * @return <code>Double</code> - Either we will return the default value or a prior existing value depending on existance.
+     * @see #setDouble(String key, double value)
      */
     public double getDouble(String key, double value) {
         if (this.containsKey(key)) {
@@ -580,9 +565,9 @@ public final class PropertiesFile {
     /**
      * Save the value given as a <code>double</code> on the specified key.
      *
-     * @see #save()
-     * @param key The <code>key</code> that we will be addressing the <code>value</code> to.
+     * @param key   The <code>key</code> that we will be addressing the <code>value</code> to.
      * @param value The <code>value</code> we will be setting inside the <code>.[properties]</code> file.
+     * @see #save()
      */
     public void setDouble(String key, double value) {
         props.put(key, String.valueOf(value));
@@ -594,8 +579,8 @@ public final class PropertiesFile {
      * Returns the value of the <code>key</code> given in a Long,
      * however we do not set a string if no <code>key</code> is found.
      *
-     * @see #getProperty(String var)
      * @param key The <code>key</code> we will retrieve the property from, if no <code>key</code> is found default to 0L
+     * @see #getProperty(String var)
      */
     public long getLong(String key) {
         if (this.containsKey(key)) {
@@ -608,10 +593,10 @@ public final class PropertiesFile {
     /**
      * Returns the long value of a key
      *
-     * @see #setLong(String key, long value)
-     * @param key The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
+     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
      * @param value The default value that we will be setting if no prior <code>key</code> is found.
      * @return <code>Long</code> - Either we will return the default value or a prior existing value depending on existance.
+     * @see #setLong(String key, long value)
      */
     public long getLong(String key, long value) {
         if (this.containsKey(key)) {
@@ -625,9 +610,9 @@ public final class PropertiesFile {
     /**
      * Save the value given as a <code>long</code> on the specified key.
      *
-     * @see #save()
-     * @param key The <code>key</code> that we will be addressing the <code>value</code> to.
+     * @param key   The <code>key</code> that we will be addressing the <code>value</code> to.
      * @param value The <code>value</code> we will be setting inside the <code>.[properties]</code> file.
+     * @see #save()
      */
     public void setLong(String key, long value) {
         props.put(key, String.valueOf(value));
@@ -639,8 +624,8 @@ public final class PropertiesFile {
      * Returns the value of the <code>key</code> given in a Boolean,
      * however we do not set a string if no <code>key</code> is found.
      *
-     * @see #getProperty(String var)
      * @param key The <code>key</code> we will retrieve the property from, if no <code>key</code> is found default to false
+     * @see #getProperty(String var)
      */
     public boolean getBoolean(String key) {
         if (this.containsKey(key)) {
@@ -653,10 +638,10 @@ public final class PropertiesFile {
     /**
      * Returns the boolean value of a key
      *
-     * @see #setBoolean(String key, boolean value)
-     * @param key The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
+     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
      * @param value The default value that we will be setting if no prior <code>key</code> is found.
      * @return <code>Boolean</code> - Either we will return the default value or a prior existing value depending on existance.
+     * @see #setBoolean(String key, boolean value)
      */
     public boolean getBoolean(String key, boolean value) {
         if (this.containsKey(key)) {
@@ -670,9 +655,9 @@ public final class PropertiesFile {
     /**
      * Save the value given as a <code>boolean</code> on the specified key.
      *
-     * @see #save()
-     * @param key The <code>key</code> that we will be addressing the <code>value</code> to.
+     * @param key   The <code>key</code> that we will be addressing the <code>value</code> to.
      * @param value The <code>value</code> we will be setting inside the <code>.[properties]</code> file.
+     * @see #save()
      */
     public void setBoolean(String key, boolean value) {
         props.put(key, String.valueOf(value));
