@@ -900,8 +900,8 @@ public class ReceiverBot extends PircBot {
                         }
                     }else if(msg.length > 2 && isOp){
                         if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
-                            String pattern = msg[2];
-                            String response = msg[3];
+                            String pattern = msg[2].replaceAll("_", " ");
+                            String response = fuseArray(msg, 3);
 
                             channelInfo.addAutoReply(pattern, response);
                             send(channel, "Autoreply added.");
