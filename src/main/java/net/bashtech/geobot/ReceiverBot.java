@@ -63,7 +63,6 @@ public class ReceiverBot extends PircBot {
 		linkPatterns[0] = Pattern.compile(".*http://.*", Pattern.CASE_INSENSITIVE);
         linkPatterns[1] = Pattern.compile(".*https://.*", Pattern.CASE_INSENSITIVE);
         linkPatterns[2] = Pattern.compile(".*[-A-Za-z0-9]+(\\.|\\(dot\\))(ac|ad|ae|aero|af|ag|ai|al|am|an|ao|aq|ar|as|asia|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|biz|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cat|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|com|coop|cr|cu|cv|cw|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|info|int|io|iq|ir|is|it|je|jm|jo|jobs|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mo|mobi|mp|mq|mr|ms|mt|mu|museum|mv|mw|mx|my|mz|na|name|nc|ne|net|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|post|pr|pro|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sx|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|travel|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|xxx|ye|yt|za|zm|zw)(\\W|$).*", Pattern.CASE_INSENSITIVE);
-        //linkPatterns[2] = Pattern.compile(".*[-A-Za-z0-9]+(\\.|\\(dot\\))(com|org|net|tv|ca|xxx|cc|de|eu|fm|gov|info|io|jobs|me|mil|mobi|name|rn|tel|travel|tz|uk|co|us|be|sh|ly|in|gl)(\\s+|/|$|,|\\.|\\?).*");
         linkPatterns[3] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
         linkPatterns[4] = Pattern.compile("vine.*4.*google", Pattern.CASE_INSENSITIVE);
 
@@ -624,16 +623,7 @@ public class ReceiverBot extends PircBot {
                     return;
 				}
 
-//                // !tweet
-//                if (msg[0].equalsIgnoreCase("!tweet")) {
-//                    log("RB: Matched command !tweet");
-//                    String url = "https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, channelInfo.getClickToTweetFormat()));
-//                    send(channel, "Current Click to Tweet is " + JSONUtil.shortenURL(url));
-//                    return;
-//                }
-
-
-        // !followme - Owner
+                // !followme - Owner
                 if (msg[0].equalsIgnoreCase(prefix + "followme") && isOwner && BotManager.getInstance().twitchChannels) {
                     log("RB: Matched command !followme");
                     BotManager.getInstance().followChannel(twitchName);
@@ -660,21 +650,7 @@ public class ReceiverBot extends PircBot {
 					}
                     return;
 				}
-				
-//				// !flip - All
-//				if(msg[0].equalsIgnoreCase("!flip") && (channelInfo.checkThrow() || isRegular)){
-//					log("RB: Matched command !flip");
-//					if(msg.length > 1){
-//						String throwMessage = "";
-//						for(int i=1;i<msg.length;i++){
-//							throwMessage += msg[i] + " ";
-//						}
-//						//send(channel, "(?°?°???" + throwMessage);
-//						send(channel, throwMessage + "TABLEFLIP");
-//					}
-//                    return;
-//				}
-				
+
 				// !topic
 				if(msg[0].equalsIgnoreCase(prefix + "topic") && channelInfo.useTopic){
 					log("RB: Matched command !topic");
@@ -907,7 +883,7 @@ public class ReceiverBot extends PircBot {
                             channelInfo.addAutoReply(pattern, response);
                             send(channel, "Autoreply added.");
                         }else if((msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) && msg.length > 2){
-                            if(isInteger(msg[2])){
+                            if(Main.isInteger(msg[2])){
                                 int pos = Integer.parseInt(msg[2]);
 
                                 if(channelInfo.removeAutoReply(pos))
@@ -1261,12 +1237,12 @@ public class ReceiverBot extends PircBot {
  	 							send(channel, "Caps filter percent: " + channelInfo.getfilterCapsPercent());
  							}
  						}else if(msg[1].equalsIgnoreCase("minchars")){
- 							if(msg.length > 2 && isInteger(msg[2])){
+ 							if(msg.length > 2 && Main.isInteger(msg[2])){
  								channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
  	 							send(channel, "Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
  							}
  						}else if(msg[1].equalsIgnoreCase("mincaps")){
- 							if(msg.length > 2 && isInteger(msg[2])){
+ 							if(msg.length > 2 && Main.isInteger(msg[2])){
  								channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
  	 							send(channel, "Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
  							}
@@ -1290,7 +1266,7 @@ public class ReceiverBot extends PircBot {
  							channelInfo.setFilterEmotes(false);
  							send(channel, "Emotes filter: " + channelInfo.getFilterEmotes());
  						}else if(msg[1].equalsIgnoreCase("max")){
- 							if(msg.length > 2 && isInteger(msg[2])){
+ 							if(msg.length > 2 && Main.isInteger(msg[2])){
  								channelInfo.setFilterEmotesMax(Integer.parseInt(msg[2]));
  	 							send(channel, "Emotes filter max: " + channelInfo.getFilterEmotesMax());
  							}
@@ -1314,12 +1290,12 @@ public class ReceiverBot extends PircBot {
                             channelInfo.setFilterSymbols(false);
                             send(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
                         }else if(msg[1].equalsIgnoreCase("percent")){
-                            if(msg.length > 2 && isInteger(msg[2])){
+                            if(msg.length > 2 && Main.isInteger(msg[2])){
                                 channelInfo.setFilterSymbolsPercent(Integer.parseInt(msg[2]));
                                 send(channel, "Symbols filter percent: " + channelInfo.getFilterSymbolsPercent());
                             }
                         }else if(msg[1].equalsIgnoreCase("min")){
-                            if(msg.length > 2 && isInteger(msg[2])){
+                            if(msg.length > 2 && Main.isInteger(msg[2])){
                                 channelInfo.setFilterSymbolsMin(Integer.parseInt(msg[2]));
                                 send(channel, "Symbols filter min symbols: " + channelInfo.getFilterSymbolsMin());
                             }
@@ -1465,7 +1441,7 @@ public class ReceiverBot extends PircBot {
                         if(msg.length < 3){
                             send(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
                         }else{
-                            if(isInteger(msg[2])){
+                            if(Main.isInteger(msg[2])){
                                 int duration = Integer.parseInt(msg[2]);
                                 channelInfo.setTimeoutDuration(duration);
                                 send(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
@@ -2117,31 +2093,6 @@ public class ReceiverBot extends PircBot {
 			channelInfo.getGiveaway().getTimer().schedule(new giveawayTimer(channelInfo),delay);
 		}
 	}
-
-/*	private String getMetaInfo(String key, Channel channelInfo) throws IllegalArgumentException, IOException, SAXException, ParserConfigurationException{
-		URL feedSource = new URL("http://twitch.tv/meta/" + channelInfo.getTwitchName() + ".xml");
-		URLConnection uc = feedSource.openConnection();
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(uc.getInputStream());
-		doc.getDocumentElement().normalize();
-
-		NodeList nList = doc.getElementsByTagName("meta");
- 
-		for (int temp = 0; temp < nList.getLength(); temp++) {
- 
-		   Node nNode = nList.item(temp);
-		   if (nNode.getNodeType() == Node.ELEMENT_NODE) {
- 
-		      Element eElement = (Element) nNode;
- 
-		      return getTagValue(key, eElement);
- 
-		   }
-		}
-		
-		return "";
-	}*/
 	
 	private String getStreamList(String key, Channel channelInfo) throws Exception{
 		URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
@@ -2152,20 +2103,20 @@ public class ReceiverBot extends PircBot {
 		doc.getDocumentElement().normalize();
 
 		NodeList nList = doc.getElementsByTagName("stream");
-		if(nList.getLength() < 1) 
+		if(nList.getLength() < 1)
 			throw new Exception();
- 
+
 		for (int temp = 0; temp < nList.getLength(); temp++) {
- 
+
 		   Node nNode = nList.item(temp);
 		   if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 		      Element eElement = (Element) nNode;
-		      
+
 		      return getTagValue(key, eElement);
- 
+
 		   }
 		}
-		
+
 		return "";
 	}
 
@@ -2190,29 +2141,7 @@ public class ReceiverBot extends PircBot {
 		return "Error getting date.";	
 	}
 
-	public static boolean isInteger(String str) {
-        if (str == null) {
-                return false;
-        }
-        int length = str.length();
-        if (length == 0) {
-                return false;
-        }
-        int i = 0;
-        if (str.charAt(0) == '-') {
-                if (length == 1) {
-                        return false;
-                }
-                i = 1;
-        }
-        for (; i < length; i++) {
-                char c = str.charAt(i);
-                if (c <= '/' || c >= ':') {
-                        return false;
-                }
-        }
-        return true;
-	}
+
 	
 	public boolean checkStalePing(){
 		if(lastPing == -1)
