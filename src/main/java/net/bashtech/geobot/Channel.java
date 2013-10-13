@@ -316,6 +316,11 @@ public class Channel {
     public void addAutoReply(String trigger, String response){
         trigger = trigger.replaceAll(",,", ""); response.replaceAll(",,","");
 
+        if(!trigger.startsWith("REGEX:"))
+            trigger = trigger.replaceAll("\\*", ".*");
+        else
+            trigger = trigger.replaceAll("REGEX:", "");
+
         autoReplyTrigger.add(Pattern.compile(trigger, Pattern.CASE_INSENSITIVE));
         autoReplyResponse.add(response);
 
@@ -1326,8 +1331,10 @@ public class Channel {
         String[] autoReplyResponseString = config.getString("autoReplyResponse").split(",,");
 
         for(int i = 0; i < autoReplyTriggersString.length; i++){
-            if(autoReplyTriggersString[i].length() > 0)
-                addAutoReply(autoReplyTriggersString[i], autoReplyResponseString[i]);
+            if(autoReplyTriggersString[i].length() > 0){
+                autoReplyTrigger.add(Pattern.compile(autoReplyTriggersString[i], Pattern.CASE_INSENSITIVE));
+                autoReplyResponse.add(autoReplyResponseString[i]);
+            }
         }
 		
 		String[] regularsRaw = config.getString("regulars").split(",");
