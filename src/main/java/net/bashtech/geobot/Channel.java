@@ -49,6 +49,9 @@ public class Channel {
 	HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
 
+    List<Pattern> autoReplyTrigger = new ArrayList<Pattern>();
+    List<String> autoReplyResponse = new ArrayList<String>();
+
     private boolean filterCaps;
 	private int filterCapsPercent;
 	private int filterCapsMinCharacters;
@@ -310,7 +313,44 @@ public class Channel {
 		
 	}
 
-	//#####################################################
+    public void addAutoReply(String trigger, String response){
+        trigger = trigger.replaceAll(",,", ""); response.replaceAll(",,","");
+
+        autoReplyTrigger.add(Pattern.compile(trigger, Pattern.CASE_INSENSITIVE));
+        autoReplyResponse.add(response);
+
+        saveAutoReply();
+    }
+
+    public boolean removeAutoReply(int pos){
+        pos = pos -1;
+
+        if(autoReplyTrigger.size() < pos - 1)
+            return false;
+
+        autoReplyTrigger.remove(pos);
+        autoReplyResponse.remove(pos);
+
+        saveAutoReply();
+
+        return  true;
+    }
+
+    private void saveAutoReply() {
+        String triggerString = "";
+        String responseString = "";
+
+        for(int i=0; i<autoReplyTrigger.size(); i++){
+            triggerString += autoReplyTrigger.get(i).toString() + ",,";
+            responseString += autoReplyResponse.get(i).toString() + ",,";
+        }
+
+        config.setString("autoReplyTriggers", triggerString);
+        config.setString("autoReplyResponse", responseString);
+    }
+
+
+    //#####################################################
 	
 	public String getTopic(){
 		return topic;
@@ -762,9 +802,9 @@ public class Channel {
                 Pattern tempP = Pattern.compile(line);
                 offensiveWordsRegex.add(tempP);
             }else{
-                String line = "(?i).*" + Pattern.quote(word) + ".*";
+                String line = ".*" + Pattern.quote(word) + ".*";
                 System.out.println("Adding: " + line);
-                Pattern tempP = Pattern.compile(line);
+                Pattern tempP = Pattern.compile(line, Pattern.CASE_INSENSITIVE);
                 offensiveWordsRegex.add(tempP);
             }
 
@@ -1126,7 +1166,12 @@ public class Channel {
         if(!config.keyExists("commandsScheduleActive")) {
             config.setString("commandsScheduleActive", "");
         }
-
+        if(!config.keyExists("autoReplyTriggers")) {
+            config.setString("autoReplyTriggers", "");
+        }
+        if(!config.keyExists("autoReplyResponse")) {
+            config.setString("autoReplyResponse", "");
+        }
 		if(!config.keyExists("regulars")) {
 			config.setString("regulars", "");
 		}
@@ -1275,6 +1320,14 @@ public class Channel {
                 ScheduledCommand rc = new ScheduledCommand(channel, commandsScheduleKey[i], commandsSchedulePattern[i],Integer.parseInt(commandsScheduleDiff[i]),Boolean.parseBoolean(commandsScheduleActive[i]));
                 commandsSchedule.put(commandsScheduleKey[i], rc);
             }
+        }
+
+        String[] autoReplyTriggersString = config.getString("autoReplyTriggers").split(",,");
+        String[] autoReplyResponseString = config.getString("autoReplyResponse").split(",,");
+
+        for(int i = 0; i < autoReplyTriggersString.length; i++){
+            if(autoReplyTriggersString[i].length() > 0)
+                addAutoReply(autoReplyTriggersString[i], autoReplyResponseString[i]);
         }
 		
 		String[] regularsRaw = config.getString("regulars").split(",");

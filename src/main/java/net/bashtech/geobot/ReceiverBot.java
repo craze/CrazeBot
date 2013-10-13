@@ -57,7 +57,7 @@ public class ReceiverBot extends PircBot {
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
-	
+
 	public ReceiverBot(String server, int port){
         ReceiverBot.setInstance(this);
 		linkPatterns[0] = Pattern.compile(".*http://.*", Pattern.CASE_INSENSITIVE);
@@ -882,6 +882,38 @@ public class ReceiverBot extends PircBot {
                                 send(channel, "Scheduled command " + key + " has been disabled.");
                             }
 
+                        }
+                    }
+                    return;
+                }
+
+                // !autoreply - Ops
+                if(msg[0].equalsIgnoreCase(prefix + "autoreply")){
+                    log("RB: Matched command !autoreply");
+                    if(msg.length < 3 && isOp){
+                        if(msg.length > 1 && msg[1].equalsIgnoreCase("list")){
+                            for(int i=0; i<channelInfo.autoReplyTrigger.size(); i++){
+                                send(channel, "[" + (i + 1) + "] " + channelInfo.autoReplyTrigger.get(i).toString() + " ---> " + channelInfo.autoReplyResponse.get(i));
+                            }
+                        }else{
+                            send(channel, "Syntax: \"!autoreply add/delete/list [pattern] [response]\"");
+                        }
+                    }else if(msg.length > 2 && isOp){
+                        if(msg[1].equalsIgnoreCase("add") && msg.length > 3){
+                            String pattern = msg[2];
+                            String response = msg[3];
+
+                            channelInfo.addAutoReply(pattern, response);
+                            send(channel, "Autoreply added.");
+                        }else if((msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) && msg.length > 2){
+                            if(isInteger(msg[2])){
+                                int pos = Integer.parseInt(msg[2]);
+
+                                if(channelInfo.removeAutoReply(pos))
+                                    send(channel, "Autoreply removed.");
+                                else
+                                    send(channel, "Autoreply not found. Are you sure you have the correct number?");
+                            }
                         }
                     }
                     return;
@@ -1718,6 +1750,17 @@ public class ReceiverBot extends PircBot {
 
 				}
 
+            // ********************************************************************************
+            // *********************************** Auto Reply *********************************
+            // ********************************************************************************
+            for(int i=0; i < channelInfo.autoReplyTrigger.size(); i++){
+                Matcher m = channelInfo.autoReplyTrigger.get(i).matcher(message);
+                if(m.matches()){
+
+                    if(!channelInfo.onCooldown(channelInfo.autoReplyTrigger.get(i).toString()))
+                        send(channel, channelInfo.autoReplyResponse.get(i));
+                }
+            }
 	}
 
     protected void onAdministrativeMessage(String message){
