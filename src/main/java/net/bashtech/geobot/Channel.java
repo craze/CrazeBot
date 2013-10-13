@@ -566,16 +566,13 @@ public class Channel {
 	//###################################################
 	
 	public boolean isRegular(String name){
-		//boolean flag = false;
-		synchronized (regulars) { 
+		synchronized (regulars) {
 			for(String s:regulars){
 				if(s.equalsIgnoreCase(name)){
 					return true;
-					//flag = true;
 				}
 			}
 		}
-		//return flag;
 		return false;
 	}
 	
@@ -1089,25 +1086,8 @@ public class Channel {
 	}
 	
 	public void reload(){
-		commands.clear();
-		commandsRepeat.clear();
-        commandsSchedule.clear();
-		regulars.clear();
-		subscribers.clear();
-		moderators.clear();
-		owners.clear();
-		permittedUsers.clear();
-		permittedDomains.clear();
-		currentPoll = null;
-		currentGiveaway = null;
-		raffle = null;
-		offensiveWords.clear();
-		offensiveWordsRegex.clear();
-		warningCount.clear();
-		warningTime.clear();
-		commandCooldown.clear();
-		
-		loadProperties(channel);
+        BotManager.getInstance().removeChannel(channel);
+        BotManager.getInstance().addChannel(channel, mode);
 	}
 
 	private void loadProperties(String name){

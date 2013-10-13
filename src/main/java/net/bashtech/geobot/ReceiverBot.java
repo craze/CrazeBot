@@ -143,7 +143,7 @@ public class ReceiverBot extends PircBot {
         }
 
             if(sender.equals("jtv"))
-                onAdministrativeMessage(message);
+                onAdministrativeMessage(message, null);
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class ReceiverBot extends PircBot {
 
                 //Handle future administrative messages from JTV
                 if(sender.equals("jtv")){
-                    onAdministrativeMessage(message);
+                    onAdministrativeMessage(message, channelInfo);
                     return;
                 }
 
@@ -1764,7 +1764,7 @@ public class ReceiverBot extends PircBot {
             }
 	}
 
-    protected void onAdministrativeMessage(String message){
+    protected void onAdministrativeMessage(String message, Channel channelinfo){
         String[] msg = message.trim().split(" ");
 
         if(msg.length > 0){
@@ -1776,8 +1776,8 @@ public class ReceiverBot extends PircBot {
                     BotManager.getInstance().addTagAdmin(user);
                 if(tag.equalsIgnoreCase("staff"))
                     BotManager.getInstance().addTagStaff(user);
-//				if(tag.equalsIgnoreCase("subscriber"))
-//					channelInfoGlobal.addSubscriber(user);
+//				if(tag.equalsIgnoreCase("subscriber") && channelinfo != null)
+//                    channelinfo.addSubscriber(user);
             }else if(msg[0].equalsIgnoreCase("USERCOLOR")){
                 String user = msg[1];
                 String color = msg[2];
