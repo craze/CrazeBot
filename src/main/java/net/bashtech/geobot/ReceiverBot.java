@@ -280,8 +280,8 @@ public class ReceiverBot extends PircBot {
 
 
         //!leave - Owner
-        if ((msg[0].equalsIgnoreCase(prefix + "leave") || msg[0].equalsIgnoreCase(prefix + "remove")) && isOwner) {
-            send(channel, "Channel " + channelInfo.getChannel() + " parting...");
+        if ((msg[0].equalsIgnoreCase(prefix + "leave") || msg[0].equalsIgnoreCase(prefix + "remove") || msg[0].equalsIgnoreCase(prefix + "part")) && isOwner) {
+            send(channel, "Leaving channel " + channelInfo.getChannel() + ".");
             BotManager.getInstance().removeChannel(channelInfo.getChannel());
         }
 
@@ -1586,7 +1586,7 @@ public class ReceiverBot extends PircBot {
                     send(channel, "Already in channel #" + sender + ".");
                 }
             } else {
-                send(channel, "Unable to join " + sender + ". Is your channel on Twitch?");
+                send(channel, "Unable to join " + sender + ". This could be because your channel is on Justin.tv and not Twitch. If you are sure your channel is on Twitch, try again later.");
             }
             return;
         }
