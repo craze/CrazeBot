@@ -308,19 +308,32 @@ public class Channel {
         response.replaceAll(",,", "");
 
         if (!trigger.startsWith("REGEX:")) {
-            String[] parts = trigger.split("\\*");
-            trigger = ".*";
+            String[] parts = trigger.replaceFirst("^\\*", "").replaceFirst("\\*$","").split("\\*");
+
+            //Only apply leading & trailing any if an one was requested
+            boolean trailingAny = trigger.endsWith("*");
+            if(trigger.startsWith("*"))
+                trigger = ".*";
+            else
+                trigger = "";
 
             for (int i = 0; i < parts.length; i++) {
                 if (parts[i].length() < 1)
                     continue;
 
-                trigger += Pattern.quote(parts[i]) + ".*";
+                trigger += Pattern.quote(parts[i]);
+                if(i != parts.length - 1)
+                    trigger += ".*";
             }
+
+            if(trailingAny)
+                trigger += ".*";
+
         } else {
             trigger = trigger.replaceAll("REGEX:", "");
         }
 
+        System.out.println("Final: " + trigger);
         autoReplyTrigger.add(Pattern.compile(trigger, Pattern.CASE_INSENSITIVE));
         autoReplyResponse.add(response);
 
