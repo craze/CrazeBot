@@ -45,7 +45,6 @@ public class ReceiverBot extends PircBot {
 
     static ReceiverBot instance;
     Timer joinCheck;
-    private String prefix = BotManager.getInstance().prefix;
     private Pattern[] linkPatterns = new Pattern[5];
     private Pattern[] symbolsPatterns = new Pattern[2];
     private int lastPing = -1;
@@ -162,6 +161,7 @@ public class ReceiverBot extends PircBot {
 
         Channel channelInfo = getChannelObject(channel);
         String twitchName = channelInfo.getTwitchName();
+        String prefix = channelInfo.getPrefix();
 
         if (!channelInfo.active) {
             System.out.println("DEBUG: Channel not active, message ignored.");
@@ -1541,6 +1541,17 @@ public class ReceiverBot extends PircBot {
                         send(channel, "_TWEET_URL_ is not allowed.");
                     }
 
+                }
+            } else if (msg[1].equalsIgnoreCase("prefix")) {
+                if (msg.length > 2) {
+                    if(msg[2].length() > 1){
+                        send(channel, "Prefix may only be 1 character.");
+                    }else{
+                        channelInfo.setPrefix(msg[2]);
+                        send(channel, "Command prefix is " + channelInfo.getPrefix());
+                    }
+                } else {
+                    send(channel, "Command prefix is " + channelInfo.getPrefix());
                 }
             }
             return;

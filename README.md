@@ -22,6 +22,10 @@ PM [george](http://www.twitch.tv/message/compose?to=george) on Twitch
 
 ##  Commands
 
+###  Note about prefixes
+
+This documentation uses the default command prefix of `!`. This can be changed on the channel level using: `!set prefix`.
+
 ###  General Channel
 
   * `!topic [new topic]` - All/Mods - Displays and sets the topic. If no topic is set, Twitch channel title will be returned 
@@ -136,6 +140,7 @@ Filtered messages must match all three of the below settings:
     * `enablewarnings [on/off]` - Enabled a lesser timeout for first offensive of a filter (10 second timeout)
     * `timeoutduration [seconds]` - Sets the duration for filter offenses (after warning if enabled)
     * `tweet [String w/ replacements]` - Format for Click to tweet message.
+    * `prefix [character` - Sets the command prefix. Default is "!"
   
   
   * `!regular add/delete/list [name]` - Owner - Adds a "regular". Regulars don't need permission to post links 

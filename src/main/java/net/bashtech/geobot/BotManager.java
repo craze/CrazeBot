@@ -56,7 +56,6 @@ public class BotManager {
     ReceiverBot receiverBot;
     String bothelpMessage;
     boolean ignoreHistory;
-    String prefix;
     WSServer ws;
     boolean wsEnabled;
     int wsPort;
@@ -381,10 +380,6 @@ public class BotManager {
         if (!config.keyExists("ignoreHistory")) {
             config.setBoolean("ignoreHistory", true);
         }
-
-        if (!config.keyExists("commandPrefix")) {
-            config.setString("commandPrefix", "!");
-        }
         // ********
 
         nick = config.getString("nick");
@@ -398,7 +393,6 @@ public class BotManager {
         publicJoin = config.getBoolean("publicJoin");
         verboseLogging = config.getBoolean("verboseLogging");
         bothelpMessage = config.getString("bothelpMessage");
-        prefix = config.getString("commandPrefix").charAt(0) + "";
 
         wsEnabled = config.getBoolean("wsEnabled");
         wsPort = config.getInt("wsPort");

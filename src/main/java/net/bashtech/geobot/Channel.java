@@ -32,18 +32,13 @@ public class Channel {
 
     private String channel;
     private String twitchname;
-
     boolean active;
-
     boolean staticChannel;
-
     private HashMap<String, String> commands = new HashMap<String, String>();
     HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
-
     List<Pattern> autoReplyTrigger = new ArrayList<Pattern>();
     List<String> autoReplyResponse = new ArrayList<String>();
-
     private boolean filterCaps;
     private int filterCapsPercent;
     private int filterCapsMinCharacters;
@@ -81,23 +76,17 @@ public class Channel {
     public long messageCount;
     public int commercialLength;
     String clickToTweetFormat;
-
     private boolean filterColors;
-
     private boolean filterMe;
-
     private Set<String> offensiveWords = new HashSet<String>();
     private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
-
     Map<String, EnumMap<FilterType, Integer>> warningCount;
     Map<String, Long> warningTime;
-
     private int timeoutDuration;
     private boolean enableWarnings;
-
     Map<String, Long> commandCooldown;
-
     Set<WebSocket> wsSubscribers = new HashSet<WebSocket>();
+    String prefix;
 
     public Channel(String name) {
         config = new PropertiesFile(name + ".properties");
@@ -116,13 +105,22 @@ public class Channel {
         setMode(mode);
     }
 
-
     public String getChannel() {
         return channel;
     }
 
     public String getTwitchName() {
         return twitchname;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix.charAt(0) + "";
+
+        config.setString("commandPrefix", this.prefix);
     }
 
     //##############################################################
@@ -1228,13 +1226,14 @@ public class Channel {
         if (!config.keyExists("clickToTweetFormat")) {
             config.setString("clickToTweetFormat", "Check out (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
         }
-
         if (!config.keyExists("filterSymbolsPercent")) {
             config.setInt("filterSymbolsPercent", 50);
         }
-
         if (!config.keyExists("filterSymbolsMin")) {
             config.setInt("filterSymbolsMin", 5);
+        }
+        if (!config.keyExists("commandPrefix")) {
+            config.setString("commandPrefix", "!");
         }
         channel = config.getString("channel");
         filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
@@ -1271,7 +1270,7 @@ public class Channel {
 
         enableWarnings = Boolean.parseBoolean(config.getString("enableWarnings"));
         timeoutDuration = config.getInt("timeoutDuration");
-
+        prefix = config.getString("commandPrefix").charAt(0) + "";
 
         String[] commandsKey = config.getString("commandsKey").split(",");
         String[] commandsValue = config.getString("commandsValue").split(",,");
