@@ -1360,7 +1360,7 @@ public class Channel {
         for (int i = 0; i < commandsRepeatKey.length; i++) {
             if (commandsRepeatKey[i].length() > 1) {
                 RepeatCommand rc = new RepeatCommand(channel, commandsRepeatKey[i].replaceAll("[^a-zA-Z0-9]", ""), Integer.parseInt(commandsRepeatDelay[i]), Integer.parseInt(commandsRepeatDiff[i]), Boolean.parseBoolean(commandsRepeatActive[i]));
-                commandsRepeat.put(commandsRepeatKey[i], rc);
+                commandsRepeat.put(commandsRepeatKey[i].replaceAll("[^a-zA-Z0-9]", ""), rc);
             }
         }
 
@@ -1373,7 +1373,7 @@ public class Channel {
         for (int i = 0; i < commandsScheduleKey.length; i++) {
             if (commandsScheduleKey[i].length() > 1) {
                 ScheduledCommand rc = new ScheduledCommand(channel, commandsScheduleKey[i].replaceAll("[^a-zA-Z0-9]", ""), commandsSchedulePattern[i], Integer.parseInt(commandsScheduleDiff[i]), Boolean.parseBoolean(commandsScheduleActive[i]));
-                commandsSchedule.put(commandsScheduleKey[i], rc);
+                commandsSchedule.put(commandsScheduleKey[i].replaceAll("[^a-zA-Z0-9]", ""), rc);
             }
         }
 

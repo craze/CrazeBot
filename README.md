@@ -55,7 +55,8 @@ This documentation uses the default command prefix of `!`. This can be changed o
 Custom commands aka triggers provide frequently requested information in your channel.  
 
   * `!command add <name> <text>` - Creates an info command (!name) 
-  * `!command delete <name>` - Removes info command (!name) 
+  * `!command delete <name>` - Removes info command (!name)
+  * `!command restrict <name> <everyone|regulars|mods|owner>` - Sets access level for triggers.
 
 #### Repeat
 The repeat command will repeat a custom trigger every X amount of seconds passed. Message difference allows you to prevent spamming an inactive channel. It requires Y amount of messages have passed in the channel since the last iteration of the message. The default is 1 so at least one message will need to have been sent in the channel in order for the repeat to trigger.  

@@ -29,6 +29,7 @@ public class ScheduledCommand {
     boolean active;
 
     public ScheduledCommand(String _channel, String _key, String _pattern, int _messageDifference, boolean _active) {
+        System.out.println("KEY: " + _key);
         key = _key;
         pattern = _pattern; //In seconds
         lastMessageCount = 0;
@@ -72,7 +73,7 @@ public class ScheduledCommand {
                 String command = channelInfo.getCommand(key);
                 ReceiverBot.getInstance().send(channel, command);
 
-                if (key.equalsIgnoreCase("!commercial"))
+                if (key.equalsIgnoreCase("commercial"))
                     channelInfo.runCommercial();
             } else {
                 //System.out.println("DEBUG: No messages received since last send - " + key);

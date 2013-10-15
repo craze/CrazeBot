@@ -79,7 +79,7 @@ public class RepeatCommand {
                 String command = channelInfo.getCommand(key);
                 ReceiverBot.getInstance().send(channel, command);
 
-                if (key.equalsIgnoreCase("!commercial"))
+                if (key.equalsIgnoreCase("commercial"))
                     channelInfo.runCommercial();
             } else {
                 //System.out.println("DEBUG: No messages received since last send - " + key);

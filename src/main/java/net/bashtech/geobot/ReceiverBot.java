@@ -778,7 +778,7 @@ public class ReceiverBot extends PircBot {
                 }
             } else if (msg.length > 2 && isOp) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     try {
                         int delay = Integer.parseInt(msg[3]);
                         int difference = 1;
@@ -798,12 +798,12 @@ public class ReceiverBot extends PircBot {
                     }
 
                 } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     channelInfo.removeRepeatCommand(key);
                     send(channel, "Command " + key + " will no longer repeat.");
 
                 } else if (msg[1].equalsIgnoreCase("on") || msg[1].equalsIgnoreCase("off")) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     if (msg[1].equalsIgnoreCase("on")) {
                         channelInfo.setRepeatCommandStatus(key, true);
                         send(channel, "Repeat command " + key + " has been enabled.");
@@ -837,7 +837,7 @@ public class ReceiverBot extends PircBot {
                 }
             } else if (msg.length > 2 && isOp) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     try {
                         String pattern = msg[3];
                         if (pattern.equals("hourly"))
@@ -864,12 +864,12 @@ public class ReceiverBot extends PircBot {
                     }
 
                 } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     channelInfo.removeScheduledCommand(key);
                     send(channel, "Command " + key + " will no longer repeat.");
 
                 } else if (msg[1].equalsIgnoreCase("on") || msg[1].equalsIgnoreCase("off")) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     if (msg[1].equalsIgnoreCase("on")) {
                         channelInfo.setScheduledCommandStatus(key, true);
                         send(channel, "Scheduled command " + key + " has been enabled.");
