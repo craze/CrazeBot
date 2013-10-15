@@ -35,6 +35,7 @@ public class Channel {
     boolean active;
     boolean staticChannel;
     private HashMap<String, String> commands = new HashMap<String, String>();
+    private HashMap<String, Integer> commandsRestrictions = new HashMap<String, Integer>();
     HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
     List<Pattern> autoReplyTrigger = new ArrayList<Pattern>();
@@ -136,7 +137,12 @@ public class Channel {
     }
 
     public void setCommand(String key, String command) {
-        key = key.toLowerCase();
+        key = key.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+        System.out.println("Key: " + key);
+        command = command.replaceAll(",,", "");
+
+        if(key.length() < 1)
+            return;
 
         if (commands.containsKey(key)) {
             commands.remove(key);
@@ -164,6 +170,7 @@ public class Channel {
     public void removeCommand(String key) {
         if (commands.containsKey(key)) {
             commands.remove(key);
+            commandsRestrictions.remove(key);
 
             String commandsKey = "";
             String commandsValue = "";
@@ -178,8 +185,47 @@ public class Channel {
 
             config.setString("commandsKey", commandsKey);
             config.setString("commandsValue", commandsValue);
+
+            saveCommandRestrictions();
         }
 
+    }
+
+    public boolean setCommandsRestriction(String command, int level){
+        command = command.toLowerCase();
+
+        if(!commands.containsKey(command))
+            return false;
+
+        commandsRestrictions.put(command, level);
+
+        saveCommandRestrictions();
+
+        return true;
+    }
+
+    public boolean checkCommandRestriction(String command, int level){
+        System.out.println("Checking command: " + command + " User level: " + level);
+        if(!commandsRestrictions.containsKey(command))
+            return true;
+
+        if(level >= commandsRestrictions.get(command))
+            return true;
+
+        return false;
+    }
+
+    public void saveCommandRestrictions(){
+        String commandRestrictionsString = "";
+
+        Iterator itr = commandsRestrictions.entrySet().iterator();
+
+        while (itr.hasNext()) {
+            Map.Entry pairs = (Map.Entry) itr.next();
+            commandRestrictionsString += pairs.getKey() + "|" + pairs.getValue() + ",";
+        }
+
+        config.setString("commandRestrictions", commandRestrictionsString);
     }
 
     public void setRepeatCommand(String key, int delay, int diff) {
@@ -1248,6 +1294,9 @@ public class Channel {
         if (!config.keyExists("commandPrefix")) {
             config.setString("commandPrefix", "!");
         }
+        if (!config.keyExists("commandRestrictions")) {
+            config.setString("commandRestrictions", "");
+        }
         channel = config.getString("channel");
         filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
         filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1290,7 +1339,15 @@ public class Channel {
 
         for (int i = 0; i < commandsKey.length; i++) {
             if (commandsKey[i].length() > 1) {
-                commands.put(commandsKey[i].toLowerCase(), commandsValue[i]);
+                commands.put(commandsKey[i].replaceAll("[^a-zA-Z0-9]", "").toLowerCase(), commandsValue[i]);
+            }
+        }
+
+        String[] commandR = config.getString("commandRestrictions").split(",");
+        for (int i = 0; i < commandR.length; i++) {
+            if (commandR[i].length() > 1) {
+                String[] parts = commandR[i].split("\\|");
+                commandsRestrictions.put(parts[0], Integer.parseInt(parts[1]));
             }
         }
 

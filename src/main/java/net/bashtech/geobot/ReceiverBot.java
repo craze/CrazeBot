@@ -209,6 +209,7 @@ public class ReceiverBot extends PircBot {
         boolean isOwner = false;
         boolean isOp = false;
         boolean isRegular = false;
+        int accessLevel = 0;
 
         //Check for user level based on other factors.
         if (BotManager.getInstance().isAdmin(sender))
@@ -230,15 +231,19 @@ public class ReceiverBot extends PircBot {
             isOwner = true;
             isOp = true;
             isRegular = true;
+            accessLevel = 99;
         } else if (isOwner) {
             log("RB: " + sender + " is owner.");
             isOp = true;
             isRegular = true;
+            accessLevel = 3;
         } else if (isOp) {
             log("RB: " + sender + " is op.");
             isRegular = true;
+            accessLevel = 2;
         } else if (isRegular) {
             log("RB: " + sender + " is regular.");
+            accessLevel = 1;
         }
 
 
@@ -710,7 +715,7 @@ public class ReceiverBot extends PircBot {
                 send(channel, "Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
             } else if (msg.length > 2 && isOp) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
-                    String key = "!" + msg[2];
+                    String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
                     String value = fuseArray(msg, 3);
                     if (!value.contains(",,")) {
                         channelInfo.setCommand(key, value);
@@ -720,13 +725,34 @@ public class ReceiverBot extends PircBot {
                     }
 
                 } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) {
-                    String key = "!" + msg[2];
+                    String key = msg[2];
                     channelInfo.removeCommand(key);
                     channelInfo.removeRepeatCommand(key);
                     channelInfo.removeScheduledCommand(key);
 
                     send(channel, "Command " + key + " removed.");
 
+                } else if (msg[1].equalsIgnoreCase("restrict") && msg.length >= 4) {
+                    String command = msg[2];
+                    String levelStr = msg[3].toLowerCase();
+                    int level = 0;
+                    if(channelInfo.getCommand(command) != null){
+                        if(levelStr.equalsIgnoreCase("owner") || levelStr.equalsIgnoreCase("owners"))
+                            level = 3;
+                        if(levelStr.equalsIgnoreCase("mod") || levelStr.equalsIgnoreCase("mods"))
+                            level = 2;
+                        if(levelStr.equalsIgnoreCase("regular") || levelStr.equalsIgnoreCase("regulars"))
+                            level = 1;
+                        if(levelStr.equalsIgnoreCase("everyone"))
+                            level = 0;
+
+                        if(channelInfo.setCommandsRestriction(command, level))
+                            send(channel, prefix + command + " restricted to " + levelStr + " only.");
+                        else
+                            send(channel, "Error setting restriction.");
+                    }else{
+                        send(channel, "Command does not exist.");
+                    }
                 }
             }
             return;
@@ -1713,19 +1739,21 @@ public class ReceiverBot extends PircBot {
         // ********************************************************************************
 
         if (msg[0].substring(0, 1).equalsIgnoreCase(prefix)) {
-            String value = channelInfo.getCommand(msg[0]);
+            String command = msg[0].substring(1);
+            String value = channelInfo.getCommand(command);
             if (value != null) {
                 log("RB: Matched command " + msg[0]);
                 if (msg.length > 1 && isOp) {
                     String updatedMessage = fuseArray(msg, 1);
                     if (!updatedMessage.contains(",,")) {
-                        channelInfo.setCommand(msg[0], updatedMessage);
-                        send(channel, channelInfo.getCommand(msg[0]));
+                        channelInfo.setCommand(command, updatedMessage);
+                        send(channel, channelInfo.getCommand(command));
                     } else {
                         send(channel, "Command cannot contain double commas (\",,\").");
                     }
                 } else {
-                    send(channel, value);
+                    if(channelInfo.checkCommandRestriction(command, accessLevel))
+                        send(channel, value);
                 }
 
             }
