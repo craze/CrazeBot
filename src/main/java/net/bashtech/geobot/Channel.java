@@ -1068,6 +1068,7 @@ public class Channel {
     }
 
     public void incWarningCount(String name, FilterType type) {
+        clearWarnings();
         synchronized (warningCount) {
             if (warningCount.containsKey(name.toLowerCase())) {
                 if (warningCount.get(name.toLowerCase()).containsKey(type)) {
@@ -1083,8 +1084,6 @@ public class Channel {
                 warningTime.put(name.toLowerCase(), getTime());
             }
         }
-
-        clearWarnings();
     }
 
     public void clearWarnings() {
@@ -1095,8 +1094,6 @@ public class Channel {
                 for (Map.Entry<String, Long> entry : warningTime.entrySet()) {
                     if ((time - entry.getValue()) > 3600) {
                         toRemove.add((String) entry.getKey());
-                        //warningCount.remove(entry.getKey());
-                        //warningTime.remove(entry.getKey());
                     }
                 }
                 for (String name : toRemove) {
@@ -1105,7 +1102,6 @@ public class Channel {
                 }
             }
         }
-
     }
 
     private void registerCommandUsage(String command) {
