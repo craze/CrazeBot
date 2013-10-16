@@ -307,7 +307,7 @@ public class ReceiverBot extends PircBot {
         if (channelInfo.useFilters) {
 
             //Me filter
-            if (!isRegular && channelInfo.getFilterMe()) {
+            if (!isRegular && channelInfo.getFilterMe() && !isRegular) {
                 if (msg[0].equalsIgnoreCase("/me")) {
                     int warningCount = 0;
 
@@ -631,7 +631,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !commands - Op/Regular
-        if (msg[0].equalsIgnoreCase(prefix + "commands") && (isRegular || isOp)) {
+        if (msg[0].equalsIgnoreCase(prefix + "commands") && isOp) {
             log("RB: Matched command !commands");
             send(channel, "Commands: " + channelInfo.getCommandList());
             return;
@@ -709,11 +709,11 @@ public class ReceiverBot extends PircBot {
         }
 
         // !command - Ops
-        if (msg[0].equalsIgnoreCase(prefix + "command")) {
+        if (msg[0].equalsIgnoreCase(prefix + "command") && isOp) {
             log("RB: Matched command !command");
-            if (msg.length < 3 && isOp) {
+            if (msg.length < 3) {
                 send(channel, "Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
-            } else if (msg.length > 2 && isOp) {
+            } else if (msg.length > 2) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
                     String key = msg[2].replaceAll("[^a-zA-Z0-9]", "");
                     String value = fuseArray(msg, 3);
@@ -736,21 +736,21 @@ public class ReceiverBot extends PircBot {
                     String command = msg[2];
                     String levelStr = msg[3].toLowerCase();
                     int level = 0;
-                    if(channelInfo.getCommand(command) != null){
-                        if(levelStr.equalsIgnoreCase("owner") || levelStr.equalsIgnoreCase("owners"))
+                    if (channelInfo.getCommand(command) != null) {
+                        if (levelStr.equalsIgnoreCase("owner") || levelStr.equalsIgnoreCase("owners"))
                             level = 3;
-                        if(levelStr.equalsIgnoreCase("mod") || levelStr.equalsIgnoreCase("mods"))
+                        if (levelStr.equalsIgnoreCase("mod") || levelStr.equalsIgnoreCase("mods"))
                             level = 2;
-                        if(levelStr.equalsIgnoreCase("regular") || levelStr.equalsIgnoreCase("regulars"))
+                        if (levelStr.equalsIgnoreCase("regular") || levelStr.equalsIgnoreCase("regulars"))
                             level = 1;
-                        if(levelStr.equalsIgnoreCase("everyone"))
+                        if (levelStr.equalsIgnoreCase("everyone"))
                             level = 0;
 
-                        if(channelInfo.setCommandsRestriction(command, level))
+                        if (channelInfo.setCommandsRestriction(command, level))
                             send(channel, prefix + command + " restricted to " + levelStr + " only.");
                         else
                             send(channel, "Error setting restriction.");
-                    }else{
+                    } else {
                         send(channel, "Command does not exist.");
                     }
                 }
@@ -759,9 +759,9 @@ public class ReceiverBot extends PircBot {
         }
 
         // !repeat - Ops
-        if (msg[0].equalsIgnoreCase(prefix + "repeat")) {
+        if (msg[0].equalsIgnoreCase(prefix + "repeat") && isOwner) {
             log("RB: Matched command !repeat");
-            if (msg.length < 3 && isOp) {
+            if (msg.length < 3) {
                 if (msg.length > 1 && msg[1].equalsIgnoreCase("list")) {
                     String commandsRepeatKey = "";
 
@@ -776,7 +776,7 @@ public class ReceiverBot extends PircBot {
                 } else {
                     send(channel, "Syntax: \"!repeat add/delete [commandname] [delay in seconds] [message difference - optional]\"");
                 }
-            } else if (msg.length > 2 && isOp) {
+            } else if (msg.length > 2) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
                     String key = msg[2];
                     try {
@@ -818,9 +818,9 @@ public class ReceiverBot extends PircBot {
         }
 
         // !schedule - Ops
-        if (msg[0].equalsIgnoreCase(prefix + "schedule")) {
+        if (msg[0].equalsIgnoreCase(prefix + "schedule") && isOwner) {
             log("RB: Matched command !schedule");
-            if (msg.length < 3 && isOp) {
+            if (msg.length < 3) {
                 if (msg.length > 1 && msg[1].equalsIgnoreCase("list")) {
                     String commandsScheduleKey = "";
 
@@ -835,7 +835,7 @@ public class ReceiverBot extends PircBot {
                 } else {
                     send(channel, "Syntax: \"!schedule add/delete/on/off [commandname] [pattern] [message difference - optional]\"");
                 }
-            } else if (msg.length > 2 && isOp) {
+            } else if (msg.length > 2) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
                     String key = msg[2];
                     try {
@@ -884,9 +884,9 @@ public class ReceiverBot extends PircBot {
         }
 
         // !autoreply - Ops
-        if (msg[0].equalsIgnoreCase(prefix + "autoreply")) {
+        if (msg[0].equalsIgnoreCase(prefix + "autoreply") && isOp) {
             log("RB: Matched command !autoreply");
-            if (msg.length < 3 && isOp) {
+            if (msg.length < 3) {
                 if (msg.length > 1 && msg[1].equalsIgnoreCase("list")) {
                     for (int i = 0; i < channelInfo.autoReplyTrigger.size(); i++) {
                         String cleanedTrigger = channelInfo.autoReplyTrigger.get(i).toString().replaceAll("\\.\\*", "*").replaceAll("\\\\Q", "").replaceAll("\\\\E", "");
@@ -895,7 +895,7 @@ public class ReceiverBot extends PircBot {
                 } else {
                     send(channel, "Syntax: \"!autoreply add/delete/list [pattern] [response]\"");
                 }
-            } else if (msg.length > 2 && isOp) {
+            } else if (msg.length > 2) {
                 if (msg[1].equalsIgnoreCase("add") && msg.length > 3) {
                     String pattern = msg[2].replaceAll("_", " ");
                     String response = fuseArray(msg, 3);
@@ -1060,17 +1060,10 @@ public class ReceiverBot extends PircBot {
         }
 
         // !random - Ops
-        if (msg[0].equalsIgnoreCase(prefix + "random") && isOp) {
+        if (msg[0].equalsIgnoreCase(prefix + "random") && isRegular) {
             log("RB: Matched command !random");
             if (msg.length >= 2) {
-                if (msg[1].equalsIgnoreCase("user")) {
-                    User[] userList = this.getUsers(channel);
-                    if (userList.length > 0) {
-                        Random rand = new Random();
-                        int randIndex = rand.nextInt(userList.length);
-                        send(channel, "Random user: " + userList[randIndex].getNick());
-                    }
-                } else if (msg[1].equalsIgnoreCase("coin")) {
+                if (msg[1].equalsIgnoreCase("coin")) {
                     Random rand = new Random();
                     boolean coin = rand.nextBoolean();
                     if (coin == true)
@@ -1106,6 +1099,7 @@ public class ReceiverBot extends PircBot {
                 }
                 if (msg[0].equalsIgnoreCase("-b")) {
                     send(channel, ".unban " + msg[1].toLowerCase());
+                    send(channel, ".timeout " + msg[1].toLowerCase() + " 1");
                 }
                 if (msg[0].equalsIgnoreCase("+k")) {
                     send(channel, ".timeout " + msg[1].toLowerCase());
@@ -1227,12 +1221,6 @@ public class ReceiverBot extends PircBot {
                     String phrase = fuseArray(msg, 2);
                     channelInfo.removeOffensive(phrase);
                     send(channel, "Word removed. " + "(" + phrase + ")");
-// 							if(channelInfo.isOffensive(phrase)){
-// 								channelInfo.removeOffensive(phrase);
-// 								send(channel,"Word removed. "+ "(" + phrase + ")");
-// 							}else{
-// 								send(channel,"Word does not exist. "+ "(" + phrase + ")");
-// 							}
                 }
             }
             return;
@@ -1570,9 +1558,9 @@ public class ReceiverBot extends PircBot {
                 }
             } else if (msg[1].equalsIgnoreCase("prefix")) {
                 if (msg.length > 2) {
-                    if(msg[2].length() > 1){
+                    if (msg[2].length() > 1) {
                         send(channel, "Prefix may only be 1 character.");
-                    }else{
+                    } else {
                         channelInfo.setPrefix(msg[2]);
                         send(channel, "Command prefix is " + channelInfo.getPrefix());
                     }
@@ -1585,7 +1573,7 @@ public class ReceiverBot extends PircBot {
 
 
         //!modchan - Mod
-        if (msg[0].equalsIgnoreCase(prefix + "modchan") && isOp) {
+        if (msg[0].equalsIgnoreCase(prefix + "modchan") && isOwner) {
             log("RB: Matched command !modchan");
             if (channelInfo.getMode() == 2) {
                 channelInfo.setMode(1);
@@ -1752,7 +1740,7 @@ public class ReceiverBot extends PircBot {
                         send(channel, "Command cannot contain double commas (\",,\").");
                     }
                 } else {
-                    if(channelInfo.checkCommandRestriction(command, accessLevel))
+                    if (channelInfo.checkCommandRestriction(command, accessLevel))
                         send(channel, value);
                 }
 
