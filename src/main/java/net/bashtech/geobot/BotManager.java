@@ -162,6 +162,8 @@ public class BotManager {
             URL url = new URL(urlString);
             //System.out.println("DEBUG: Getting data from " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            conn.setConnectTimeout(connectTimeout);
+//            conn.setReadTimeout(socketTimeout);
 
             if (BotManager.getInstance().krakenClientID.length() > 0)
                 conn.setRequestProperty("Client-ID", BotManager.getInstance().krakenClientID);

@@ -201,7 +201,6 @@ Adding dynamic data to bot message is also supported via string substitutions. A
   * `(_GAME_)` : Twitch game.
   * `(_STATUS_)` : Twitch status.
   * `(_VIEWERS_)` : Viewer count.
-  * `(_CHATTERS_)` : Number of users in chat.
   * `(_STEAM_PROFILE_)` : Link to Steam profile (Steam account must be configured).
   * `(_STEAM_GAME_)` : Steam game (Steam account must be configured).
   * `(_STEAM_SERVER_)` : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured).

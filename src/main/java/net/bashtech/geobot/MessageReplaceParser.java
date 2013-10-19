@@ -30,8 +30,8 @@ public class MessageReplaceParser {
             message = message.replace("(_STATUS_)", JSONUtil.krakenStatus(channel.substring(1)));
         if (message.contains("(_VIEWERS_)"))
             message = message.replace("(_VIEWERS_)", "" + JSONUtil.krakenViewers(channel.substring(1)));
-        if (message.contains("(_CHATTERS_)"))
-            message = message.replace("(_CHATTERS_)", "" + ReceiverBot.getInstance().getUsers(channel).length);
+//        if (message.contains("(_CHATTERS_)"))
+//            message = message.replace("(_CHATTERS_)", "" + ReceiverBot.getInstance().getUsers(channel).length);
         if (message.contains("(_SONG_)"))
             message = message.replace("(_SONG_)", JSONUtil.lastFM(ci.getLastfm()));
         if (message.contains("(_SONG_)"))
