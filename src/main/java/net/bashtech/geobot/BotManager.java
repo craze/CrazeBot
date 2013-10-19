@@ -68,6 +68,8 @@ public class BotManager {
     // ********
     private String _propertiesFile;
 
+    Map<String, Set<String>> emoteSetMapping;
+
 
     public BotManager(String propertiesFile) {
         BotManager.setInstance(this);
@@ -79,6 +81,7 @@ public class BotManager {
         tagStaff = new HashSet<String>();
         emoteSet = new LinkedList<String>();
         globalBannedWords = new LinkedList<Pattern>();
+        emoteSetMapping = new HashMap<String, Set<String>>();
 
         loadGlobalProfile();
 
@@ -633,6 +636,23 @@ public class BotManager {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void addSubBySet(String username, String setID) {
+        if (emoteSetMapping.containsKey(setID)) {
+            emoteSetMapping.get(setID).add(username);
+        } else {
+            emoteSetMapping.put(setID, new HashSet<String>());
+        }
+    }
+
+    public boolean checkEmoteSetMapping(String username, String setID) {
+        if (emoteSetMapping.containsKey(setID)) {
+            if (emoteSetMapping.get(setID).contains(username))
+                return true;
+        }
+
+        return false;
     }
 
     public void log(String line) {

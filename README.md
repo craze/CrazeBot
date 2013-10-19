@@ -165,6 +165,8 @@ Limits Twitch **global** emotes.
     * `timeoutduration <seconds>` - Sets the duration for filter offenses (after warning if enabled).
     * `tweet <message>` - Format for Click to tweet message.
     * `prefix <character>` - Sets the command prefix. Default is "!"
+    * `emoteset <set id>` - Sets the emote_set for of the subscription product for this channel. (Used to determine subscriber status for regulars)
+    * `subscriberregulars on|off` - Treats subscribers a regulars. `emoteset` must be defined first.
 
 ### User Levels
 

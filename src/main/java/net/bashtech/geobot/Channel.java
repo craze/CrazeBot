@@ -88,6 +88,8 @@ public class Channel {
     Map<String, Long> commandCooldown;
     Set<WebSocket> wsSubscribers = new HashSet<WebSocket>();
     String prefix;
+    String emoteSet;
+    boolean subscriberRegulars;
 
     public Channel(String name) {
         config = new PropertiesFile(name + ".properties");
@@ -124,6 +126,27 @@ public class Channel {
         config.setString("commandPrefix", this.prefix);
     }
 
+    public String getEmoteSet() {
+        return emoteSet;
+    }
+
+    public void setEmoteSet(String emoteSet) {
+        this.emoteSet = emoteSet;
+
+        config.setString("emoteSet", emoteSet);
+    }
+
+    public boolean getSubscriberRegulars() {
+        return subscriberRegulars;
+    }
+
+    public void setSubscriberRegulars(boolean subscriberRegulars) {
+        subscribers.clear();
+
+        this.subscriberRegulars = subscriberRegulars;
+        config.setBoolean("subscriberRegulars", subscriberRegulars);
+    }
+
     //##############################################################
 
     public String getCommand(String key) {
@@ -141,7 +164,7 @@ public class Channel {
         System.out.println("Key: " + key);
         command = command.replaceAll(",,", "");
 
-        if(key.length() < 1)
+        if (key.length() < 1)
             return;
 
         if (commands.containsKey(key)) {
@@ -191,10 +214,10 @@ public class Channel {
 
     }
 
-    public boolean setCommandsRestriction(String command, int level){
+    public boolean setCommandsRestriction(String command, int level) {
         command = command.toLowerCase();
 
-        if(!commands.containsKey(command))
+        if (!commands.containsKey(command))
             return false;
 
         commandsRestrictions.put(command, level);
@@ -204,18 +227,18 @@ public class Channel {
         return true;
     }
 
-    public boolean checkCommandRestriction(String command, int level){
+    public boolean checkCommandRestriction(String command, int level) {
         System.out.println("Checking command: " + command + " User level: " + level);
-        if(!commandsRestrictions.containsKey(command))
+        if (!commandsRestrictions.containsKey(command))
             return true;
 
-        if(level >= commandsRestrictions.get(command))
+        if (level >= commandsRestrictions.get(command))
             return true;
 
         return false;
     }
 
-    public void saveCommandRestrictions(){
+    public void saveCommandRestrictions() {
         String commandRestrictionsString = "";
 
         Iterator itr = commandsRestrictions.entrySet().iterator();
@@ -354,11 +377,11 @@ public class Channel {
         response.replaceAll(",,", "");
 
         if (!trigger.startsWith("REGEX:")) {
-            String[] parts = trigger.replaceFirst("^\\*", "").replaceFirst("\\*$","").split("\\*");
+            String[] parts = trigger.replaceFirst("^\\*", "").replaceFirst("\\*$", "").split("\\*");
 
             //Only apply leading & trailing any if an one was requested
             boolean trailingAny = trigger.endsWith("*");
-            if(trigger.startsWith("*"))
+            if (trigger.startsWith("*"))
                 trigger = ".*";
             else
                 trigger = "";
@@ -368,11 +391,11 @@ public class Channel {
                     continue;
 
                 trigger += Pattern.quote(parts[i]);
-                if(i != parts.length - 1)
+                if (i != parts.length - 1)
                     trigger += ".*";
             }
 
-            if(trailingAny)
+            if (trailingAny)
                 trigger += ".*";
 
         } else {
@@ -690,7 +713,13 @@ public class Channel {
     }
 
     public boolean isSubscriber(String name) {
-        return subscribers.contains(name.toLowerCase());
+        if (subscribers.contains(name.toLowerCase()))
+            return true;
+
+        if (emoteSet.length() > 0)
+            if (BotManager.getInstance().checkEmoteSetMapping(name, emoteSet))
+                return true;
+        return false;
     }
 
     public void addSubscriber(String name) {
@@ -1293,6 +1322,12 @@ public class Channel {
         if (!config.keyExists("commandRestrictions")) {
             config.setString("commandRestrictions", "");
         }
+        if (!config.keyExists("emoteSet")) {
+            config.setString("emoteSet", "");
+        }
+        if (!config.keyExists("subscriberRegulars")) {
+            config.setBoolean("subscriberRegulars", false);
+        }
         channel = config.getString("channel");
         filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
         filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1329,6 +1364,8 @@ public class Channel {
         enableWarnings = Boolean.parseBoolean(config.getString("enableWarnings"));
         timeoutDuration = config.getInt("timeoutDuration");
         prefix = config.getString("commandPrefix").charAt(0) + "";
+        emoteSet = config.getString("emoteSet");
+        subscriberRegulars = config.getBoolean("subscriberRegulars");
 
         String[] commandsKey = config.getString("commandsKey").split(",");
         String[] commandsValue = config.getString("commandsValue").split(",,");

@@ -222,8 +222,11 @@ public class ReceiverBot extends PircBot {
             isOp = true;
         if (channelInfo.isOwner(sender))
             isOwner = true;
-        if (channelInfo.isRegular(sender) || channelInfo.isSubscriber(sender))
+        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && channelInfo.isSubscriber(sender)))
             isRegular = true;
+
+        if (channelInfo.isSubscriber(sender))
+            System.out.println("Subscriber");
 
         //Give users all the ranks below them
         if (isAdmin) {
@@ -1567,6 +1570,17 @@ public class ReceiverBot extends PircBot {
                 } else {
                     send(channel, "Command prefix is " + channelInfo.getPrefix());
                 }
+            } else if (msg[1].equalsIgnoreCase("emoteset") && msg.length > 2) {
+                channelInfo.setEmoteSet(msg[2]);
+                send(channel, "Emote set ID set to " + channelInfo.getEmoteSet());
+            } else if (msg[1].equalsIgnoreCase("subscriberregulars")) {
+                if (msg[2].equalsIgnoreCase("on")) {
+                    channelInfo.setSubscriberRegulars(true);
+                    send(channel, "Subscribers will now be treated as regulars.");
+                } else if (msg[2].equalsIgnoreCase("off")) {
+                    channelInfo.setSubscriberRegulars(false);
+                    send(channel, "Subscribers will no longer be treated as regulars.");
+                }
             }
             return;
         }
@@ -1792,6 +1806,12 @@ public class ReceiverBot extends PircBot {
                 Channel ci = BotManager.getInstance().getChannel("#" + channel);
                 ci.active = true;
                 System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
+            } else if (msg[0].equalsIgnoreCase("EMOTESET")) {
+                String user = msg[1];
+                String setsList = msg[2].replaceAll("(\\[|\\])", "");
+                String[] sets = setsList.split(",");
+                for (String s : sets)
+                    BotManager.getInstance().addSubBySet(user, s);
             }
         }
     }
