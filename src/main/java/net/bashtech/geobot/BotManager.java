@@ -623,10 +623,18 @@ public class BotManager {
             Scanner in = new Scanner(f, "UTF-8");
 
             while (in.hasNextLine()) {
-                String line = ".*" + Pattern.quote(in.nextLine().trim().toLowerCase()) + ".*";
-                System.out.println(line);
-                Pattern tempP = Pattern.compile(line);
-                globalBannedWords.add(tempP);
+                String line = in.nextLine().replace("\uFEFF", "");
+                if (line.length() > 0) {
+
+                    if (line.startsWith("REGEX:"))
+                        line = line.replaceAll("REGEX:", "");
+                    else
+                        line = ".*" + Pattern.quote(line) + ".*";
+
+                    System.out.println(line);
+                    Pattern tempP = Pattern.compile(line, Pattern.CASE_INSENSITIVE);
+                    globalBannedWords.add(tempP);
+                }
             }
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
