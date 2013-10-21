@@ -130,7 +130,8 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onPrivateMessage(String sender, String login, String hostname, String message) {
-        BotManager.getInstance().log("RB PM: " + sender + " " + message);
+        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT"))
+            BotManager.getInstance().log("RB PM: " + sender + " " + message);
 
         Matcher m = banNoticePattern.matcher(message);
         if (m.matches()) {
