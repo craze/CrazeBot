@@ -53,6 +53,7 @@ public class ReceiverBot extends PircBot {
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
+    private Pattern vinePattern = Pattern.compile(".*vine.*4.*\\bGoogle\\b.*", Pattern.CASE_INSENSITIVE);
 
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
@@ -309,8 +310,16 @@ public class ReceiverBot extends PircBot {
         // Voluntary Filters
         if (channelInfo.useFilters) {
 
+            if (!isRegular) {
+                Matcher m = vinePattern.matcher(message);
+                if (m.find()) {
+                    this.secondaryTO(channel, sender, 3600, FilterType.VINE, message);
+                    return;
+                }
+            }
+
             //Me filter
-            if (!isRegular && channelInfo.getFilterMe() && !isRegular) {
+            if (channelInfo.getFilterMe() && !isRegular) {
                 if (msg[0].equalsIgnoreCase("/me")) {
                     int warningCount = 0;
 
@@ -2074,19 +2083,25 @@ public class ReceiverBot extends PircBot {
     }
 
     private void secondaryTO(final String channel, final String name, final int duration, FilterType type, String message) {
-        Timer timer = new Timer();
-        int delay = 1000;
+
 
         String line = "FILTER: Issuing a timeout on " + name + " in " + channel + " for " + type.toString() + " (" + duration + ")";
         logMain(line);
         line = "FILTER: Affected Message: " + message;
         logMain(line);
 
-        timer.schedule(new TimerTask() {
-            public void run() {
-                ReceiverBot.this.send(channel, ".timeout " + name + " " + duration);
-            }
-        }, delay);
+        int iterations = BotManager.getInstance().multipleTimeout;
+
+        for (int i = 0; i < iterations; i++) {
+            Timer timer = new Timer();
+            int delay = 1000 * i;
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    ReceiverBot.this.send(channel, ".timeout " + name + " " + duration);
+                }
+            }, delay);
+        }
+
 
         //Send to subscribers
         Channel channelInfo = getChannelObject(channel);
@@ -2096,17 +2111,22 @@ public class ReceiverBot extends PircBot {
     }
 
     private void secondaryBan(final String channel, final String name, FilterType type) {
-        Timer timer = new Timer();
-        int delay = 1000;
+
 
         String line = "RB: Issuing a ban on " + name + " in " + channel + " for " + type.toString();
         logMain(line);
 
-        timer.schedule(new TimerTask() {
-            public void run() {
-                ReceiverBot.this.send(channel, ".ban " + name);
-            }
-        }, delay);
+        int iterations = BotManager.getInstance().multipleTimeout;
+        for (int i = 0; i < iterations; i++) {
+            Timer timer = new Timer();
+            int delay = 1000 * i;
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    ReceiverBot.this.send(channel, ".ban " + name);
+                }
+            }, delay);
+        }
+
 
         //Send to subscribers
         Channel channelInfo = getChannelObject(channel);

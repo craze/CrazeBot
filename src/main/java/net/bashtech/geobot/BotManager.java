@@ -65,6 +65,7 @@ public class BotManager {
     private Set<BotModule> modules;
     private Set<String> tagAdmins;
     private Set<String> tagStaff;
+    int multipleTimeout;
     // ********
     private String _propertiesFile;
 
@@ -385,6 +386,10 @@ public class BotManager {
         if (!config.keyExists("ignoreHistory")) {
             config.setBoolean("ignoreHistory", true);
         }
+
+        if (!config.keyExists("multipleTimeout")) {
+            config.setInt("multipleTimeout", 3);
+        }
         // ********
 
         nick = config.getString("nick");
@@ -405,7 +410,7 @@ public class BotManager {
 
         twitchChannels = config.getBoolean("twitchChannels");
         ignoreHistory = config.getBoolean("ignoreHistory");
-
+        multipleTimeout = config.getInt("multipleTimeout");
 
         // API KEYS
 
