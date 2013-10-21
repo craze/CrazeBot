@@ -53,7 +53,7 @@ public class ReceiverBot extends PircBot {
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
-    private Pattern vinePattern = Pattern.compile(".*vine.*4.*\\bGoogle\\b.*", Pattern.CASE_INSENSITIVE);
+    private Pattern vinePattern = Pattern.compile(".*vine.*4.*Google.*", Pattern.CASE_INSENSITIVE);
 
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
@@ -311,9 +311,10 @@ public class ReceiverBot extends PircBot {
         if (channelInfo.useFilters) {
 
             if (!isRegular) {
-                Matcher m = vinePattern.matcher(message);
+                Matcher m = vinePattern.matcher(message.replaceAll(" ", ""));
                 if (m.find()) {
-                    this.secondaryTO(channel, sender, 3600, FilterType.VINE, message);
+                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
+                    this.secondaryBan(channel, sender, FilterType.VINE);
                     return;
                 }
             }
@@ -2120,6 +2121,7 @@ public class ReceiverBot extends PircBot {
         for (int i = 0; i < iterations; i++) {
             Timer timer = new Timer();
             int delay = 1000 * i;
+            System.out.println("Delay: " + delay);
             timer.schedule(new TimerTask() {
                 public void run() {
                     ReceiverBot.this.send(channel, ".ban " + name);
