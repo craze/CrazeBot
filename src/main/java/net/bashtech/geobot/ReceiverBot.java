@@ -1660,92 +1660,66 @@ public class ReceiverBot extends PircBot {
         // **************************** Administration Commands ***************************
         // ********************************************************************************
 
-        if (msg[0].equalsIgnoreCase(prefix + "bm-channels") && isAdmin) {
-            send(channel, "Currently in " + BotManager.getInstance().channelList.size() + " channels.");
+        if (msg[0].equalsIgnoreCase(prefix + "admin") && isAdmin && msg.length > 1) {
+            if (msg[1].equalsIgnoreCase("channels")) {
+                send(channel, "Currently in " + BotManager.getInstance().channelList.size() + " channels.");
+                return;
+            } else if (msg[1].equalsIgnoreCase("join") && msg.length > 2) {
+                if (msg[2].contains("#")) {
+                    String toJoin = msg[2];
+                    send(channel, "Joining channel " + toJoin + ".");
+                    boolean joinStatus = BotManager.getInstance().addChannel(toJoin, -1);
+                    if (joinStatus) {
+                        send(channel, "Channel " + toJoin + " joined.");
+                    } else {
+                        send(channel, "Already in channel " + toJoin + ".");
+                    }
 
-            String channelString = "";
-            for (Map.Entry<String, Channel> entry : BotManager.getInstance().channelList.entrySet()) {
-                channelString += entry.getValue().getChannel() + ", ";
-            }
-
-            send(channel, "Channels: " + channelString);
-            return;
-        }
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-join") && msg.length > 1 && isAdmin) {
-
-            if (msg[1].contains("#")) {
-                send(channel, "Joining channel " + msg[1] + ".");
-                boolean joinStatus = BotManager.getInstance().addChannel(msg[1], -1);
-                if (joinStatus) {
-                    send(channel, "Channel " + msg[1] + " joined.");
                 } else {
-                    send(channel, "Already in channel " + msg[1] + ".");
+                    send(channel, "Invalid channel format. Must be in format #channelname.");
                 }
-
-            } else {
-                send(channel, "Invalid channel format. Must be in format #channelname.");
+                return;
+            } else if (msg[1].equalsIgnoreCase("part") && msg.length > 2) {
+                if (msg[2].contains("#")) {
+                    String toPart = msg[2];
+                    send(channel, "Channel " + toPart + " parting...");
+                    BotManager.getInstance().removeChannel(msg[1]);
+                    send(channel, "Channel " + toPart + " parted.");
+                } else {
+                    send(channel, "Invalid channel format. Must be in format #channelname.");
+                }
+                return;
+            } else if (msg[1].equalsIgnoreCase("reconnect")) {
+                send(channel, "Reconnecting all servers.");
+                BotManager.getInstance().reconnectAllBotsSoft();
+                return;
+            } else if (msg[1].equalsIgnoreCase("reload") && msg.length > 2) {
+                if (msg[2].contains("#")) {
+                    String toReload = msg[2];
+                    send(channel, "Reloading channel " + toReload);
+                    BotManager.getInstance().reloadChannel(toReload);
+                    send(channel, "Channel " + toReload + " reloaded.");
+                } else {
+                    send(channel, "Invalid channel format. Must be in format #channelname.");
+                }
+                return;
+            } else if (msg[1].equalsIgnoreCase("color") && msg.length > 2) {
+                send(channel, ".color " + msg[2]);
+                send(channel, "Color set to " + msg[2]);
+                return;
+            } else if (msg[1].equalsIgnoreCase("loadfilter")) {
+                BotManager.getInstance().loadGlobalBannedWords();
+                send(channel, "Global banned filter reloaded.");
+                return;
+            } else if (msg[1].equalsIgnoreCase("spam")) {
+                if (msg.length > 3 && Main.isInteger(msg[2])) {
+                    String toSpam = fuseArray(msg, 3);
+                    for (int i = 0; i < Integer.parseInt(msg[2]); i++)
+                        send(channel, toSpam);
+                    return;
+                }
             }
-            return;
         }
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-leave") && msg.length > 1 && isAdmin) {
-            if (msg[1].contains("#")) {
-                send(channel, "Channel " + msg[1] + " parting...");
-                BotManager.getInstance().removeChannel(msg[1]);
-                send(channel, "Channel " + msg[1] + " parted.");
-            } else {
-                send(channel, "Invalid channel format. Must be in format #channelname.");
-            }
-            return;
-        }
-
-// 				if (msg[0].equalsIgnoreCase("!bm-rejoin") && isAdmin) {
-// 					send(channel, "Rejoining all channels.");
-// 					BotManager.getInstance().rejoinChannels();
-// 				}
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-reconnect") && isAdmin) {
-            send(channel, "Reconnecting all servers.");
-            BotManager.getInstance().reconnectAllBotsSoft();
-            return;
-        }
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-global") && isAdmin) {
-            BotManager.getInstance().sendGlobal(message.substring(11), sender);
-            return;
-        }
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-reload") && msg.length > 1 && isAdmin) {
-            if (msg[1].contains("#")) {
-                send(channel, "Reloading channel " + msg[1]);
-                BotManager.getInstance().reloadChannel(msg[1]);
-                send(channel, "Channel " + msg[1] + " reloaded.");
-            } else {
-                send(channel, "Invalid channel format. Must be in format #channelname.");
-            }
-            return;
-        }
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-color") && msg.length > 1 && isAdmin) {
-            send(channel, ".color " + msg[1]);
-            send(channel, "Color set to " + msg[1]);
-            return;
-        }
-
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-gbtest") && msg.length > 1 && isAdmin) {
-            for (int i = 0; i < Integer.parseInt(msg[1]); i++)
-                send(channel, ".timeout kappa123 1");
-            return;
-        }
-
-        if (msg[0].equalsIgnoreCase(prefix + "bm-loadglobalfilter") && isAdmin) {
-            BotManager.getInstance().loadGlobalBannedWords();
-            send(channel, "Global banned filter reloaded.");
-            return;
-        }
-
         // ********************************************************************************
         // ***************************** Info/Catch-all Command ***************************
         // ********************************************************************************
