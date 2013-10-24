@@ -315,6 +315,7 @@ public class ReceiverBot extends PircBot {
                 if (m.find()) {
                     logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
                     this.secondaryBan(channel, sender, FilterType.VINE);
+                    logGlobalBan(channel, sender, message);
                     return;
                 }
             }
