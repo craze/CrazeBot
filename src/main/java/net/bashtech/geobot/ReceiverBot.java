@@ -1683,7 +1683,7 @@ public class ReceiverBot extends PircBot {
                 if (msg[2].contains("#")) {
                     String toPart = msg[2];
                     send(channel, "Channel " + toPart + " parting...");
-                    BotManager.getInstance().removeChannel(msg[1]);
+                    BotManager.getInstance().removeChannel(toPart);
                     send(channel, "Channel " + toPart + " parted.");
                 } else {
                     send(channel, "Invalid channel format. Must be in format #channelname.");
