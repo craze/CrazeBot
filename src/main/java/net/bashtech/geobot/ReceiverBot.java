@@ -1716,7 +1716,7 @@ public class ReceiverBot extends PircBot {
                 if (msg.length > 3 && Main.isInteger(msg[2])) {
                     String toSpam = fuseArray(msg, 3);
                     for (int i = 0; i < Integer.parseInt(msg[2]); i++)
-                        send(channel, toSpam);
+                        send(channel, toSpam + " " + i);
                     return;
                 }
             }
