@@ -388,4 +388,26 @@ public class JSONUtil {
 
     }
 
+    public static String getChatProperties(String channel) {
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://api.twitch.tv/api/channels/" + channel + "/chat_properties"));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            Boolean hide_chat_links = (Boolean) jsonObject.get("hide_chat_links");
+            Boolean devchat = (Boolean) jsonObject.get("devchat");
+            Boolean eventchat = (Boolean) jsonObject.get("eventchat");
+            Boolean require_verified_account = (Boolean) jsonObject.get("require_verified_account");
+
+            String response = "Hide links: " + hide_chat_links + ", Require verified account: " + require_verified_account;
+
+            return response;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "(Error querying API)";
+        }
+
+    }
+
 }

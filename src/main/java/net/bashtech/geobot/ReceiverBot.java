@@ -644,6 +644,13 @@ public class ReceiverBot extends PircBot {
             return;
         }
 
+        // !properties - Owner
+        if (msg[0].equalsIgnoreCase(prefix + "properties") && isOwner && BotManager.getInstance().twitchChannels) {
+            log("RB: Matched command !properties");
+            send(channel, JSONUtil.getChatProperties(channelInfo.getTwitchName()));
+            return;
+        }
+
         // !commands - Op/Regular
         if (msg[0].equalsIgnoreCase(prefix + "commands") && isOp) {
             log("RB: Matched command !commands");
