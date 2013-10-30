@@ -53,7 +53,7 @@ public class ReceiverBot extends PircBot {
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
-    private Pattern vinePattern = Pattern.compile(".*vine.*4.*(Google|\\*\\*\\*).*", Pattern.CASE_INSENSITIVE);
+    private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*(Google|\\*\\*\\*).*", Pattern.CASE_INSENSITIVE);
 
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
@@ -1723,7 +1723,7 @@ public class ReceiverBot extends PircBot {
                 if (msg.length > 3 && Main.isInteger(msg[2])) {
                     String toSpam = fuseArray(msg, 3);
                     for (int i = 0; i < Integer.parseInt(msg[2]); i++)
-                        send(channel, toSpam + " " + i);
+                        send(channel, toSpam + " " + (i + 1));
                     return;
                 }
             }
