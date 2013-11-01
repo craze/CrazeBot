@@ -1671,6 +1671,11 @@ public class ReceiverBot extends PircBot {
         if (msg[0].equalsIgnoreCase(prefix + "admin") && isAdmin && msg.length > 1) {
             if (msg[1].equalsIgnoreCase("channels")) {
                 send(channel, "Currently in " + BotManager.getInstance().channelList.size() + " channels.");
+                String channelString = "";
+                for (Map.Entry<String, Channel> entry : BotManager.getInstance().channelList.entrySet()) {
+                    channelString += entry.getValue().getChannel() + ", ";
+                }
+                send(channel, "Channels: " + channelString);
                 return;
             } else if (msg[1].equalsIgnoreCase("join") && msg.length > 2) {
                 if (msg[2].contains("#")) {
@@ -1881,10 +1886,19 @@ public class ReceiverBot extends PircBot {
 
         if (!message.startsWith(".")) {
             message = MessageReplaceParser.parseMessage(target, message);
-            message = getBullet() + " " + message;
-        }
 
-        sendMessage(target, message);
+            //Split if message > X characters
+            List<String> chunks = Main.splitEqually(message, 350);
+            int c = 1;
+            for (String chunk : chunks) {
+                sendMessage(target, getBullet() + " " + (chunks.size() > 1 ? "[" + c + "] " : "") + chunk);
+                c++;
+            }
+
+
+        } else {
+            sendMessage(target, message);
+        }
     }
 
     @Override
