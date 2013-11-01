@@ -1888,7 +1888,7 @@ public class ReceiverBot extends PircBot {
             message = MessageReplaceParser.parseMessage(target, message);
 
             //Split if message > X characters
-            List<String> chunks = Main.splitEqually(message, 350);
+            List<String> chunks = Main.splitEqually(message, 500);
             int c = 1;
             for (String chunk : chunks) {
                 sendMessage(target, getBullet() + " " + (chunks.size() > 1 ? "[" + c + "] " : "") + chunk);
