@@ -26,8 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 
 public class JSONUtil {
@@ -406,6 +405,27 @@ public class JSONUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
             return "(Error querying API)";
+        }
+
+    }
+
+    public static List<String> getEmotes() {
+        List<String> emotes = new LinkedList<String>();
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://direct.twitchemotes.com/global.json"));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            for (Object o : jsonObject.keySet()) {
+                String name = (String) o;
+                if (name.length() > 0)
+                    emotes.add(name);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            return emotes;
         }
 
     }

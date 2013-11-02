@@ -588,25 +588,9 @@ public class BotManager {
 
     private void loadEmotes() {
         emoteSet.clear();
-        File f = new File("emotes.cfg");
-        if (!f.exists())
-            try {
-                f.createNewFile();
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-        try {
-            Scanner in = new Scanner(f, "UTF-8");
+        emoteSet = JSONUtil.getEmotes();
 
-            while (in.hasNextLine()) {
-                emoteSet.add(in.nextLine().trim());
-            }
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        System.out.println("Loaded " + emoteSet.size() + " emotes.");
     }
 
     public void loadGlobalBannedWords() {

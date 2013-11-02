@@ -442,6 +442,20 @@ public class ReceiverBot extends PircBot {
 
                 }
 
+                if (channelInfo.getFilterEmotesSingle() && checkSingleEmote(message)) {
+                    int warningCount = 0;
+
+                    channelInfo.incWarningCount(sender, FilterType.EMOTES);
+                    warningCount = channelInfo.getWarningCount(sender, FilterType.EMOTES);
+                    this.secondaryTO(channel, sender, this.getTODuration(warningCount, channelInfo), FilterType.EMOTES, message);
+
+                    if (channelInfo.checkSignKicks())
+                        send(channel, sender + ", single emote messages are not allowed - " + this.getTimeoutText(warningCount, channelInfo));
+
+                    return;
+
+                }
+
             }
 
         }
@@ -1285,7 +1299,7 @@ public class ReceiverBot extends PircBot {
         if (msg[0].equalsIgnoreCase(prefix + "emotes") && isOwner) {
             log("RB: Matched command !emotes");
             if (msg.length == 1) {
-                send(channel, "Syntax: \"!emotes on/off\", \"!emotes max [value]\"");
+                send(channel, "Syntax: \"!emotes on/off\", \"!emotes max [value]\", \"!emotes single on/off\"");
             } else if (msg.length > 1) {
                 if (msg[1].equalsIgnoreCase("on")) {
                     channelInfo.setFilterEmotes(true);
@@ -1299,7 +1313,15 @@ public class ReceiverBot extends PircBot {
                         send(channel, "Emotes filter max: " + channelInfo.getFilterEmotesMax());
                     }
                 } else if (msg[1].equalsIgnoreCase("status")) {
-                    send(channel, "Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax());
+                    send(channel, "Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
+                } else if (msg[1].equalsIgnoreCase("single") && msg.length > 2) {
+                    if (msg[2].equalsIgnoreCase("on")) {
+                        channelInfo.setFilterEmotesSingle(true);
+                        send(channel, "Single Emote filter: " + channelInfo.getFilterEmotesSingle());
+                    } else if (msg[2].equalsIgnoreCase("off")) {
+                        channelInfo.setFilterEmotesSingle(false);
+                        send(channel, "Single Emote filter: " + channelInfo.getFilterEmotesSingle());
+                    }
                 }
             }
             return;
@@ -2042,6 +2064,14 @@ public class ReceiverBot extends PircBot {
             }
         }
         return count;
+    }
+
+    private boolean checkSingleEmote(String message) {
+        for (String emote : BotManager.getInstance().emoteSet) {
+            if (emote.equals(message))
+                return true;
+        }
+        return false;
     }
 
     public boolean isGlobalBannedWord(String message) {

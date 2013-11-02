@@ -51,6 +51,7 @@ public class Channel {
     private int filterSymbolsPercent;
     private int filterSymbolsMin;
     private int filterEmotesMax;
+    private boolean filterEmotesSingle;
     private int filterMaxLength;
     private String topic;
     private int topicTime;
@@ -589,6 +590,16 @@ public class Channel {
 
     public int getFilterEmotesMax() {
         return filterEmotesMax;
+    }
+
+    public boolean getFilterEmotesSingle() {
+        return filterEmotesSingle;
+    }
+
+    public void setFilterEmotesSingle(boolean filterEmotesSingle) {
+        this.filterEmotesSingle = filterEmotesSingle;
+
+        config.setBoolean("filterEmotesSingle", filterEmotesSingle);
     }
 
     public void setAnnounceJoinParts(boolean bol) {
@@ -1328,6 +1339,9 @@ public class Channel {
         if (!config.keyExists("subscriberRegulars")) {
             config.setBoolean("subscriberRegulars", false);
         }
+        if (!config.keyExists("filterEmotesSingle")) {
+            config.setBoolean("filterEmotesSingle", false);
+        }
         channel = config.getString("channel");
         filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
         filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
@@ -1342,6 +1356,7 @@ public class Channel {
         filterSymbolsMin = Integer.parseInt(config.getString("filterSymbolsMin"));
 
         filterEmotesMax = Integer.parseInt(config.getString("filterEmotesMax"));
+        filterEmotesSingle = Boolean.parseBoolean(config.getString("filterEmotesSingle"));
         //announceJoinParts = Boolean.parseBoolean(config.getString("announceJoinParts"));
         announceJoinParts = false;
         topic = config.getString("topic");
