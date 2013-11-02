@@ -147,6 +147,7 @@ Limits Twitch **global** emotes.
 
   * `!emotes on|off` - Owner - Toggle emote spam filtering on and off. 
   * `!emotes max <int>` - Max number of emotes allowed.
+  * `!emotes single on|off` - Toggles filter for single emote messages.
 
 ### Settings
   * `!set <option> [parameters]`
@@ -221,10 +222,5 @@ Adding dynamic data to bot message is also supported via string substitutions. A
 
 Admin nicks are defined in global.properties. Twitch Admins and Staff also have access.
 
-  * `!bm-join [#channelname]` - Joins channelname  
-  * `!bm-leave [#channelname]` - Leaves channelname   
-  * `!bm-rejoin` - Rejoin all channels   
-  * `!bm-reconnect` - Disconnects all bots and allows them to "auto-reconnect" 
-  * `!bm-global [message]` - Sends a message to all channel the bot is in
-  * `!bm-loadglobalfilter` - Reload the global spam filter
-
+  * `!admin join [#channelname]` - Joins channelname. (Note: Forces mode level -1)
+  * `!admin part [#channelname]` - Leaves channelname
