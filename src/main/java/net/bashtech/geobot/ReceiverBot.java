@@ -1232,6 +1232,9 @@ public class ReceiverBot extends PircBot {
                 } else if (msg[1].equalsIgnoreCase("off")) {
                     channelInfo.setFilterOffensive(false);
                     send(channel, "Ban phrase filter is off");
+                } else if (msg[1].equalsIgnoreCase("clear")) {
+                    channelInfo.clearBannedPhrases();
+                    send(channel, "Banned phrases cleared.");
                 } else if (msg[1].equalsIgnoreCase("list")) {
                     String tempList = "Banned phrases words: ";
                     for (String s : channelInfo.getOffensive()) {
@@ -1242,7 +1245,7 @@ public class ReceiverBot extends PircBot {
                     String phrase = fuseArray(msg, 2);
                     if (phrase.contains(",,")) {
                         send(channel, "Cannot contain double commas (,,)");
-                    } else if (channelInfo.isOffensive(fuseArray(msg, 2))) {
+                    } else if (channelInfo.isBannedPhrase(fuseArray(msg, 2))) {
                         send(channel, "Word already exists. " + "(" + phrase + ")");
                     } else {
                         if (phrase.startsWith("REGEX:") && !isAdmin) {
@@ -1559,15 +1562,6 @@ public class ReceiverBot extends PircBot {
                 } else if (msg[2].equalsIgnoreCase("-1") || msg[2].equalsIgnoreCase("admin")) {
                     channelInfo.setMode(-1);
                     send(channel, "Special moderation mode activated.");
-                }
-            } else if (msg[1].equalsIgnoreCase("chatlogging")) {
-                if (msg[2].equalsIgnoreCase("on")) {
-                    channelInfo.setLogging(true);
-                    send(channel, "Chat logging is on");
-                    //send(channel, "You cannot enable chat logging. If you would like it enabled for your channel, please contact the bot maintainer.");
-                } else if (msg[2].equalsIgnoreCase("off")) {
-                    channelInfo.setLogging(false);
-                    send(channel, "Chat logging is off");
                 }
             } else if (msg[1].equalsIgnoreCase("maxlength")) {
                 if (msg.length > 2) {

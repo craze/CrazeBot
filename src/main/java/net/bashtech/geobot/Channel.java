@@ -957,12 +957,17 @@ public class Channel {
         }
     }
 
+    public void clearBannedPhrases() {
+        offensiveWords.clear();
+        offensiveWordsRegex.clear();
+        config.setString("offensiveWords", "");
+    }
+
     public boolean isBannedPhrase(String phrase) {
         return offensiveWords.contains(phrase);
     }
 
     public boolean isOffensive(String word) {
-
         for (Pattern reg : offensiveWordsRegex) {
             Matcher match = reg.matcher(word.toLowerCase());
             if (match.find()) {
