@@ -1182,12 +1182,6 @@ public class Channel {
     }
 
     private void loadProperties(String name) {
-        try {
-            config.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if (!config.keyExists("channel")) {
             config.setString("channel", name);
         }

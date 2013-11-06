@@ -664,4 +664,65 @@ public final class PropertiesFile {
 
         save();
     }
+
+    public List<String> getList(String key, List<String> returnObject) {
+        if (this.containsKey(key)) {
+            String raw = this.getProperty(key);
+            String[] rawSplit = raw.split(Main.DELIMITER);
+            for (String p : rawSplit) {
+                returnObject.add(p);
+            }
+        }
+
+        return returnObject;
+    }
+
+    public void setList(String key, List<?> list) {
+        String outString = "";
+        String delim = "";
+
+        for (Object p : list) {
+            String strValue = String.valueOf(p);
+            strValue = strValue.replaceAll(Main.DELIMITER, "");
+            outString += delim + strValue;
+            delim = Main.DELIMITER;
+        }
+
+        System.out.println(outString);
+        this.setString(key, outString);
+    }
+
+    public Map<String, String> getMap(String key) {
+        Map<String, String> map = new HashMap<String, String>();
+
+        if (this.containsKey(key)) {
+            String raw = this.getProperty(key);
+            String[] rawSplit = raw.split(Main.DELIMITER);
+            for (String p : rawSplit) {
+                String[] rawSplitInner = p.split(Main.DELIMITER2);
+                if (rawSplitInner.length == 2) {
+                    map.put(rawSplitInner[0], rawSplitInner[1]);
+                }
+            }
+        }
+
+        return map;
+    }
+
+    public void setMap(String key, Map<?, ?> map) {
+        String outString = "";
+        String delim = "";
+        Iterator it = map.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            String pair = String.valueOf(pairs.getKey()).replaceAll(Main.DELIMITER, "").replaceAll(Main.DELIMITER2, "") + Main.DELIMITER2 +
+                    String.valueOf(pairs.getValue()).replaceAll(Main.DELIMITER, "").replaceAll(Main.DELIMITER2, "");
+            outString += delim + pair;
+            delim = Main.DELIMITER;
+        }
+
+        System.out.println(outString);
+        this.setString(key, outString);
+    }
 }

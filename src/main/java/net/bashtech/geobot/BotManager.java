@@ -284,11 +284,6 @@ public class BotManager {
         config = new PropertiesFile(_propertiesFile);
 
         log("BM: Reading global file > " + _propertiesFile);
-        try {
-            config.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         if (!config.keyExists("nick")) {
             config.setString("nick", "");
