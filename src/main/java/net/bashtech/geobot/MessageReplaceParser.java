@@ -21,7 +21,7 @@ package net.bashtech.geobot;
 
 public class MessageReplaceParser {
 
-    public static String parseMessage(String channel, String message) {
+    public static String parseMessage(String channel, String message, String[] args) {
         Channel ci = BotManager.getInstance().getChannel(channel);
 
         if (message.contains("(_GAME_)"))
@@ -49,8 +49,17 @@ public class MessageReplaceParser {
         if (message.contains("(_CHANNEL_URL_)"))
             message = message.replace("(_CHANNEL_URL_)", "twitch.tv/" + channel.substring(1));
         if (message.contains("(_TWEET_URL_)")) {
-            String url = JSONUtil.shortenURL("https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, ci.getClickToTweetFormat())));
+            String url = JSONUtil.shortenURL("https://twitter.com/intent/tweet?text=" + JSONUtil.urlEncode(MessageReplaceParser.parseMessage(channel, ci.getClickToTweetFormat(), args)));
             message = message.replace("(_TWEET_URL_)", url);
+        }
+
+        if (args != null) {
+            int argCounter = 1;
+            for (String argument : args) {
+                if (message.contains("(_" + argCounter + "_)"))
+                    message = message.replace("(_" + argCounter + "_)", argument);
+                argCounter++;
+            }
         }
 
         return message;

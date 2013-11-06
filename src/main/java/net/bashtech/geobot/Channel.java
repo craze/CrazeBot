@@ -92,7 +92,12 @@ public class Channel {
     String emoteSet;
     boolean subscriberRegulars;
 
+
+    private Map<String, String> simpleProperty = new HashMap<String, String>();
+    private Map<String, Object> defaults = new HashMap<String, Object>();
+
     public Channel(String name) {
+        channel = name;
         config = new PropertiesFile(name + ".properties");
         loadProperties(name);
         warningCount = new HashMap<String, EnumMap<FilterType, Integer>>();
@@ -100,8 +105,6 @@ public class Channel {
         commandCooldown = new HashMap<String, Long>();
 
         twitchname = channel.substring(1);
-
-        //active = !BotManager.getInstance().ignoreHistory;
     }
 
     public Channel(String name, int mode) {
@@ -1181,166 +1184,106 @@ public class Channel {
         BotManager.getInstance().addChannel(channel, mode);
     }
 
+    /**
+     * Retrieves a simple key -> value property in String form.
+     * <p/>
+     * If not available in memory then it pulls from property file.
+     *
+     * @param key Key
+     * @return Value, if none is found then null
+     */
+    private String getSimpleProperty(String key) {
+        if (simpleProperty.containsKey(key))
+            return simpleProperty.get(key);
+
+        if (config.keyExists(key)) {
+            return config.getString(key);
+        }
+
+        return null;
+    }
+
+    /**
+     * Set a simple key -> value property to memory and to file
+     *
+     * @param key   Key
+     * @param value Value as an object. Will be converted to String
+     */
+    private void setSimpleProperty(String key, Object value) {
+        simpleProperty.put(key, String.valueOf(value));
+        config.setString(key, String.valueOf(value));
+    }
+
+    private void setDefaults() {
+
+        defaults.put("channel", channel);
+        defaults.put("filterCaps", false);
+        defaults.put("filterOffensive", true);
+        defaults.put("filterCapsPercent", 50);
+        defaults.put("filterCapsMinCharacters", 0);
+        defaults.put("filterCapsMinCapitals", 6);
+        defaults.put("filterLinks", false);
+        defaults.put("filterEmotes", false);
+        defaults.put("filterSymbols", false);
+        defaults.put("filterEmotesMax", 4);
+        defaults.put("topic", "");
+        defaults.put("commandsKey", "");
+        defaults.put("commandsValue", "");
+        defaults.put("commandsRepeatKey", "");
+        defaults.put("commandsRepeatDelay", "");
+        defaults.put("commandsRepeatDiff", "");
+        defaults.put("commandsRepeatActive", "");
+        defaults.put("commandsScheduleKey", "");
+        defaults.put("commandsSchedulePattern", "");
+        defaults.put("commandsScheduleDiff", "");
+        defaults.put("commandsScheduleActive", "");
+        defaults.put("autoReplyTriggers", "");
+        defaults.put("autoReplyResponse", "");
+        defaults.put("regulars", "");
+        defaults.put("moderators", "");
+        defaults.put("owners", "");
+        defaults.put("useTopic", true);
+        defaults.put("useFilters", false);
+        defaults.put("enableThrow", true);
+        defaults.put("permittedDomains", "");
+        defaults.put("signKicks", false);
+        defaults.put("topicTime", 0);
+        defaults.put("mode", 2);
+        defaults.put("announceJoinParts", false);
+        defaults.put("lastfm", "");
+        defaults.put("steamID", "");
+        defaults.put("logChat", false);
+        defaults.put("filterMaxLength", 500);
+        defaults.put("offensiveWords", "");
+        defaults.put("commercialLength", 30);
+        defaults.put("filterColors", false);
+        defaults.put("filterMe", false);
+        defaults.put("staticChannel", false);
+        defaults.put("enableWarnings", true);
+        defaults.put("timeoutDuration", 600);
+        defaults.put("clickToTweetFormat", "Checkout(_CHANNEL_URL_)playing(_GAME_)on@TwitchTV");
+        defaults.put("filterSymbolsPercent", 50);
+        defaults.put("filterSymbolsMin", 5);
+        defaults.put("commandPrefix", "!");
+        defaults.put("commandRestrictions", "");
+        defaults.put("emoteSet", "");
+        defaults.put("subscriberRegulars", false);
+        defaults.put("filterEmotesSingle", false);
+        defaults.put("subMessage", "(_1_) has subscribed!");
+
+        Iterator it = defaults.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            String key = String.valueOf(pairs.getKey());
+            String value = String.valueOf(pairs.getValue());
+            if (getSimpleProperty(key) == null)
+                setSimpleProperty(key, value);
+        }
+    }
+
     private void loadProperties(String name) {
-        if (!config.keyExists("channel")) {
-            config.setString("channel", name);
-        }
-        if (!config.keyExists("filterCaps")) {
-            config.setBoolean("filterCaps", false);
-        }
-        if (!config.keyExists("filterOffensive")) {
-            config.setBoolean("filterOffensive", true);
-        }
-        if (!config.keyExists("filterCapsPercent")) {
-            config.setInt("filterCapsPercent", 50);
-        }
-        if (!config.keyExists("filterCapsMinCharacters")) {
-            config.setInt("filterCapsMinCharacters", 0);
-        }
-        if (!config.keyExists("filterCapsMinCapitals")) {
-            config.setInt("filterCapsMinCapitals", 6);
-        }
-        if (!config.keyExists("filterLinks")) {
-            config.setBoolean("filterLinks", false);
-        }
-        if (!config.keyExists("filterEmotes")) {
-            config.setBoolean("filterEmotes", false);
-        }
-        if (!config.keyExists("filterSymbols")) {
-            config.setBoolean("filterSymbols", false);
-        }
-        if (!config.keyExists("filterEmotesMax")) {
-            config.setInt("filterEmotesMax", 4);
-        }
-        if (!config.keyExists("topic")) {
-            config.setString("topic", "");
-        }
-        if (!config.keyExists("commandsKey")) {
-            config.setString("commandsKey", "");
-        }
-        if (!config.keyExists("commandsValue")) {
-            config.setString("commandsValue", "");
-        }
-        if (!config.keyExists("commandsRepeatKey")) {
-            config.setString("commandsRepeatKey", "");
-        }
-        if (!config.keyExists("commandsRepeatDelay")) {
-            config.setString("commandsRepeatDelay", "");
-        }
-        if (!config.keyExists("commandsRepeatDiff")) {
-            config.setString("commandsRepeatDiff", "");
-        }
-        if (!config.keyExists("commandsRepeatActive")) {
-            config.setString("commandsRepeatActive", "");
-        }
-        if (!config.keyExists("commandsScheduleKey")) {
-            config.setString("commandsScheduleKey", "");
-        }
-        if (!config.keyExists("commandsSchedulePattern")) {
-            config.setString("commandsSchedulePattern", "");
-        }
-        if (!config.keyExists("commandsScheduleDiff")) {
-            config.setString("commandsScheduleDiff", "");
-        }
-        if (!config.keyExists("commandsScheduleActive")) {
-            config.setString("commandsScheduleActive", "");
-        }
-        if (!config.keyExists("autoReplyTriggers")) {
-            config.setString("autoReplyTriggers", "");
-        }
-        if (!config.keyExists("autoReplyResponse")) {
-            config.setString("autoReplyResponse", "");
-        }
-        if (!config.keyExists("regulars")) {
-            config.setString("regulars", "");
-        }
-        if (!config.keyExists("moderators")) {
-            config.setString("moderators", "");
-        }
-        if (!config.keyExists("owners")) {
-            config.setString("owners", "");
-        }
-        if (!config.keyExists("useTopic")) {
-            config.setBoolean("useTopic", true);
-        }
-        if (!config.keyExists("useFilters")) {
-            config.setBoolean("useFilters", false);
-        }
-        if (!config.keyExists("enableThrow")) {
-            config.setBoolean("enableThrow", true);
-        }
-        if (!config.keyExists("permittedDomains")) {
-            config.setString("permittedDomains", "");
-        }
-        if (!config.keyExists("signKicks")) {
-            config.setBoolean("signKicks", false);
-        }
-        if (!config.keyExists("topicTime")) {
-            config.setInt("topicTime", 0);
-        }
-        if (!config.keyExists("mode")) {
-            config.setInt("mode", 2);
-        }
-        if (!config.keyExists("announceJoinParts")) {
-            config.setBoolean("announceJoinParts", false);
-        }
-        if (!config.keyExists("lastfm")) {
-            config.setString("lastfm", "");
-        }
-        if (!config.keyExists("steamID")) {
-            config.setString("steamID", "");
-        }
-        if (!config.keyExists("logChat")) {
-            config.setBoolean("logChat", false);
-        }
-        if (!config.keyExists("filterMaxLength")) {
-            config.setInt("filterMaxLength", 500);
-        }
-        if (!config.keyExists("offensiveWords")) {
-            config.setString("offensiveWords", "");
-        }
-        if (!config.keyExists("commercialLength")) {
-            config.setInt("commercialLength", 30);
-        }
-        if (!config.keyExists("filterColors")) {
-            config.setBoolean("filterColors", false);
-        }
-        if (!config.keyExists("filterMe")) {
-            config.setBoolean("filterMe", false);
-        }
-        if (!config.keyExists("staticChannel")) {
-            config.setBoolean("staticChannel", false);
-        }
-        if (!config.keyExists("enableWarnings")) {
-            config.setBoolean("enableWarnings", true);
-        }
-        if (!config.keyExists("timeoutDuration")) {
-            config.setInt("timeoutDuration", 600);
-        }
-        if (!config.keyExists("clickToTweetFormat")) {
-            config.setString("clickToTweetFormat", "Check out (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
-        }
-        if (!config.keyExists("filterSymbolsPercent")) {
-            config.setInt("filterSymbolsPercent", 50);
-        }
-        if (!config.keyExists("filterSymbolsMin")) {
-            config.setInt("filterSymbolsMin", 5);
-        }
-        if (!config.keyExists("commandPrefix")) {
-            config.setString("commandPrefix", "!");
-        }
-        if (!config.keyExists("commandRestrictions")) {
-            config.setString("commandRestrictions", "");
-        }
-        if (!config.keyExists("emoteSet")) {
-            config.setString("emoteSet", "");
-        }
-        if (!config.keyExists("subscriberRegulars")) {
-            config.setBoolean("subscriberRegulars", false);
-        }
-        if (!config.keyExists("filterEmotesSingle")) {
-            config.setBoolean("filterEmotesSingle", false);
-        }
+        setDefaults();
+
         channel = config.getString("channel");
         filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
         filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));

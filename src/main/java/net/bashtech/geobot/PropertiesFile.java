@@ -725,4 +725,32 @@ public final class PropertiesFile {
         System.out.println(outString);
         this.setString(key, outString);
     }
+
+    public Set<String> getSet(String key) {
+        Set<String> returnObject = new HashSet<String>();
+
+        if (this.containsKey(key)) {
+            String raw = this.getProperty(key);
+            String[] rawSplit = raw.split(Main.DELIMITER);
+            for (String p : rawSplit) {
+                returnObject.add(p);
+            }
+        }
+
+        return returnObject;
+    }
+
+    public void setSet(String key, Set<?> set) {
+        String outString = "";
+        String delim = "";
+
+        for (Object p : set) {
+            String strValue = String.valueOf(p);
+            strValue = strValue.replaceAll(Main.DELIMITER, "");
+            outString += delim + strValue;
+            delim = Main.DELIMITER;
+        }
+
+        this.setString(key, outString);
+    }
 }

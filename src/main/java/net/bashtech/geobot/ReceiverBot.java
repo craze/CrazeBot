@@ -1888,6 +1888,10 @@ public class ReceiverBot extends PircBot {
     }
 
     public void send(String target, String message) {
+        send(target, message, null);
+    }
+
+    public void send(String target, String message, String[] args) {
         Channel channelInfo = getChannelObject(target);
 
         if (!BotManager.getInstance().verboseLogging)
@@ -1901,7 +1905,7 @@ public class ReceiverBot extends PircBot {
         }
 
         if (!message.startsWith(".")) {
-            message = MessageReplaceParser.parseMessage(target, message);
+            message = MessageReplaceParser.parseMessage(target, message, args);
 
             //Split if message > X characters
             List<String> chunks = Main.splitEqually(message, 500);
