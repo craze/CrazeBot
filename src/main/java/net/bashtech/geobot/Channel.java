@@ -1061,16 +1061,14 @@ public class Channel {
         }
 
         for (String d : permittedDomains) {
-            d = d.replaceAll("\\.", "\\\\.");
+            //d = d.replaceAll("\\.", "\\\\.");
 
-            String test = ".*(\\.|^|//)" + d + "(/|$).*";
+            String test = ".*(\\.|^|//)" + Pattern.quote(d) + "(/|$).*";
             if (message.matches(test)) {
                 //System.out.println("DEBUG: Matched permitted domain: " + test);
                 return true;
             }
-
         }
-
         return false;
     }
 
@@ -1192,7 +1190,7 @@ public class Channel {
      * @param key Key
      * @return Value, if none is found then null
      */
-    private String getSimpleProperty(String key) {
+    public String getSimpleProperty(String key) {
         if (simpleProperty.containsKey(key))
             return simpleProperty.get(key);
 
@@ -1203,13 +1201,21 @@ public class Channel {
         return null;
     }
 
+    public boolean getSimpleBoolean(String key) {
+        return Boolean.parseBoolean(getSimpleProperty(key));
+    }
+
+    public int getSimpleInt(String key) {
+        return Integer.parseInt(getSimpleProperty(key));
+    }
+
     /**
      * Set a simple key -> value property to memory and to file
      *
      * @param key   Key
      * @param value Value as an object. Will be converted to String
      */
-    private void setSimpleProperty(String key, Object value) {
+    public void setSimpleProperty(String key, Object value) {
         simpleProperty.put(key, String.valueOf(value));
         config.setString(key, String.valueOf(value));
     }
