@@ -57,6 +57,7 @@ public class ReceiverBot extends PircBot {
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
     private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*(Google|\\*\\*\\*).*", Pattern.CASE_INSENSITIVE);
+    Random random = new Random();
 
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
@@ -132,7 +133,7 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onPrivateMessage(String sender, String login, String hostname, String message) {
-        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT"))
+        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT") && !message.startsWith("Your color"))
             BotManager.getInstance().log("RB PM: " + sender + " " + message);
 
         Matcher m = banNoticePattern.matcher(message);
@@ -1847,31 +1848,32 @@ public class ReceiverBot extends PircBot {
 
         if (countToNewColor == 0) {
             countToNewColor = BotManager.getInstance().randomNickColorDiff;
-            Color newColor = generateRandomColor();
-            String hexColor = "#" + Integer.toHexString(newColor.getRed()) + Integer.toHexString(newColor.getGreen()) + Integer.toHexString(newColor.getBlue());
+            Color newColor = new Color(Color.HSBtoRGB(random.nextFloat(), 1.0f, 0.65f));
+            System.out.println(newColor.toString());
+            String hexColor = String.format("#%06X", (0xFFFFFF & newColor.getRGB()));
             System.out.println("New color: " + hexColor);
             sendMessage("#" + getNick(), ".color " + hexColor);
         }
 
     }
 
-    private Color generateRandomColor() {
-        Color mix = new Color(153, 204, 255);
-        Random random = new Random();
-        int red = random.nextInt(150);
-        int green = random.nextInt(150);
-        int blue = random.nextInt(255);
-
-        // mix the color
-        if (mix != null) {
-            red = (red + mix.getRed()) / 2;
-            green = (green + mix.getGreen()) / 2;
-            blue = (blue + mix.getBlue()) / 2;
-        }
-
-        Color color = new Color(red, green, blue);
-        return color;
-    }
+//    private Color generateRandomColor() {
+//        Color mix = new Color(0, 0, 0);
+//        Random random = new Random();
+//        int red = random.nextInt(256);
+//        int green = random.nextInt(256);
+//        int blue = random.nextInt(256);
+//
+//        // mix the color
+//        if (mix != null) {
+//            red = (red + mix.getRed()) / 2;
+//            green = (green + mix.getGreen()) / 2;
+//            blue = (blue + mix.getBlue()) / 2;
+//        }
+//
+//        Color color = new Color(red, green, blue);
+//        return color;
+//    }
 
     @Override
     public void onDisconnect() {
