@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -38,6 +39,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +52,7 @@ public class ReceiverBot extends PircBot {
     private int lastPing = -1;
     private char bullet[] = {'>', '+', '-', '~'};
     private int bulletPos = 0;
+    private int countToNewColor = BotManager.getInstance().randomNickColorDiff;
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
@@ -1836,6 +1839,40 @@ public class ReceiverBot extends PircBot {
         System.out.println("RB: New subscriber in " + channel + " " + username);
     }
 
+    private void setRandomNickColor() {
+        if (!BotManager.getInstance().randomNickColor)
+            return;
+
+        countToNewColor--;
+
+        if (countToNewColor == 0) {
+            countToNewColor = BotManager.getInstance().randomNickColorDiff;
+            Color newColor = generateRandomColor();
+            String hexColor = "#" + Integer.toHexString(newColor.getRed()) + Integer.toHexString(newColor.getGreen()) + Integer.toHexString(newColor.getBlue());
+            System.out.println("New color: " + hexColor);
+            sendMessage("#" + getNick(), ".color " + hexColor);
+        }
+
+    }
+
+    private Color generateRandomColor() {
+        Color mix = new Color(153, 204, 255);
+        Random random = new Random();
+        int red = random.nextInt(150);
+        int green = random.nextInt(150);
+        int blue = random.nextInt(255);
+
+        // mix the color
+        if (mix != null) {
+            red = (red + mix.getRed()) / 2;
+            green = (green + mix.getGreen()) / 2;
+            blue = (blue + mix.getBlue()) / 2;
+        }
+
+        Color color = new Color(red, green, blue);
+        return color;
+    }
+
     @Override
     public void onDisconnect() {
         lastPing = -1;
@@ -1908,6 +1945,7 @@ public class ReceiverBot extends PircBot {
         }
 
         if (!message.startsWith(".")) {
+            setRandomNickColor();
             message = MessageReplaceParser.parseMessage(target, message, args);
 
             //Split if message > X characters

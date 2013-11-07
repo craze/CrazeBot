@@ -66,6 +66,8 @@ public class BotManager {
     private Set<String> tagAdmins;
     private Set<String> tagStaff;
     int multipleTimeout;
+    boolean randomNickColor;
+    int randomNickColorDiff;
     // ********
     private String _propertiesFile;
 
@@ -385,6 +387,14 @@ public class BotManager {
         if (!config.keyExists("multipleTimeout")) {
             config.setInt("multipleTimeout", 3);
         }
+
+        if (!config.keyExists("randomNickColor")) {
+            config.setBoolean("randomNickColor", false);
+        }
+
+        if (!config.keyExists("randomNickColorDiff")) {
+            config.setInt("randomNickColorDiff", 5);
+        }
         // ********
 
         nick = config.getString("nick");
@@ -406,6 +416,9 @@ public class BotManager {
         twitchChannels = config.getBoolean("twitchChannels");
         ignoreHistory = config.getBoolean("ignoreHistory");
         multipleTimeout = config.getInt("multipleTimeout");
+
+        randomNickColor = config.getBoolean("randomNickColor");
+        randomNickColorDiff = config.getInt("randomNickColorDiff");
 
         // API KEYS
 
