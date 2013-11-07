@@ -1696,8 +1696,11 @@ public class ReceiverBot extends PircBot {
             } else if (msg[1].equalsIgnoreCase("join") && msg.length > 2) {
                 if (msg[2].contains("#")) {
                     String toJoin = msg[2];
-                    send(channel, "Joining channel " + toJoin + ".");
-                    boolean joinStatus = BotManager.getInstance().addChannel(toJoin, -1);
+                    int mode = -1;
+                    if (msg.length > 3 && Main.isInteger(msg[3]))
+                        mode = Integer.parseInt(msg[3]);
+                    send(channel, "Joining channel " + toJoin + " with mode (" + mode + ").");
+                    boolean joinStatus = BotManager.getInstance().addChannel(toJoin, mode);
                     if (joinStatus) {
                         send(channel, "Channel " + toJoin + " joined.");
                     } else {
