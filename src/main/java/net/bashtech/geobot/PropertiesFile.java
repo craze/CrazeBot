@@ -14,6 +14,8 @@ public final class PropertiesFile {
     private List<String> lines = new ArrayList<String>();
     private Map<String, String> props = new HashMap<String, String>();
 
+    private Map<String, String> cached = new HashMap<String, String>();
+
     /**
      * Creates or opens a properties file using specified filename
      *
@@ -323,6 +325,11 @@ public final class PropertiesFile {
      * @return <code>Boolean</code> - True if the <code>key</code> exists, false if it cannot be found.
      */
     public boolean containsKey(String var) {
+        //Start caching
+        if (cached.containsKey(var))
+            return true;
+        //End caching
+
         for (String line : this.lines) {
             if (line.trim().length() == 0) {
                 continue;
@@ -347,13 +354,12 @@ public final class PropertiesFile {
         return false;
     }
 
-    /**
-     * Checks to see if this <code>key</code> exists in the .[properties] file.
-     *
-     * @param var The key we are grabbing the value of.
-     * @return <code>java.lang.String</code> - True if the <code>key</code> exists, false if it cannot be found.
-     */
     public String getProperty(String var) {
+        //Start caching
+        if (cached.containsKey(var))
+            return cached.get(var);
+        //End caching
+
         for (String line : this.lines) {
             if (line.trim().length() == 0) {
                 continue;
@@ -456,25 +462,6 @@ public final class PropertiesFile {
     }
 
     /**
-     * Returns the value of the <code>key</code> given as a <code>String</code>.
-     * If it is not found, it will invoke saving the default <code>value</code> to the properties file.
-     *
-     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
-     * @param value The default value that we will be setting if no prior <code>key</code> is found.
-     * @return java.lang.String Either we will return the default value or a prior existing value depending on existance.
-     * @see #setString(java.lang.String, java.lang.String)
-     * @see #getProperty(java.lang.String)
-     */
-    public String getString(String key, String value) {
-        if (this.containsKey(key)) {
-            return this.getProperty(key);
-        }
-
-        setString(key, value);
-        return value;
-    }
-
-    /**
      * Save the value given as a <code>String</code> on the specified key.
      *
      * @param key   The <code>key</code> that we will be addressing the <code>value</code> to.
@@ -482,6 +469,9 @@ public final class PropertiesFile {
      * @see #save()
      */
     public void setString(String key, String value) {
+        //Start caching
+        cached.put(key, value);
+        //End caching
         props.put(key, value);
 
         save();
@@ -496,28 +486,10 @@ public final class PropertiesFile {
      */
     public int getInt(String key) {
         if (this.containsKey(key)) {
-            return Integer.parseInt(this.getProperty(key));
+            return Integer.parseInt(this.getString(key));
         }
 
         return 0;
-    }
-
-    /**
-     * Returns the int value of a key
-     *
-     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
-     * @param value The default value that we will be setting if no prior <code>key</code> is found.
-     * @return <code>Integer</code> - Either we will return the default value or a prior existing value depending on existance.
-     * @see #setInt(String key, int value)
-     */
-    public int getInt(String key, int value) {
-        if (this.containsKey(key)) {
-            return Integer.parseInt(this.getProperty(key));
-        }
-
-        setInt(key, value);
-        return value;
-
     }
 
     /**
@@ -528,9 +500,7 @@ public final class PropertiesFile {
      * @see #save()
      */
     public void setInt(String key, int value) {
-        props.put(key, String.valueOf(value));
-
-        save();
+        this.setString(key, String.valueOf(value));
     }
 
     /**
@@ -542,27 +512,10 @@ public final class PropertiesFile {
      */
     public double getDouble(String key) {
         if (this.containsKey(key)) {
-            return Double.parseDouble(this.getProperty(key));
+            return Double.parseDouble(this.getString(key));
         }
 
         return 0;
-    }
-
-    /**
-     * Returns the double value of a key
-     *
-     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
-     * @param value The default value that we will be setting if no prior <code>key</code> is found.
-     * @return <code>Double</code> - Either we will return the default value or a prior existing value depending on existance.
-     * @see #setDouble(String key, double value)
-     */
-    public double getDouble(String key, double value) {
-        if (this.containsKey(key)) {
-            return Double.parseDouble(this.getProperty(key));
-        }
-
-        setDouble(key, value);
-        return value;
     }
 
     /**
@@ -573,9 +526,7 @@ public final class PropertiesFile {
      * @see #save()
      */
     public void setDouble(String key, double value) {
-        props.put(key, String.valueOf(value));
-
-        save();
+        this.setString(key, String.valueOf(value));
     }
 
     /**
@@ -587,28 +538,12 @@ public final class PropertiesFile {
      */
     public long getLong(String key) {
         if (this.containsKey(key)) {
-            return Long.parseLong(this.getProperty(key));
+            return Long.parseLong(this.getString(key));
         }
 
         return 0;
     }
 
-    /**
-     * Returns the long value of a key
-     *
-     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
-     * @param value The default value that we will be setting if no prior <code>key</code> is found.
-     * @return <code>Long</code> - Either we will return the default value or a prior existing value depending on existance.
-     * @see #setLong(String key, long value)
-     */
-    public long getLong(String key, long value) {
-        if (this.containsKey(key)) {
-            return Long.parseLong(this.getProperty(key));
-        }
-
-        setLong(key, value);
-        return value;
-    }
 
     /**
      * Save the value given as a <code>long</code> on the specified key.
@@ -618,9 +553,7 @@ public final class PropertiesFile {
      * @see #save()
      */
     public void setLong(String key, long value) {
-        props.put(key, String.valueOf(value));
-
-        save();
+        this.setString(key, String.valueOf(value));
     }
 
     /**
@@ -632,27 +565,10 @@ public final class PropertiesFile {
      */
     public boolean getBoolean(String key) {
         if (this.containsKey(key)) {
-            return Boolean.parseBoolean(this.getProperty(key));
+            return Boolean.parseBoolean(this.getString(key));
         }
 
         return false;
-    }
-
-    /**
-     * Returns the boolean value of a key
-     *
-     * @param key   The key that we will be grabbing the value from, if no value is found set and return <code>value</code>
-     * @param value The default value that we will be setting if no prior <code>key</code> is found.
-     * @return <code>Boolean</code> - Either we will return the default value or a prior existing value depending on existance.
-     * @see #setBoolean(String key, boolean value)
-     */
-    public boolean getBoolean(String key, boolean value) {
-        if (this.containsKey(key)) {
-            return Boolean.parseBoolean(this.getProperty(key));
-        }
-
-        setBoolean(key, value);
-        return value;
     }
 
     /**
@@ -663,9 +579,7 @@ public final class PropertiesFile {
      * @see #save()
      */
     public void setBoolean(String key, boolean value) {
-        props.put(key, String.valueOf(value));
-
-        save();
+        this.setString(key, String.valueOf(value));
     }
 
     public List<String> getList(String key, List<String> returnObject) {

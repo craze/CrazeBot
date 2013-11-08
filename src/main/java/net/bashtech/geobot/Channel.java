@@ -92,8 +92,6 @@ public class Channel {
     String emoteSet;
     boolean subscriberRegulars;
 
-
-    private Map<String, String> simpleProperty = new HashMap<String, String>();
     private Map<String, Object> defaults = new HashMap<String, Object>();
 
     public Channel(String name) {
@@ -1182,44 +1180,6 @@ public class Channel {
         BotManager.getInstance().addChannel(channel, mode);
     }
 
-    /**
-     * Retrieves a simple key -> value property in String form.
-     * <p/>
-     * If not available in memory then it pulls from property file.
-     *
-     * @param key Key
-     * @return Value, if none is found then null
-     */
-    public String getSimpleProperty(String key) {
-        if (simpleProperty.containsKey(key))
-            return simpleProperty.get(key);
-
-        if (config.keyExists(key)) {
-            return config.getString(key);
-        }
-
-        return null;
-    }
-
-    public boolean getSimpleBoolean(String key) {
-        return Boolean.parseBoolean(getSimpleProperty(key));
-    }
-
-    public int getSimpleInt(String key) {
-        return Integer.parseInt(getSimpleProperty(key));
-    }
-
-    /**
-     * Set a simple key -> value property to memory and to file
-     *
-     * @param key   Key
-     * @param value Value as an object. Will be converted to String
-     */
-    public void setSimpleProperty(String key, Object value) {
-        simpleProperty.put(key, String.valueOf(value));
-        config.setString(key, String.valueOf(value));
-    }
-
     private void setDefaults() {
 
         defaults.put("channel", channel);
@@ -1267,7 +1227,7 @@ public class Channel {
         defaults.put("staticChannel", false);
         defaults.put("enableWarnings", true);
         defaults.put("timeoutDuration", 600);
-        defaults.put("clickToTweetFormat", "Checkout(_CHANNEL_URL_)playing(_GAME_)on@TwitchTV");
+        defaults.put("clickToTweetFormat", "Checkout (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
         defaults.put("filterSymbolsPercent", 50);
         defaults.put("filterSymbolsMin", 5);
         defaults.put("commandPrefix", "!");
@@ -1282,8 +1242,8 @@ public class Channel {
             Map.Entry pairs = (Map.Entry) it.next();
             String key = String.valueOf(pairs.getKey());
             String value = String.valueOf(pairs.getValue());
-            if (getSimpleProperty(key) == null)
-                setSimpleProperty(key, value);
+            if (!config.containsKey(key))
+                config.setString(key, value);
         }
     }
 
