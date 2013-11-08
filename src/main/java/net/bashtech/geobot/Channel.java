@@ -1182,7 +1182,7 @@ public class Channel {
 
     private void setDefaults() {
 
-        defaults.put("channel", channel);
+        //defaults.put("channel", channel);
         defaults.put("filterCaps", false);
         defaults.put("filterOffensive", true);
         defaults.put("filterCapsPercent", 50);
@@ -1250,7 +1250,7 @@ public class Channel {
     private void loadProperties(String name) {
         setDefaults();
 
-        channel = config.getString("channel");
+        //channel = config.getString("channel");
         filterCaps = Boolean.parseBoolean(config.getString("filterCaps"));
         filterCapsPercent = Integer.parseInt(config.getString("filterCapsPercent"));
         filterCapsMinCharacters = Integer.parseInt(config.getString("filterCapsMinCharacters"));
