@@ -28,9 +28,6 @@ import java.util.List;
 
 public class Main {
 
-    public static final String DELIMITER = "│";
-    public static final String DELIMITER2 = "≡";
-
     public static void main(String[] args) throws NickAlreadyInUseException, IOException, IrcException {
         String propertiesFile = "global.properties";
         if (args.length > 0) {

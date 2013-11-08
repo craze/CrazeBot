@@ -6,6 +6,9 @@ import java.util.logging.Logger;
 
 public final class PropertiesFile {
 
+    public static final String DELIMITER = "│";
+    public static final String DELIMITER2 = "≡";
+
     private static final Logger log = Logger.getLogger("GeoBot");
     private String fileName;
     private List<String> lines = new ArrayList<String>();
@@ -668,7 +671,7 @@ public final class PropertiesFile {
     public List<String> getList(String key, List<String> returnObject) {
         if (this.containsKey(key)) {
             String raw = this.getProperty(key);
-            String[] rawSplit = raw.split(Main.DELIMITER);
+            String[] rawSplit = raw.split(PropertiesFile.DELIMITER);
             for (String p : rawSplit) {
                 returnObject.add(p);
             }
@@ -683,9 +686,9 @@ public final class PropertiesFile {
 
         for (Object p : list) {
             String strValue = String.valueOf(p);
-            strValue = strValue.replaceAll(Main.DELIMITER, "");
+            strValue = strValue.replaceAll(PropertiesFile.DELIMITER, "");
             outString += delim + strValue;
-            delim = Main.DELIMITER;
+            delim = PropertiesFile.DELIMITER;
         }
 
         System.out.println(outString);
@@ -697,9 +700,9 @@ public final class PropertiesFile {
 
         if (this.containsKey(key)) {
             String raw = this.getProperty(key);
-            String[] rawSplit = raw.split(Main.DELIMITER);
+            String[] rawSplit = raw.split(PropertiesFile.DELIMITER);
             for (String p : rawSplit) {
-                String[] rawSplitInner = p.split(Main.DELIMITER2);
+                String[] rawSplitInner = p.split(PropertiesFile.DELIMITER2);
                 if (rawSplitInner.length == 2) {
                     map.put(rawSplitInner[0], rawSplitInner[1]);
                 }
@@ -716,10 +719,10 @@ public final class PropertiesFile {
 
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            String pair = String.valueOf(pairs.getKey()).replaceAll(Main.DELIMITER, "").replaceAll(Main.DELIMITER2, "") + Main.DELIMITER2 +
-                    String.valueOf(pairs.getValue()).replaceAll(Main.DELIMITER, "").replaceAll(Main.DELIMITER2, "");
+            String pair = String.valueOf(pairs.getKey()).replaceAll(PropertiesFile.DELIMITER, "").replaceAll(PropertiesFile.DELIMITER2, "") + PropertiesFile.DELIMITER2 +
+                    String.valueOf(pairs.getValue()).replaceAll(PropertiesFile.DELIMITER, "").replaceAll(PropertiesFile.DELIMITER2, "");
             outString += delim + pair;
-            delim = Main.DELIMITER;
+            delim = PropertiesFile.DELIMITER;
         }
 
         System.out.println(outString);
@@ -731,7 +734,7 @@ public final class PropertiesFile {
 
         if (this.containsKey(key)) {
             String raw = this.getProperty(key);
-            String[] rawSplit = raw.split(Main.DELIMITER);
+            String[] rawSplit = raw.split(PropertiesFile.DELIMITER);
             for (String p : rawSplit) {
                 returnObject.add(p);
             }
@@ -746,9 +749,9 @@ public final class PropertiesFile {
 
         for (Object p : set) {
             String strValue = String.valueOf(p);
-            strValue = strValue.replaceAll(Main.DELIMITER, "");
+            strValue = strValue.replaceAll(PropertiesFile.DELIMITER, "");
             outString += delim + strValue;
-            delim = Main.DELIMITER;
+            delim = PropertiesFile.DELIMITER;
         }
 
         this.setString(key, outString);
