@@ -2073,14 +2073,14 @@ public class ReceiverBot extends PircBot {
                 }
             }
         }
-        for (Pattern pattern : linkPatterns) {
-            System.out.println("Checking " + message + " against " + pattern.pattern());
-            Matcher match = pattern.matcher(message);
-            if (match.matches()) {
-                System.out.println("Bypass match");
-                return true;
-            }
-        }
+//        for (Pattern pattern : linkPatterns) {
+//            System.out.println("Checking " + message + " against " + pattern.pattern());
+//            Matcher match = pattern.matcher(message);
+//            if (match.matches()) {
+//                System.out.println("Bypass match");
+//                return true;
+//            }
+//        }
         return false;
     }
 
