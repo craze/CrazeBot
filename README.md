@@ -209,8 +209,8 @@ Consists of Owners, Mods, and Regulars. Owner have permission to you all channel
 Adding dynamic data to bot message is also supported via string substitutions. Almost any response from the bot will accept a replacement. The following substitutions are available:
 
   * `(_GAME_)` : Twitch game.
-  * `(_STATUS_)` : Twitch status.
-  * `(_VIEWERS_)` : Viewer count.
+  * `(_STATUS_)` or `(_JTV_STATUS_)`: Channel status.
+  * `(_VIEWERS_)` or `(_JTV_VIEWERS_)` : Viewer count.
   * `(_STEAM_PROFILE_)` : Link to Steam profile (Steam account must be configured).
   * `(_STEAM_GAME_)` : Steam game (Steam account must be configured).
   * `(_STEAM_SERVER_)` : Server you are playing on with a compatible (ie SteamWorks) game (Steam account must be configured).
