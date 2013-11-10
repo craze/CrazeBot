@@ -536,13 +536,22 @@ public class ReceiverBot extends PircBot {
         }
 
         // !viewers - All
-        if ((msg[0].equalsIgnoreCase(prefix + "viewers") || msg[0].equalsIgnoreCase(prefix + "lurkers")) && BotManager.getInstance().twitchChannels) {
+        if ((msg[0].equalsIgnoreCase(prefix + "viewers") || msg[0].equalsIgnoreCase(prefix + "lurkers"))) {
             log("RB: Matched command !viewers");
-            try {
-                send(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
-            } catch (Exception e) {
-                send(channel, "Stream is not live.");
+            if (BotManager.getInstance().twitchChannels) {
+                try {
+                    send(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
+                } catch (Exception e) {
+                    send(channel, "Stream is not live.");
+                }
+            } else {
+                try {
+                    send(channel, JSONUtil.jtvViewers(twitchName) + " viewers.");
+                } catch (Exception e) {
+                    send(channel, "Stream is not live.");
+                }
             }
+
             return;
         }
 
@@ -631,9 +640,9 @@ public class ReceiverBot extends PircBot {
         }
 
         // !status - All
-        if (msg[0].equalsIgnoreCase(prefix + "status") && BotManager.getInstance().twitchChannels) {
+        if (msg[0].equalsIgnoreCase(prefix + "status")) {
             log("RB: Matched command !status");
-            if (isOwner && msg.length > 1) {
+            if (isOwner && msg.length > 1 && BotManager.getInstance().twitchChannels) {
                 String status = this.fuseArray(msg, 1);
                 status.trim();
                 try {
@@ -644,11 +653,16 @@ public class ReceiverBot extends PircBot {
                 }
 
             } else {
-                String status = JSONUtil.krakenStatus(twitchName);
+                String status = "";
+                if (BotManager.getInstance().twitchChannels)
+                    status = JSONUtil.krakenStatus(twitchName);
+                else
+                    status = JSONUtil.jtvStatus(twitchName);
+
                 if (status.length() > 0) {
                     send(channel, status);
                 } else {
-                    send(channel, "Unable to query TwitchTV API.");
+                    send(channel, "Unable to query API.");
                 }
             }
             return;

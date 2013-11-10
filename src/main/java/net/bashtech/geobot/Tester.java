@@ -25,18 +25,8 @@ import java.util.Set;
 public class Tester {
 
     public static void main(String[] args) {
-        Set<String> staff = new HashSet<String>();
-        Set<String> admins = new HashSet<String>();
-        Set<String> mods = new HashSet<String>();
-
-        Long chatter_count = JSONUtil.updateTMIUserList("twitch", staff, admins, mods);
-
-        for (String user : staff)
-            System.out.println(user);
-        for (String user : admins)
-            System.out.println(user);
-        for (String user : mods)
-            System.out.println(user);
+        System.out.println(JSONUtil.jtvViewers("xinchromakesawesome"));
+        System.out.println(JSONUtil.jtvStatus("xinchromakesawesome"));
     }
 
 }

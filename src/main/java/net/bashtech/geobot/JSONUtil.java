@@ -62,6 +62,38 @@ public class JSONUtil {
 
     }
 
+    public static Long jtvViewers(String channel) {
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/stream/summary.json?channel=" + channel));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            Long viewers = (Long) jsonObject.get("viewers_count");
+            return viewers;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return (long) 0;
+        }
+
+    }
+
+    public static String jtvStatus(String channel) {
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/channel/show/" + channel + ".json"));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            String status = (String) jsonObject.get("status");
+            return status;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "Unable to query API";
+        }
+
+    }
+
     public static String krakenStatus(String channel) {
         try {
             JSONParser parser = new JSONParser();
