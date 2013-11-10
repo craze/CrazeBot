@@ -194,10 +194,10 @@ public class ReceiverBot extends PircBot {
         }
 
         //Handle twitchnotify
-        if (sender.equals("twitchnotify")) {
+        if (sender.equals("george")) {
             Matcher m = twitchnotifySubscriberPattern.matcher(message);
             if (m.matches()) {
-                onNewSubscriber(channel, m.group(1));
+                onNewSubscriber(channelInfo, m.group(1));
             }
         }
 
@@ -1619,6 +1619,20 @@ public class ReceiverBot extends PircBot {
                     channelInfo.setSubscriberRegulars(false);
                     send(channel, "Subscribers will no longer be treated as regulars.");
                 }
+            } else if (msg[1].equalsIgnoreCase("subscriberalerts")) {
+                if (msg.length < 3) {
+                    send(channel, "Subscriber alerts: " + channelInfo.config.getBoolean("subscriberAlert"));
+                    send(channel, "Subscriber alert message: " + channelInfo.config.getString("subMessage"));
+                } else if (msg[2].equalsIgnoreCase("on")) {
+                    channelInfo.config.setBoolean("subscriberAlert", true);
+                    send(channel, "Subscriber alerts enabled.");
+                } else if (msg[2].equalsIgnoreCase("off")) {
+                    channelInfo.config.setBoolean("subscriberAlert", false);
+                    send(channel, "Subscriber alerts disabled.");
+                } else if (msg[2].equalsIgnoreCase("message") && msg.length > 3) {
+                    channelInfo.config.setString("subMessage", fuseArray(msg, 3));
+                    send(channel, "Subscriber alert message set to: " + channelInfo.config.getString("subMessage"));
+                }
             }
             return;
         }
@@ -1836,8 +1850,12 @@ public class ReceiverBot extends PircBot {
         }
     }
 
-    protected void onNewSubscriber(String channel, String username) {
-        System.out.println("RB: New subscriber in " + channel + " " + username);
+    protected void onNewSubscriber(Channel channel, String username) {
+        System.out.println("RB: New subscriber in " + channel.getTwitchName() + " " + username);
+        if (channel.config.getBoolean("subscriberAlert")) {
+            String msgFormat = channel.config.getString("subMessage");
+            send(channel.getChannel(), msgFormat, new String[]{username});
+        }
     }
 
     private void setRandomNickColor() {

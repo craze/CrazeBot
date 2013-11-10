@@ -1236,6 +1236,7 @@ public class Channel {
         defaults.put("subscriberRegulars", false);
         defaults.put("filterEmotesSingle", false);
         defaults.put("subMessage", "(_1_) has subscribed!");
+        defaults.put("subscriberAlert", false);
 
         Iterator it = defaults.entrySet().iterator();
         while (it.hasNext()) {
