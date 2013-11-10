@@ -1572,15 +1572,6 @@ public class ReceiverBot extends PircBot {
                     channelInfo.setThrow(false);
                     send(channel, "Feature: !throw is off");
                 }
-            } else if (msg[1].equalsIgnoreCase("joinsparts")) {
-                send(channel, "This feature is currently disabled due to issues with TMI.");
-                if (msg[2].equalsIgnoreCase("on")) {
-                    //channelInfo.setAnnounceJoinParts(true);
-                    //send(channel, "Feature: Join/Part announcing is on");
-                } else if (msg[2].equalsIgnoreCase("off")) {
-                    //channelInfo.setAnnounceJoinParts(false);
-                    //send(channel, "Feature: Join/Part announcing is off");
-                }
             } else if (msg[1].equalsIgnoreCase("lastfm")) {
                 if (msg[2].equalsIgnoreCase("off")) {
                     channelInfo.setLastfm("");
