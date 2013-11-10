@@ -1157,20 +1157,285 @@ public class ReceiverBot extends PircBot {
             return;
         }
 
-        // !links - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "links") && isOwner) {
-            log("RB: Matched command !links");
-            if (msg.length == 1) {
-                send(channel, "Syntax: \"!links on/off\"");
-            } else if (msg.length == 2) {
+        //Filters
+        if (msg[0].equalsIgnoreCase(prefix + "filter") && isOwner) {
+            if (msg.length < 2) {
+                send(channel, "Syntax: !filter <option> [sub options]. Options: on/off, status, me, enablewarnings, timeoutduration, displaywarnings, messagelength, links, pd, banphrase, caps, emotes, and symbols.");
+                return;
+            }
+
+            //Shift down a notch
+            String[] newMsg = new String[msg.length - 1];
+            for (int i = 1; i < msg.length; i++) {
+                newMsg[i - 1] = msg[i];
+            }
+            msg = newMsg;
+
+            //Global disable
+            if (msg[0].equalsIgnoreCase("on")) {
+                channelInfo.setFiltersFeature(true);
+                send(channel, "Feature: Filters is on");
+                return;
+            } else if (msg[0].equalsIgnoreCase("off")) {
+                channelInfo.setFiltersFeature(false);
+                send(channel, "Feature: Filters is off");
+                return;
+            }
+
+            if (msg[0].equalsIgnoreCase("status")) {
+                send(channel, "Global: " + channelInfo.useFilters);
+                send(channel, "Enable warnings: " + channelInfo.getEnableWarnings());
+                send(channel, "Timeout duration: " + channelInfo.getTimeoutDuration());
+                send(channel, "Display warnings: " + channelInfo.checkSignKicks());
+                send(channel, "Max message length: " + channelInfo.getFilterMax());
+                send(channel, "Links: " + channelInfo.getFilterLinks());
+                send(channel, "Banned phrases: " + channelInfo.getFilterOffensive());
+                send(channel, "Caps: " + channelInfo.getFilterCaps() + " ~ percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps=" + channelInfo.getfilterCapsMinCapitals());
+                send(channel, "Emotes: " + channelInfo.getFilterEmotes() + " ~ max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
+                send(channel, "Symbols: " + channelInfo.getFilterSymbols() + " ~ percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
+            }
+
+            if (msg[0].equalsIgnoreCase("me") && msg.length == 2) {
                 if (msg[1].equalsIgnoreCase("on")) {
-                    channelInfo.setFilterLinks(true);
-                    send(channel, "Link filter: " + channelInfo.getFilterLinks());
+                    channelInfo.setFilterMe(true);
+                    send(channel, "Feature: /me filter is on");
                 } else if (msg[1].equalsIgnoreCase("off")) {
-                    channelInfo.setFilterLinks(false);
-                    send(channel, "Link filter: " + channelInfo.getFilterLinks());
+                    channelInfo.setFilterMe(false);
+                    send(channel, "Feature: /me filter is off");
+                }
+                return;
+            }
+
+            if (msg[0].equalsIgnoreCase("enablewarnings") && msg.length == 2) {
+                if (msg[1].equalsIgnoreCase("on")) {
+                    channelInfo.setEnableWarnings(true);
+                    send(channel, "Feature: Timeout warnings are on");
+                } else if (msg[1].equalsIgnoreCase("off")) {
+                    channelInfo.setEnableWarnings(false);
+                    send(channel, "Feature: Timeout warnings are off");
                 }
             }
+
+            if (msg[0].equalsIgnoreCase("timeoutduration") && msg.length == 2) {
+                if (Main.isInteger(msg[1])) {
+                    int duration = Integer.parseInt(msg[1]);
+                    channelInfo.setTimeoutDuration(duration);
+                    send(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
+                } else {
+                    send(channel, "You must specify an integer for the duration");
+                }
+            }
+
+            if (msg[0].equalsIgnoreCase("displaywarnings") && msg.length == 2) {
+                if (msg[1].equalsIgnoreCase("on")) {
+                    channelInfo.setSignKicks(true);
+                    send(channel, "Feature: Display warnings is on");
+                } else if (msg[1].equalsIgnoreCase("off")) {
+                    channelInfo.setSignKicks(false);
+                    send(channel, "Feature: Display warnings is off");
+                }
+            }
+
+            if (msg[0].equalsIgnoreCase("messagelength") && msg.length == 2) {
+                if (Main.isInteger(msg[1])) {
+                    channelInfo.setFilterMax(Integer.parseInt(msg[1]));
+                    send(channel, "Max message length set to " + channelInfo.getFilterMax());
+                } else {
+                    send(channel, "Must be an integer.");
+                }
+            }
+
+
+            // !links - Owner
+            if (msg[0].equalsIgnoreCase("links")) {
+                log("RB: Matched command !links");
+                if (msg.length == 1) {
+                    send(channel, "Syntax: \"!links on/off\"");
+                } else if (msg.length == 2) {
+                    if (msg[1].equalsIgnoreCase("on")) {
+                        channelInfo.setFilterLinks(true);
+                        send(channel, "Link filter: " + channelInfo.getFilterLinks());
+                    } else if (msg[1].equalsIgnoreCase("off")) {
+                        channelInfo.setFilterLinks(false);
+                        send(channel, "Link filter: " + channelInfo.getFilterLinks());
+                    }
+                }
+                return;
+            }
+
+            // !pd - Owner
+            if (msg[0].equalsIgnoreCase("pd")) {
+                log("RB: Matched command !pd");
+                if (msg.length == 1) {
+                    send(channel, "Syntax: \"!pd add/delete [domain]\" and \"!pd list\"");
+                } else if (msg.length > 2) {
+                    if (msg[1].equalsIgnoreCase("add")) {
+                        if (channelInfo.isDomainPermitted(msg[2])) {
+                            send(channel, "Domain already exists. " + "(" + msg[2] + ")");
+                        } else {
+                            channelInfo.addPermittedDomain(msg[2]);
+                            send(channel, "Domain added. " + "(" + msg[2] + ")");
+                        }
+                    } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) {
+                        if (channelInfo.isDomainPermitted(msg[2])) {
+                            channelInfo.removePermittedDomain(msg[2]);
+                            send(channel, "Domain removed. " + "(" + msg[2] + ")");
+                        } else {
+                            send(channel, "Domain does not exist. " + "(" + msg[2] + ")");
+                        }
+                    }
+                } else if (msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner) {
+                    String tempList = "Permitted domains: ";
+                    for (String s : channelInfo.getpermittedDomains()) {
+                        tempList += s + ", ";
+                    }
+                    send(channel, tempList);
+                }
+                return;
+            }
+
+            // !banphrase - Owner
+            if (msg[0].equalsIgnoreCase("banphrase")) {
+                log("RB: Matched command !banphrase");
+                if (isOwner)
+                    log("RB: Is owner");
+                if (msg.length == 1) {
+                    send(channel, "Syntax: \"!banphrase on/off\", \"!banphrase add/delete [string to purge]\", \"!banphrase list\"");
+                } else if (msg.length > 1) {
+                    if (msg[1].equalsIgnoreCase("on")) {
+                        channelInfo.setFilterOffensive(true);
+                        send(channel, "Ban phrase filter is on");
+                    } else if (msg[1].equalsIgnoreCase("off")) {
+                        channelInfo.setFilterOffensive(false);
+                        send(channel, "Ban phrase filter is off");
+                    } else if (msg[1].equalsIgnoreCase("clear")) {
+                        channelInfo.clearBannedPhrases();
+                        send(channel, "Banned phrases cleared.");
+                    } else if (msg[1].equalsIgnoreCase("list")) {
+                        String tempList = "Banned phrases words: ";
+                        for (String s : channelInfo.getOffensive()) {
+                            tempList += s + ", ";
+                        }
+                        send(channel, tempList);
+                    } else if (msg[1].equalsIgnoreCase("add") && msg.length > 2) {
+                        String phrase = fuseArray(msg, 2);
+                        if (phrase.contains(",,")) {
+                            send(channel, "Cannot contain double commas (,,)");
+                        } else if (channelInfo.isBannedPhrase(fuseArray(msg, 2))) {
+                            send(channel, "Word already exists. " + "(" + phrase + ")");
+                        } else {
+                            if (phrase.startsWith("REGEX:") && !isAdmin) {
+                                send(channel, "You must have Admin status to add regex phrases.");
+                                return;
+                            }
+                            channelInfo.addOffensive(phrase);
+                            send(channel, "Word added. " + "(" + phrase + ")");
+                        }
+                    } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove") && msg.length > 2) {
+                        String phrase = fuseArray(msg, 2);
+                        channelInfo.removeOffensive(phrase);
+                        send(channel, "Word removed. " + "(" + phrase + ")");
+                    }
+                }
+                return;
+            }
+
+            // !caps - Owner
+            if (msg[0].equalsIgnoreCase("caps")) {
+                log("RB: Matched command !caps");
+                if (msg.length == 1) {
+                    send(channel, "Syntax: \"!caps on/off\", \"!caps percent/minchars/mincaps [value]\", \"!caps status\"");
+                } else if (msg.length > 1) {
+                    if (msg[1].equalsIgnoreCase("on")) {
+                        channelInfo.setFilterCaps(true);
+                        send(channel, "Caps filter: " + channelInfo.getFilterCaps());
+                    } else if (msg[1].equalsIgnoreCase("off")) {
+                        channelInfo.setFilterCaps(false);
+                        send(channel, "Caps filter: " + channelInfo.getFilterCaps());
+                    } else if (msg[1].equalsIgnoreCase("percent")) {
+                        if (msg.length > 2) {
+                            channelInfo.setfilterCapsPercent(Integer.parseInt(msg[2]));
+                            send(channel, "Caps filter percent: " + channelInfo.getfilterCapsPercent());
+                        }
+                    } else if (msg[1].equalsIgnoreCase("minchars")) {
+                        if (msg.length > 2 && Main.isInteger(msg[2])) {
+                            channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
+                            send(channel, "Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
+                        }
+                    } else if (msg[1].equalsIgnoreCase("mincaps")) {
+                        if (msg.length > 2 && Main.isInteger(msg[2])) {
+                            channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
+                            send(channel, "Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
+                        }
+                    } else if (msg[1].equalsIgnoreCase("status")) {
+                        send(channel, "Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps=" + channelInfo.getfilterCapsMinCapitals());
+                    }
+                }
+                return;
+            }
+
+            // !emotes - Owner
+            if (msg[0].equalsIgnoreCase("emotes")) {
+                log("RB: Matched command !emotes");
+                if (msg.length == 1) {
+                    send(channel, "Syntax: \"!emotes on/off\", \"!emotes max [value]\", \"!emotes single on/off\"");
+                } else if (msg.length > 1) {
+                    if (msg[1].equalsIgnoreCase("on")) {
+                        channelInfo.setFilterEmotes(true);
+                        send(channel, "Emotes filter: " + channelInfo.getFilterEmotes());
+                    } else if (msg[1].equalsIgnoreCase("off")) {
+                        channelInfo.setFilterEmotes(false);
+                        send(channel, "Emotes filter: " + channelInfo.getFilterEmotes());
+                    } else if (msg[1].equalsIgnoreCase("max")) {
+                        if (msg.length > 2 && Main.isInteger(msg[2])) {
+                            channelInfo.setFilterEmotesMax(Integer.parseInt(msg[2]));
+                            send(channel, "Emotes filter max: " + channelInfo.getFilterEmotesMax());
+                        }
+                    } else if (msg[1].equalsIgnoreCase("status")) {
+                        send(channel, "Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
+                    } else if (msg[1].equalsIgnoreCase("single") && msg.length > 2) {
+                        if (msg[2].equalsIgnoreCase("on")) {
+                            channelInfo.setFilterEmotesSingle(true);
+                            send(channel, "Single Emote filter: " + channelInfo.getFilterEmotesSingle());
+                        } else if (msg[2].equalsIgnoreCase("off")) {
+                            channelInfo.setFilterEmotesSingle(false);
+                            send(channel, "Single Emote filter: " + channelInfo.getFilterEmotesSingle());
+                        }
+                    }
+                }
+                return;
+            }
+
+            // !symbols - Owner
+            if (msg[0].equalsIgnoreCase("symbols")) {
+                log("RB: Matched command !symbols");
+                if (msg.length == 1) {
+                    send(channel, "Syntax: \"!symbols on/off\", \"!symbols percent/min [value]\", \"!symbols status\"");
+                } else if (msg.length > 1) {
+                    if (msg[1].equalsIgnoreCase("on")) {
+                        channelInfo.setFilterSymbols(true);
+                        send(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
+                    } else if (msg[1].equalsIgnoreCase("off")) {
+                        channelInfo.setFilterSymbols(false);
+                        send(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
+                    } else if (msg[1].equalsIgnoreCase("percent")) {
+                        if (msg.length > 2 && Main.isInteger(msg[2])) {
+                            channelInfo.setFilterSymbolsPercent(Integer.parseInt(msg[2]));
+                            send(channel, "Symbols filter percent: " + channelInfo.getFilterSymbolsPercent());
+                        }
+                    } else if (msg[1].equalsIgnoreCase("min")) {
+                        if (msg.length > 2 && Main.isInteger(msg[2])) {
+                            channelInfo.setFilterSymbolsMin(Integer.parseInt(msg[2]));
+                            send(channel, "Symbols filter min symbols: " + channelInfo.getFilterSymbolsMin());
+                        }
+                    } else if (msg[1].equalsIgnoreCase("status")) {
+                        send(channel, "Symbols filter=" + channelInfo.getFilterSymbols() + ", percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
+                    }
+                }
+                return;
+            }
+
+
             return;
         }
 
@@ -1185,179 +1450,6 @@ public class ReceiverBot extends PircBot {
                     send(channel, msg[1] + " may now post 1 link.");
                 } else {
                     send(channel, msg[1] + " is a regular and does not need to be permitted.");
-                }
-            }
-            return;
-        }
-
-
-        // !pd - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "pd") && isOwner) {
-            log("RB: Matched command !pd");
-            if (msg.length == 1) {
-                send(channel, "Syntax: \"!pd add/delete [domain]\" and \"!pd list\"");
-            } else if (msg.length > 2) {
-                if (msg[1].equalsIgnoreCase("add")) {
-                    if (channelInfo.isDomainPermitted(msg[2])) {
-                        send(channel, "Domain already exists. " + "(" + msg[2] + ")");
-                    } else {
-                        channelInfo.addPermittedDomain(msg[2]);
-                        send(channel, "Domain added. " + "(" + msg[2] + ")");
-                    }
-                } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove")) {
-                    if (channelInfo.isDomainPermitted(msg[2])) {
-                        channelInfo.removePermittedDomain(msg[2]);
-                        send(channel, "Domain removed. " + "(" + msg[2] + ")");
-                    } else {
-                        send(channel, "Domain does not exist. " + "(" + msg[2] + ")");
-                    }
-                }
-            } else if (msg.length > 1 && msg[1].equalsIgnoreCase("list") && isOwner) {
-                String tempList = "Permitted domains: ";
-                for (String s : channelInfo.getpermittedDomains()) {
-                    tempList += s + ", ";
-                }
-                send(channel, tempList);
-            }
-            return;
-        }
-
-        // !banphrase - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "banphrase") && isOwner) {
-            log("RB: Matched command !banphrase");
-            if (isOwner)
-                log("RB: Is owner");
-            if (msg.length == 1) {
-                send(channel, "Syntax: \"!banphrase on/off\", \"!banphrase add/delete [string to purge]\", \"!banphrase list\"");
-            } else if (msg.length > 1) {
-                if (msg[1].equalsIgnoreCase("on")) {
-                    channelInfo.setFilterOffensive(true);
-                    send(channel, "Ban phrase filter is on");
-                } else if (msg[1].equalsIgnoreCase("off")) {
-                    channelInfo.setFilterOffensive(false);
-                    send(channel, "Ban phrase filter is off");
-                } else if (msg[1].equalsIgnoreCase("clear")) {
-                    channelInfo.clearBannedPhrases();
-                    send(channel, "Banned phrases cleared.");
-                } else if (msg[1].equalsIgnoreCase("list")) {
-                    String tempList = "Banned phrases words: ";
-                    for (String s : channelInfo.getOffensive()) {
-                        tempList += s + ", ";
-                    }
-                    send(channel, tempList);
-                } else if (msg[1].equalsIgnoreCase("add") && msg.length > 2) {
-                    String phrase = fuseArray(msg, 2);
-                    if (phrase.contains(",,")) {
-                        send(channel, "Cannot contain double commas (,,)");
-                    } else if (channelInfo.isBannedPhrase(fuseArray(msg, 2))) {
-                        send(channel, "Word already exists. " + "(" + phrase + ")");
-                    } else {
-                        if (phrase.startsWith("REGEX:") && !isAdmin) {
-                            send(channel, "You must have Admin status to add regex phrases.");
-                            return;
-                        }
-                        channelInfo.addOffensive(phrase);
-                        send(channel, "Word added. " + "(" + phrase + ")");
-                    }
-                } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove") && msg.length > 2) {
-                    String phrase = fuseArray(msg, 2);
-                    channelInfo.removeOffensive(phrase);
-                    send(channel, "Word removed. " + "(" + phrase + ")");
-                }
-            }
-            return;
-        }
-
-        // !caps - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "caps") && isOwner) {
-            log("RB: Matched command !caps");
-            if (msg.length == 1) {
-                send(channel, "Syntax: \"!caps on/off\", \"!caps percent/minchars/mincaps [value]\", \"!caps status\"");
-            } else if (msg.length > 1) {
-                if (msg[1].equalsIgnoreCase("on")) {
-                    channelInfo.setFilterCaps(true);
-                    send(channel, "Caps filter: " + channelInfo.getFilterCaps());
-                } else if (msg[1].equalsIgnoreCase("off")) {
-                    channelInfo.setFilterCaps(false);
-                    send(channel, "Caps filter: " + channelInfo.getFilterCaps());
-                } else if (msg[1].equalsIgnoreCase("percent")) {
-                    if (msg.length > 2) {
-                        channelInfo.setfilterCapsPercent(Integer.parseInt(msg[2]));
-                        send(channel, "Caps filter percent: " + channelInfo.getfilterCapsPercent());
-                    }
-                } else if (msg[1].equalsIgnoreCase("minchars")) {
-                    if (msg.length > 2 && Main.isInteger(msg[2])) {
-                        channelInfo.setfilterCapsMinCharacters(Integer.parseInt(msg[2]));
-                        send(channel, "Caps filter min characters: " + channelInfo.getfilterCapsMinCharacters());
-                    }
-                } else if (msg[1].equalsIgnoreCase("mincaps")) {
-                    if (msg.length > 2 && Main.isInteger(msg[2])) {
-                        channelInfo.setfilterCapsMinCapitals(Integer.parseInt(msg[2]));
-                        send(channel, "Caps filter min caps: " + channelInfo.getfilterCapsMinCapitals());
-                    }
-                } else if (msg[1].equalsIgnoreCase("status")) {
-                    send(channel, "Caps filter=" + channelInfo.getFilterCaps() + ", percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps= " + channelInfo.getfilterCapsMinCapitals());
-                }
-            }
-            return;
-        }
-
-        // !emotes - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "emotes") && isOwner) {
-            log("RB: Matched command !emotes");
-            if (msg.length == 1) {
-                send(channel, "Syntax: \"!emotes on/off\", \"!emotes max [value]\", \"!emotes single on/off\"");
-            } else if (msg.length > 1) {
-                if (msg[1].equalsIgnoreCase("on")) {
-                    channelInfo.setFilterEmotes(true);
-                    send(channel, "Emotes filter: " + channelInfo.getFilterEmotes());
-                } else if (msg[1].equalsIgnoreCase("off")) {
-                    channelInfo.setFilterEmotes(false);
-                    send(channel, "Emotes filter: " + channelInfo.getFilterEmotes());
-                } else if (msg[1].equalsIgnoreCase("max")) {
-                    if (msg.length > 2 && Main.isInteger(msg[2])) {
-                        channelInfo.setFilterEmotesMax(Integer.parseInt(msg[2]));
-                        send(channel, "Emotes filter max: " + channelInfo.getFilterEmotesMax());
-                    }
-                } else if (msg[1].equalsIgnoreCase("status")) {
-                    send(channel, "Emotes filter=" + channelInfo.getFilterEmotes() + ", max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
-                } else if (msg[1].equalsIgnoreCase("single") && msg.length > 2) {
-                    if (msg[2].equalsIgnoreCase("on")) {
-                        channelInfo.setFilterEmotesSingle(true);
-                        send(channel, "Single Emote filter: " + channelInfo.getFilterEmotesSingle());
-                    } else if (msg[2].equalsIgnoreCase("off")) {
-                        channelInfo.setFilterEmotesSingle(false);
-                        send(channel, "Single Emote filter: " + channelInfo.getFilterEmotesSingle());
-                    }
-                }
-            }
-            return;
-        }
-
-        // !symbols - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "symbols") && isOwner) {
-            log("RB: Matched command !symbols");
-            if (msg.length == 1) {
-                send(channel, "Syntax: \"!symbols on/off\", \"!symbols percent/min [value]\", \"!symbols status\"");
-            } else if (msg.length > 1) {
-                if (msg[1].equalsIgnoreCase("on")) {
-                    channelInfo.setFilterSymbols(true);
-                    send(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
-                } else if (msg[1].equalsIgnoreCase("off")) {
-                    channelInfo.setFilterSymbols(false);
-                    send(channel, "Symbols filter: " + channelInfo.getFilterSymbols());
-                } else if (msg[1].equalsIgnoreCase("percent")) {
-                    if (msg.length > 2 && Main.isInteger(msg[2])) {
-                        channelInfo.setFilterSymbolsPercent(Integer.parseInt(msg[2]));
-                        send(channel, "Symbols filter percent: " + channelInfo.getFilterSymbolsPercent());
-                    }
-                } else if (msg[1].equalsIgnoreCase("min")) {
-                    if (msg.length > 2 && Main.isInteger(msg[2])) {
-                        channelInfo.setFilterSymbolsMin(Integer.parseInt(msg[2]));
-                        send(channel, "Symbols filter min symbols: " + channelInfo.getFilterSymbolsMin());
-                    }
-                } else if (msg[1].equalsIgnoreCase("status")) {
-                    send(channel, "Symbols filter=" + channelInfo.getFilterSymbols() + ", percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
                 }
             }
             return;
@@ -1471,45 +1563,7 @@ public class ReceiverBot extends PircBot {
                     channelInfo.setTopicFeature(false);
                     send(channel, "Feature: Topic is off");
                 }
-            } else if (msg[1].equalsIgnoreCase("filters")) {
-                if (msg[2].equalsIgnoreCase("on")) {
-                    channelInfo.setFiltersFeature(true);
-                    send(channel, "Feature: Filters is on");
-                } else if (msg[2].equalsIgnoreCase("off")) {
-                    channelInfo.setFiltersFeature(false);
-                    send(channel, "Feature: Filters is off");
-                }
-            } else if (msg[1].equalsIgnoreCase("filterme")) {
-                if (msg[2].equalsIgnoreCase("on")) {
-                    channelInfo.setFilterMe(true);
-                    send(channel, "Feature: /me filter is on");
-                } else if (msg[2].equalsIgnoreCase("off")) {
-                    channelInfo.setFilterMe(false);
-                    send(channel, "Feature: /me filter is off");
-                }
-            } else if (msg[1].equalsIgnoreCase("enablewarnings")) {
-                if (msg[2].equalsIgnoreCase("on")) {
-                    channelInfo.setEnableWarnings(true);
-                    send(channel, "Feature: Timeout warnings are on");
-                } else if (msg[2].equalsIgnoreCase("off")) {
-                    channelInfo.setEnableWarnings(false);
-                    send(channel, "Feature: Timeout warnings are off");
-                }
-            } else if (msg[1].equalsIgnoreCase("timeoutduration")) {
 
-                if (msg.length < 3) {
-                    send(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
-                } else {
-                    if (Main.isInteger(msg[2])) {
-                        int duration = Integer.parseInt(msg[2]);
-                        channelInfo.setTimeoutDuration(duration);
-                        send(channel, "Timeout duration is " + channelInfo.getTimeoutDuration());
-                    } else {
-                        send(channel, "You must specify an integer for the duration");
-                    }
-
-
-                }
             } else if (msg[1].equalsIgnoreCase("throw")) {
                 if (msg[2].equalsIgnoreCase("on")) {
                     channelInfo.setThrow(true);
@@ -1517,14 +1571,6 @@ public class ReceiverBot extends PircBot {
                 } else if (msg[2].equalsIgnoreCase("off")) {
                     channelInfo.setThrow(false);
                     send(channel, "Feature: !throw is off");
-                }
-            } else if (msg[1].equalsIgnoreCase("signedkicks")) {
-                if (msg[2].equalsIgnoreCase("on")) {
-                    channelInfo.setSignKicks(true);
-                    send(channel, "Feature: Signed-kicks is on");
-                } else if (msg[2].equalsIgnoreCase("off")) {
-                    channelInfo.setSignKicks(false);
-                    send(channel, "Feature: Signed-kicks is off");
                 }
             } else if (msg[1].equalsIgnoreCase("joinsparts")) {
                 send(channel, "This feature is currently disabled due to issues with TMI.");
@@ -1566,13 +1612,6 @@ public class ReceiverBot extends PircBot {
                 } else if (msg[2].equalsIgnoreCase("-1") || msg[2].equalsIgnoreCase("admin")) {
                     channelInfo.setMode(-1);
                     send(channel, "Special moderation mode activated.");
-                }
-            } else if (msg[1].equalsIgnoreCase("maxlength")) {
-                if (msg.length > 2) {
-                    channelInfo.setFilterMax(Integer.parseInt(msg[2]));
-                    send(channel, "Max message length set to " + channelInfo.getFilterMax());
-                } else {
-                    send(channel, "Max message length is " + channelInfo.getFilterMax() + " characters.");
                 }
             } else if (msg[1].equalsIgnoreCase("commerciallength")) {
                 if (msg.length > 2) {

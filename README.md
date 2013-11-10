@@ -105,65 +105,72 @@ Example:
   * `-b [user]` - Unbans a user. 
   * `+k [user]` - Timeouts a user. 
   * `+p [user]` - Purges a user.  
-
   * `!clear` - Clears chat.
 
+### Filters
+
+ * `!filter on|off` - Toggles all filters.
+ * `!filter status` - Displays status of all filter options.
+ * `!filter me on|off` - Toggle the action AKA /me filter.
+ * `!filter enablewarnings on|off` - Toggles a 10sec warning timeout for first offenses.
+ * `!filter timeoutduration <seconds>` - Sets timeout duration for filter timeouts. 
+ * `!filter displaywarnings on|off` - Toggle a message warning and announcing filter timeouts.
+ * `!filter messagelength <num of char>` - Sets the maximum allowed character length for a message.
+
+As of Nov. 10, 2013, filter options have been moved to sub commands of `!filter`. For example, `!caps` can now be found as `!filter caps`.
+
 #### Links
-  * `!links on|off` - Toggles link filtering on and off. 
-  * `!permit <name>` - Permits a user to post 1 link.
-  * `!pd list` - Lists domains that are allowed to bypass link filter. 
-  * `!pd add|delete <domain>` - Configures permanently permitted domains. 
+  * `links on|off` - Toggles link filtering on and off.
+  * `pd add|delete <domain>` - Configures permanently permitted domains. 
+  * `pd list` - Lists domains that are allowed to bypass link filter.
+
+
+  * `!permit <name>` - Permits a user to post 1 link. **This is NOT a sub command!**
   
 #### Caps
-  * `!caps on|off` - Toggle cap filtering on and off. 
+  * `caps on|off` - Toggle cap filtering on and off. 
 
 Filtered messages must match all three of the below settings:
 
-  * `!caps percent <int (0-100)>` - >= this percentage of caps per line. 
-  * `!caps mincaps <int>` - >= this number of caps per line. 
-  * `!caps minchars <int>` - total characters per line must be >= this. 
-  * `!caps status` - Displays the current values. 
+  * `caps percent <int (0-100)>` - >= this percentage of caps per line. 
+  * `caps mincaps <int>` - >= this number of caps per line. 
+  * `caps minchars <int>` - total characters per line must be >= this. 
+  * `caps status` - Displays the current values. 
   
 #### Banned phrases
-  * `!banphrase on|off` - Turns filter on/off.
-  * `!banphrase list` - Lists filtered words.
-  * `!banphrase add <phrase>` - Adds string to filter - Accepts direct regular expressions (Prefix with REGEX:).
-  * `!banphrase delete <phrase>` - Removes string from filter.
+  * `banphrase on|off` - Turns filter on/off.
+  * `banphrase list` - Lists filtered words.
+  * `banphrase add <phrase>` - Adds string to filter - Accepts direct regular expressions (Prefix with REGEX:).
+  * `banphrase delete <phrase>` - Removes string from filter.
 
 #### Symbols
 Covers ASCII symbols, unicode classes for box drawings, block elements and geometric shapes also select other spammed characters.
 
-  * `!symbols on|off` - Turns symbols filter on/off.  
+  * `symbols on|off` - Turns symbols filter on/off.  
   
 Filtered messages must match both of the below settings:
 
-  * `!symbols percent <int (0-100)>` - >= percentage of symbols.
-  * `!symbols min <int>` - >= number of symbols per line.
-  * `!caps status` - Displays the current values.
+  * `symbols percent <int (0-100)>` - >= percentage of symbols.
+  * `symbols min <int>` - >= number of symbols per line.
+  * `symbols status` - Displays the current values.
 
 #### Emotes
 
 Limits Twitch **global** emotes.
 
-  * `!emotes on|off` - Owner - Toggle emote spam filtering on and off. 
-  * `!emotes max <int>` - Max number of emotes allowed.
-  * `!emotes single on|off` - Toggles filter for single emote messages.
+  * `emotes on|off` - Owner - Toggle emote spam filtering on and off. 
+  * `emotes max <int>` - Max number of emotes allowed.
+  * `emotes single on|off` - Toggles filter for single emote messages.
 
 ### Settings
   * `!set <option> [parameters]`
   * **Options**: 
     * `topic on|off` - Enables the !topic command.
-    * `filters on|off` - Global toggle all moderation filters. 
     * `throw on|off` - Enables the !throw command.
-    * `signedkicks on|off` - Enables chat announcements for moderation timeouts. 
     * `lastfm <username|off>` - Sets username to use with !music command.
-    * `maxlength <num of chars>` - Maximum allowed message length. Messages greater than the limit will be removed.
     * `steam <ID>` - Sets your Steam ID. Must be in [SteamID64](http://steamidconverter.com/) format and profile must be public. 
     * `mode <(0/owner)|(1/mod)|(2,everyone)|(-1, "Admin mode")>` - Sets the minimum access to use any bot commands. 
     * `commerciallength <30|60|90|120|150|180>` - Length of commercials to run with.
-    * `filterme on|off` - Toggles removal of actions aka /me.
-    * `enablewarnings on/off` - Enabled a lesser timeout for first offensive of a filter (10 second timeout).
-    * `timeoutduration <seconds>` - Sets the duration for filter offenses (after warning if enabled).
     * `tweet <message>` - Format for Click to tweet message.
     * `prefix <character>` - Sets the command prefix. Default is "!"
     * `emoteset <set id>` - Sets the emote_set for of the subscription product for this channel. (Used to determine subscriber status for regulars)
