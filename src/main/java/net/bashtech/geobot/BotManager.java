@@ -130,7 +130,7 @@ public class BotManager {
         reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 
         // Load modules
-        this.registerModule(new Logger());
+        //this.registerModule(new Logger());
     }
 
     public static BotManager getInstance() {
@@ -455,7 +455,6 @@ public class BotManager {
 
     public synchronized Channel getChannel(String channel) {
         if (channelList.containsKey(channel.toLowerCase())) {
-
             return channelList.get(channel.toLowerCase());
         } else {
             return null;

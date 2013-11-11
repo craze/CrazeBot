@@ -176,11 +176,6 @@ public class ReceiverBot extends PircBot {
         if (!sender.equalsIgnoreCase(this.getNick()))
             channelInfo.messageCount++; //Inc message count
 
-        //Call modules
-        for (BotModule b : BotManager.getInstance().getModules()) {
-            b.onMessage(channelInfo, sender, login, hostname, message);
-        }
-
         //Ignore messages from self.
         if (sender.equalsIgnoreCase(this.getNick())) {
             //System.out.println("Message from bot");
@@ -1964,11 +1959,6 @@ public class ReceiverBot extends PircBot {
         if (channelInfo == null)
             return;
 
-        //Call modules
-        for (BotModule b : BotManager.getInstance().getModules()) {
-            b.onJoin(channelInfo, sender, login, hostname);
-        }
-
         if (this.getNick().equalsIgnoreCase(sender)) {
             log("RB: Got self join for " + channel);
             if (BotManager.getInstance().ignoreHistory) {
@@ -1984,11 +1974,6 @@ public class ReceiverBot extends PircBot {
 
         if (channelInfo == null)
             return;
-
-        //Call modules
-        for (BotModule b : BotManager.getInstance().getModules()) {
-            b.onPart(channelInfo, sender, login, hostname);
-        }
     }
 
     public void send(String target, String sender, String message) {
@@ -2004,13 +1989,6 @@ public class ReceiverBot extends PircBot {
 
         if (!BotManager.getInstance().verboseLogging)
             logMain("SEND: " + target + " " + getNick() + " : " + message);
-
-        if (channelInfo != null) {
-            //Call modules
-            for (BotModule b : BotManager.getInstance().getModules()) {
-                b.onSelfMessage(channelInfo, this.getNick(), message);
-            }
-        }
 
         setRandomNickColor();
         message = MessageReplaceParser.parseMessage(target, sender, message, args);
