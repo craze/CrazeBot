@@ -1135,30 +1135,30 @@ public class ReceiverBot extends PircBot {
         //Moderation commands - Ops
         if (isOp) {
             if (msg[0].equalsIgnoreCase("+m")) {
-                send(channel, ".slow");
+                sendCommand(channel, ".slow");
             }
             if (msg[0].equalsIgnoreCase("-m")) {
-                send(channel, ".slowoff");
+                sendCommand(channel, ".slowoff");
             }
             if (msg[0].equalsIgnoreCase("+s")) {
-                send(channel, ".subscribers");
+                sendCommand(channel, ".subscribers");
             }
             if (msg[0].equalsIgnoreCase("-s")) {
-                send(channel, ".subscribersoff");
+                sendCommand(channel, ".subscribersoff");
             }
             if (msg.length > 0) {
                 if (msg[0].equalsIgnoreCase("+b")) {
-                    send(channel, ".ban " + msg[1].toLowerCase());
+                    sendCommand(channel, ".ban " + msg[1].toLowerCase());
                 }
                 if (msg[0].equalsIgnoreCase("-b")) {
-                    send(channel, ".unban " + msg[1].toLowerCase());
-                    send(channel, ".timeout " + msg[1].toLowerCase() + " 1");
+                    sendCommand(channel, ".unban " + msg[1].toLowerCase());
+                    sendCommand(channel, ".timeout " + msg[1].toLowerCase() + " 1");
                 }
                 if (msg[0].equalsIgnoreCase("+k")) {
-                    send(channel, ".timeout " + msg[1].toLowerCase());
+                    sendCommand(channel, ".timeout " + msg[1].toLowerCase());
                 }
                 if (msg[0].equalsIgnoreCase("+p")) {
-                    send(channel, ".timeout " + msg[1].toLowerCase() + " 1");
+                    sendCommand(channel, ".timeout " + msg[1].toLowerCase() + " 1");
                 }
             }
 
@@ -1167,7 +1167,7 @@ public class ReceiverBot extends PircBot {
         // !clear - Ops
         if (msg[0].equalsIgnoreCase(prefix + "clear") && isOp) {
             log("RB: Matched command !clear");
-            send(channel, ".clear");
+            sendCommand(channel, ".clear");
             return;
         }
 
@@ -1798,7 +1798,7 @@ public class ReceiverBot extends PircBot {
                 }
                 return;
             } else if (msg[1].equalsIgnoreCase("color") && msg.length > 2) {
-                send(channel, ".color " + msg[2]);
+                sendCommand(channel, ".color " + msg[2]);
                 send(channel, "Color set to " + msg[2]);
                 return;
             } else if (msg[1].equalsIgnoreCase("loadfilter")) {
@@ -1914,7 +1914,7 @@ public class ReceiverBot extends PircBot {
             System.out.println(newColor.toString());
             String hexColor = String.format("#%06X", (0xFFFFFF & newColor.getRGB()));
             System.out.println("New color: " + hexColor);
-            sendMessage("#" + getNick(), ".color " + hexColor);
+            sendCommand("#" + getNick(), ".color " + hexColor);
         }
 
     }
@@ -2012,26 +2012,26 @@ public class ReceiverBot extends PircBot {
             }
         }
 
-        if (!message.startsWith(".")) {
-            setRandomNickColor();
-            message = MessageReplaceParser.parseMessage(target, sender, message, args);
-            boolean useBullet = true;
+        setRandomNickColor();
+        message = MessageReplaceParser.parseMessage(target, sender, message, args);
+        boolean useBullet = true;
 
-            if (message.startsWith("/me "))
-                useBullet = false;
+        if (message.startsWith("/me "))
+            useBullet = false;
 
-            //Split if message > X characters
-            List<String> chunks = Main.splitEqually(message, 500);
-            int c = 1;
-            for (String chunk : chunks) {
-                sendMessage(target, (useBullet ? getBullet() + " " : "") + (chunks.size() > 1 ? "[" + c + "] " : "") + chunk);
-                c++;
-            }
-
-
-        } else {
-            sendMessage(target, message);
+        //Split if message > X characters
+        List<String> chunks = Main.splitEqually(message, 500);
+        int c = 1;
+        for (String chunk : chunks) {
+            sendMessage(target, (useBullet ? getBullet() + " " : "") + (chunks.size() > 1 ? "[" + c + "] " : "") + chunk);
+            c++;
+            useBullet = true;
         }
+
+    }
+
+    public void sendCommand(String target, String message) {
+        sendMessage(target, message);
     }
 
     @Override
@@ -2244,7 +2244,7 @@ public class ReceiverBot extends PircBot {
             int delay = 1000 * i;
             timer.schedule(new TimerTask() {
                 public void run() {
-                    ReceiverBot.this.send(channel, ".timeout " + name + " " + duration);
+                    ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration);
                 }
             }, delay);
         }
@@ -2270,7 +2270,7 @@ public class ReceiverBot extends PircBot {
             System.out.println("Delay: " + delay);
             timer.schedule(new TimerTask() {
                 public void run() {
-                    ReceiverBot.this.send(channel, ".ban " + name);
+                    ReceiverBot.this.sendCommand(channel, ".ban " + name);
                 }
             }, delay);
         }
