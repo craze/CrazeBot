@@ -194,7 +194,7 @@ public class ReceiverBot extends PircBot {
         }
 
         //Handle twitchnotify
-        if (sender.equals("george")) {
+        if (sender.equals("twitchnotify")) {
             Matcher m = twitchnotifySubscriberPattern.matcher(message);
             if (m.matches()) {
                 onNewSubscriber(channelInfo, m.group(1));
