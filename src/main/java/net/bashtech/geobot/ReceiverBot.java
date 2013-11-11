@@ -767,7 +767,7 @@ public class ReceiverBot extends PircBot {
                     String value = fuseArray(msg, 3);
                     if (!value.contains(",,")) {
                         channelInfo.setCommand(key, value);
-                        send(channel, channelInfo.getCommand(key));
+                        send(channel, "Command added/updated.");
                     } else {
                         send(channel, "Command cannot contain double commas (\",,\").");
                     }
@@ -1822,7 +1822,7 @@ public class ReceiverBot extends PircBot {
                     String updatedMessage = fuseArray(msg, 1);
                     if (!updatedMessage.contains(",,")) {
                         channelInfo.setCommand(command, updatedMessage);
-                        send(channel, sender, channelInfo.getCommand(command));
+                        send(channel, "Command updated.");
                     } else {
                         send(channel, "Command cannot contain double commas (\",,\").");
                     }
