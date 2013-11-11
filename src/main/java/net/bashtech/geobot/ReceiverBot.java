@@ -47,6 +47,7 @@ public class ReceiverBot extends PircBot {
 
     static ReceiverBot instance;
     Timer joinCheck;
+    Random random = new Random();
     private Pattern[] linkPatterns = new Pattern[4];
     private Pattern[] symbolsPatterns = new Pattern[2];
     private int lastPing = -1;
@@ -57,7 +58,6 @@ public class ReceiverBot extends PircBot {
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
     private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*(Google|\\*\\*\\*).*", Pattern.CASE_INSENSITIVE);
-    Random random = new Random();
 
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
@@ -1827,13 +1827,13 @@ public class ReceiverBot extends PircBot {
                     String updatedMessage = fuseArray(msg, 1);
                     if (!updatedMessage.contains(",,")) {
                         channelInfo.setCommand(command, updatedMessage);
-                        send(channel, channelInfo.getCommand(command));
+                        send(channel, sender, channelInfo.getCommand(command));
                     } else {
                         send(channel, "Command cannot contain double commas (\",,\").");
                     }
                 } else {
                     if (channelInfo.checkCommandRestriction(command, accessLevel))
-                        send(channel, value);
+                        send(channel, sender, value);
                 }
 
             }
@@ -1848,7 +1848,7 @@ public class ReceiverBot extends PircBot {
             if (m.matches()) {
 
                 if (!channelInfo.onCooldown(channelInfo.autoReplyTrigger.get(i).toString()))
-                    send(channel, channelInfo.autoReplyResponse.get(i));
+                    send(channel, sender, channelInfo.autoReplyResponse.get(i));
             }
         }
     }
@@ -1898,7 +1898,7 @@ public class ReceiverBot extends PircBot {
         System.out.println("RB: New subscriber in " + channel.getTwitchName() + " " + username);
         if (channel.config.getBoolean("subscriberAlert")) {
             String msgFormat = channel.config.getString("subMessage");
-            send(channel.getChannel(), msgFormat, new String[]{username});
+            send(channel.getChannel(), null, msgFormat, new String[]{username});
         }
     }
 
@@ -1991,11 +1991,15 @@ public class ReceiverBot extends PircBot {
         }
     }
 
-    public void send(String target, String message) {
-        send(target, message, null);
+    public void send(String target, String sender, String message) {
+        send(target, sender, message, null);
     }
 
-    public void send(String target, String message, String[] args) {
+    public void send(String target, String message) {
+        send(target, null, message, null);
+    }
+
+    public void send(String target, String sender, String message, String[] args) {
         Channel channelInfo = getChannelObject(target);
 
         if (!BotManager.getInstance().verboseLogging)
@@ -2010,13 +2014,17 @@ public class ReceiverBot extends PircBot {
 
         if (!message.startsWith(".")) {
             setRandomNickColor();
-            message = MessageReplaceParser.parseMessage(target, message, args);
+            message = MessageReplaceParser.parseMessage(target, sender, message, args);
+            boolean useBullet = true;
+
+            if (message.startsWith("/me "))
+                useBullet = false;
 
             //Split if message > X characters
             List<String> chunks = Main.splitEqually(message, 500);
             int c = 1;
             for (String chunk : chunks) {
-                sendMessage(target, getBullet() + " " + (chunks.size() > 1 ? "[" + c + "] " : "") + chunk);
+                sendMessage(target, (useBullet ? getBullet() + " " : "") + (chunks.size() > 1 ? "[" + c + "] " : "") + chunk);
                 c++;
             }
 

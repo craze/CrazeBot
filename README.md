@@ -220,6 +220,7 @@ Adding dynamic data to bot message is also supported via string substitutions. A
   * `(_SONG_)` : Scrobbled Last.fm track name and artist (Last.fm account must be configured).
   * `(_BOT_HELP_)` : Bot's help message. See bothelpMessage in global.properties..
   * `(_TWEET_URL_)` : Click to tweet URL See !set tweet.
+  * `(_USER_)` : Nick of the user requesting a trigger or triggering an autoreply.
 
   Example:
   `!command add info I am (_STEAM_PROFILE_) and I'm playing (_STEAM_GAME_) on (_STEAM_SERVER_) listening to (_SONG_)`
