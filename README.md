@@ -176,7 +176,7 @@ Limits Twitch **global** emotes.
     * `emoteset <set id>` - Sets the emote_set for of the subscription product for this channel. (Used to determine subscriber status for regulars)
     * `subscriberregulars on|off` - Treats subscribers a regulars. `emoteset` must be defined first.
     * `subscriberalerts on|off` - Toggle chat alert when a new user subs.
-    * `subscriberalerts message <message> - Message to be displayed when new user subs. Use `(_1_)` to insert the new subscriber's name.
+    * `subscriberalerts message <message>` - Message to be displayed when new user subs. Use `(_1_)` to insert the new subscriber's name.
 
 ### User Levels
 

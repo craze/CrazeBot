@@ -1990,7 +1990,6 @@ public class ReceiverBot extends PircBot {
         if (!BotManager.getInstance().verboseLogging)
             logMain("SEND: " + target + " " + getNick() + " : " + message);
 
-        setRandomNickColor();
         message = MessageReplaceParser.parseMessage(target, sender, message, args);
         boolean useBullet = true;
 
@@ -2006,6 +2005,7 @@ public class ReceiverBot extends PircBot {
             useBullet = true;
         }
 
+        setRandomNickColor();
     }
 
     public void sendCommand(String target, String message) {
