@@ -309,15 +309,15 @@ public class ReceiverBot extends PircBot {
         // Voluntary Filters
         if (channelInfo.useFilters) {
 
-            if (!isRegular) {
-                Matcher m = vinePattern.matcher(message.replaceAll(" ", ""));
-                if (m.find()) {
-                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
-                    this.secondaryBan(channel, sender, FilterType.VINE);
-                    logGlobalBan(channel, sender, message);
-                    return;
-                }
-            }
+//            if (!isRegular) {
+//                Matcher m = vinePattern.matcher(message.replaceAll(" ", ""));
+//                if (m.find()) {
+//                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
+//                    this.secondaryBan(channel, sender, FilterType.VINE);
+//                    logGlobalBan(channel, sender, message);
+//                    return;
+//                }
+//            }
 
             //Me filter
             if (channelInfo.getFilterMe() && !isRegular) {
