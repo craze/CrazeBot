@@ -1807,6 +1807,7 @@ public class ReceiverBot extends PircBot {
                 return;
             } else if (msg[1].equalsIgnoreCase("loadfilter")) {
                 BotManager.getInstance().loadGlobalBannedWords();
+                BotManager.getInstance().loadBanPhraseList();
                 send(channel, "Global banned filter reloaded.");
                 return;
             } else if (msg[1].equalsIgnoreCase("spam")) {
