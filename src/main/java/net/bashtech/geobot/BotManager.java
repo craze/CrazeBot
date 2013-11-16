@@ -660,7 +660,8 @@ public class BotManager {
                     if (line.startsWith("#"))
                         continue;
 
-                    String[] parts = line.split("\\|");
+
+                    String[] parts = line.split("\\|", 2);
                     int severity = Integer.parseInt(parts[0]);
                     line = parts[1];
 
