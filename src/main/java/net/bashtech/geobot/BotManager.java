@@ -68,6 +68,8 @@ public class BotManager {
     int multipleTimeout;
     boolean randomNickColor;
     int randomNickColorDiff;
+
+    Map<Integer, List<Pattern>> banPhraseLists;
     // ********
     private String _propertiesFile;
 
@@ -85,6 +87,7 @@ public class BotManager {
         emoteSet = new LinkedList<String>();
         globalBannedWords = new LinkedList<Pattern>();
         emoteSetMapping = new HashMap<String, Set<String>>();
+        banPhraseLists = new HashMap<Integer, List<Pattern>>();
 
         loadGlobalProfile();
 
@@ -447,6 +450,7 @@ public class BotManager {
 
         loadEmotes();
         loadGlobalBannedWords();
+        loadBanPhraseList();
 
         if (server.length() < 1) {
             System.exit(1);
@@ -625,6 +629,55 @@ public class BotManager {
                     System.out.println(line);
                     Pattern tempP = Pattern.compile(line, Pattern.CASE_INSENSITIVE);
                     globalBannedWords.add(tempP);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    public void loadBanPhraseList() {
+        banPhraseLists = new HashMap<Integer, List<Pattern>>();
+
+        File f = new File("bannedphrases.cfg");
+        if (!f.exists())
+            try {
+                f.createNewFile();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        try {
+            Scanner in = new Scanner(f, "UTF-8");
+
+            while (in.hasNextLine()) {
+                String line = in.nextLine().replace("\uFEFF", "");
+
+                if (line.length() > 0) {
+
+                    if (line.startsWith("#"))
+                        continue;
+
+                    String[] parts = line.split("\\|");
+                    int severity = Integer.parseInt(parts[0]);
+                    line = parts[1];
+
+                    if (line.startsWith("REGEX:"))
+                        line = line.replaceAll("REGEX:", "");
+                    else
+                        line = ".*\\b" + Pattern.quote(line) + "\\b.*";
+
+                    System.out.println(line);
+                    Pattern tempP = Pattern.compile(line, Pattern.CASE_INSENSITIVE);
+
+                    for (int c = severity; c >= 0; c--) {
+                        if (!banPhraseLists.containsKey(c))
+                            banPhraseLists.put(c, new LinkedList<Pattern>());
+                        banPhraseLists.get(c).add(tempP);
+                        System.out.println("Adding " + tempP.toString() + " to s=" + c);
+                    }
                 }
             }
         } catch (FileNotFoundException e) {

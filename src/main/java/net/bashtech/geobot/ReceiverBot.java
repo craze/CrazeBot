@@ -1198,7 +1198,7 @@ public class ReceiverBot extends PircBot {
                 send(channel, "Display warnings: " + channelInfo.checkSignKicks());
                 send(channel, "Max message length: " + channelInfo.getFilterMax());
                 send(channel, "Links: " + channelInfo.getFilterLinks());
-                send(channel, "Banned phrases: " + channelInfo.getFilterOffensive());
+                send(channel, "Banned phrases: " + channelInfo.getFilterOffensive() + " ~ severity=" + channelInfo.config.getInt("banPhraseSeverity"));
                 send(channel, "Caps: " + channelInfo.getFilterCaps() + " ~ percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps=" + channelInfo.getfilterCapsMinCapitals());
                 send(channel, "Emotes: " + channelInfo.getFilterEmotes() + " ~ max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
                 send(channel, "Symbols: " + channelInfo.getFilterSymbols() + " ~ percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
@@ -1339,6 +1339,15 @@ public class ReceiverBot extends PircBot {
                             }
                             channelInfo.addOffensive(phrase);
                             send(channel, "Word added. " + "(" + phrase + ")");
+                        }
+                    } else if (msg[1].equalsIgnoreCase("severity")) {
+                        if (msg.length > 2 && Main.isInteger(msg[2])) {
+                            int severity = Integer.parseInt(msg[2]);
+                            channelInfo.config.setInt("banPhraseSeverity", severity);
+
+                            send(channel, "Severity set to " + channelInfo.config.getInt("banPhraseSeverity"));
+                        } else {
+                            send(channel, "Severity is " + channelInfo.config.getInt("banPhraseSeverity"));
                         }
                     } else if (msg[1].equalsIgnoreCase("delete") || msg[1].equalsIgnoreCase("remove") && msg.length > 2) {
                         String phrase = fuseArray(msg, 2);

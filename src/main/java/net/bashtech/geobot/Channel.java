@@ -975,7 +975,14 @@ public class Channel {
                 System.out.println("Matched: " + reg.toString());
                 return true;
             }
+        }
 
+        for (Pattern reg : BotManager.getInstance().banPhraseLists.get(config.getInt("banPhraseSeverity"))) {
+            Matcher match = reg.matcher(word.toLowerCase());
+            if (match.find()) {
+                System.out.println("Matched: " + reg.toString());
+                return true;
+            }
         }
         return false;
     }
@@ -1237,6 +1244,7 @@ public class Channel {
         defaults.put("filterEmotesSingle", false);
         defaults.put("subMessage", "(_1_) has subscribed!");
         defaults.put("subscriberAlert", false);
+        defaults.put("banPhraseSeverity", 99);
 
         Iterator it = defaults.entrySet().iterator();
         while (it.hasNext()) {
