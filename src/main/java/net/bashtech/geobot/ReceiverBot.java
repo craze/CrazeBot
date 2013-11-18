@@ -411,6 +411,7 @@ public class ReceiverBot extends PircBot {
 
             //Offensive filter
             if (!isRegular && channelInfo.getFilterOffensive()) {
+                System.out.println("DEBUG: Entering offensive check");
                 boolean isOffensive = channelInfo.isOffensive(message);
                 System.out.println("DEBUG: isOffensive " + isOffensive);
                 if (isOffensive) {
@@ -2129,7 +2130,7 @@ public class ReceiverBot extends PircBot {
         String[] splitMessage = message.toLowerCase().split(" ");
         for (String m : splitMessage) {
             for (Pattern pattern : linkPatterns) {
-                System.out.println("Checking " + m + " against " + pattern.pattern());
+                //System.out.println("Checking " + m + " against " + pattern.pattern());
                 Matcher match = pattern.matcher(m);
                 if (match.matches()) {
                     log("RB: Link match on " + pattern.pattern());
