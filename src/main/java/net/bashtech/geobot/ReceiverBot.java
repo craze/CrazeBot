@@ -1703,8 +1703,14 @@ public class ReceiverBot extends PircBot {
 
 
         //!join
-        if (msg[0].equalsIgnoreCase(prefix + "join") && BotManager.getInstance().publicJoin) {
+        if (msg[0].equalsIgnoreCase(prefix + "join")) {
             log("RB: Matched command !join");
+
+            if (!BotManager.getInstance().publicJoin) {
+                send(channel, "Public joining is disabled at this time.");
+                return;
+            }
+
             if (JSONUtil.krakenChannelExist(sender)) {
                 send(channel, "Joining channel #" + sender + ".");
                 boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
