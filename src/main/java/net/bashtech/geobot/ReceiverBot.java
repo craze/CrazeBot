@@ -291,6 +291,7 @@ public class ReceiverBot extends PircBot {
         if ((msg[0].equalsIgnoreCase(prefix + "leave") || msg[0].equalsIgnoreCase(prefix + "remove") || msg[0].equalsIgnoreCase(prefix + "part")) && isOwner) {
             send(channel, "Leaving channel " + channelInfo.getChannel() + ".");
             BotManager.getInstance().removeChannel(channelInfo.getChannel());
+            return;
         }
 
 
@@ -411,6 +412,7 @@ public class ReceiverBot extends PircBot {
             //Offensive filter
             if (!isRegular && channelInfo.getFilterOffensive()) {
                 if (channelInfo.isOffensive(message)) {
+                    System.out.println("DEBUG: Message is offensive");
                     int warningCount = 0;
 
                     channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
@@ -422,7 +424,6 @@ public class ReceiverBot extends PircBot {
 
                     return;
                 }
-
             }
 
             //Emote filter

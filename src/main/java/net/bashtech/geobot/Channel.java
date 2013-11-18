@@ -977,7 +977,8 @@ public class Channel {
             }
         }
 
-        for (Pattern reg : BotManager.getInstance().banPhraseLists.get(config.getInt("banPhraseSeverity"))) {
+        int severity = config.getInt("banPhraseSeverity");
+        for (Pattern reg : BotManager.getInstance().banPhraseLists.get(severity)) {
             Matcher match = reg.matcher(word.toLowerCase());
             if (match.find()) {
                 System.out.println("Matched: " + reg.toString());
