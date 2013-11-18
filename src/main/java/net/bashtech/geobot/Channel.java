@@ -978,13 +978,16 @@ public class Channel {
         }
 
         int severity = config.getInt("banPhraseSeverity");
-        for (Pattern reg : BotManager.getInstance().banPhraseLists.get(severity)) {
-            Matcher match = reg.matcher(word.toLowerCase());
-            if (match.find()) {
-                System.out.println("Matched: " + reg.toString());
-                return true;
+        if (BotManager.getInstance().banPhraseLists.containsKey(severity)) {
+            for (Pattern reg : BotManager.getInstance().banPhraseLists.get(severity)) {
+                Matcher match = reg.matcher(word.toLowerCase());
+                if (match.find()) {
+                    System.out.println("Matched: " + reg.toString());
+                    return true;
+                }
             }
         }
+
         return false;
     }
 

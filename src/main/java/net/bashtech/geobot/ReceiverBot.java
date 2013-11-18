@@ -411,11 +411,8 @@ public class ReceiverBot extends PircBot {
 
             //Offensive filter
             if (!isRegular && channelInfo.getFilterOffensive()) {
-                System.out.println("DEBUG: Entering offensive check");
                 boolean isOffensive = channelInfo.isOffensive(message);
-                System.out.println("DEBUG: isOffensive " + isOffensive);
                 if (isOffensive) {
-                    System.out.println("DEBUG: Message is offensive");
                     int warningCount = 0;
 
                     channelInfo.incWarningCount(sender, FilterType.OFFENSIVE);
