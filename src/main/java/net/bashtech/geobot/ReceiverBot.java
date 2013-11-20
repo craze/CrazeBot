@@ -758,7 +758,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !command - Ops
-        if (msg[0].equalsIgnoreCase(prefix + "command") && isOp) {
+        if (msg[0].equalsIgnoreCase(prefix + "command") && isOwner) {
             log("RB: Matched command !command");
             if (msg.length < 3) {
                 send(channel, "Syntax: \"!command add/delete [name] [message]\" - Name is the command trigger without \"!\" and message is the response.");
@@ -1835,7 +1835,7 @@ public class ReceiverBot extends PircBot {
             String value = channelInfo.getCommand(command);
             if (value != null) {
                 log("RB: Matched command " + msg[0]);
-                if (msg.length > 1 && isOp) {
+                if (msg.length > 1 && isOwner) {
                     String updatedMessage = fuseArray(msg, 1);
                     if (!updatedMessage.contains(",,")) {
                         channelInfo.setCommand(command, updatedMessage);
