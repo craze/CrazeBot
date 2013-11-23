@@ -647,7 +647,6 @@ public class ReceiverBot extends PircBot {
                 } catch (Exception ex) {
                     send(channel, "Error updating status. Did you add me as an editor?");
                 }
-
             } else {
                 String status = "";
                 if (BotManager.getInstance().twitchChannels)
@@ -705,11 +704,16 @@ public class ReceiverBot extends PircBot {
             if (msg.length < 2 || !isOp) {
                 if (channelInfo.getTopic().equalsIgnoreCase("")) {
                     if (BotManager.getInstance().twitchChannels) {
-                        String status = JSONUtil.krakenStatus(twitchName);
+                        String status = "";
+                        if (BotManager.getInstance().twitchChannels)
+                            status = JSONUtil.krakenStatus(twitchName);
+                        else
+                            status = JSONUtil.jtvStatus(twitchName);
+
                         if (status.length() > 0)
                             send(channel, status);
                         else
-                            send(channel, "Unable to query TwitchTV API.");
+                            send(channel, "Unable to query API.");
                     } else {
                         send(channel, "Topic not set");
                     }
