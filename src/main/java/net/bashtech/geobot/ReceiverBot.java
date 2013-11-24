@@ -161,6 +161,11 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
+        if (!BotManager.getInstance().useEventFeed)
+            onChannelMessage(channel, sender, message);
+    }
+
+    protected void onChannelMessage(String channel, String sender, String message) {
         if (!BotManager.getInstance().verboseLogging)
             logMain("MSG: " + channel + " " + sender + " : " + message);
 

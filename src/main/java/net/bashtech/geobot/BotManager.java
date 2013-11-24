@@ -68,6 +68,8 @@ public class BotManager {
     int multipleTimeout;
     boolean randomNickColor;
     int randomNickColorDiff;
+    boolean useEventFeed;
+    String eventFeedURL;
 
     Map<Integer, List<Pattern>> banPhraseLists;
     // ********
@@ -122,6 +124,14 @@ public class BotManager {
 
         }
 
+        //Start EventFeedReader
+        if (useEventFeed) {
+            Runnable task = new EventFeedReader();
+            Thread worker = new Thread(task);
+            worker.setName("Reader");
+            worker.start();
+        }
+
         //Remove outdatedChannels
         for (String channel : outdatedChannels) {
             log("BM: Removing channel: " + channel);
@@ -132,8 +142,6 @@ public class BotManager {
         Timer reconnectTimer = new Timer();
         reconnectTimer.scheduleAtFixedRate(new ReconnectTimer(channelList), 30 * 1000, 30 * 1000);
 
-        // Load modules
-        //this.registerModule(new Logger());
     }
 
     public static BotManager getInstance() {
@@ -398,6 +406,14 @@ public class BotManager {
         if (!config.keyExists("randomNickColorDiff")) {
             config.setInt("randomNickColorDiff", 5);
         }
+
+        if (!config.keyExists("useEventFeed")) {
+            config.setBoolean("useEventFeed", false);
+        }
+
+        if (!config.keyExists("eventFeedURL")) {
+            config.setString("eventFeedURL", "");
+        }
         // ********
 
         nick = config.getString("nick");
@@ -422,6 +438,9 @@ public class BotManager {
 
         randomNickColor = config.getBoolean("randomNickColor");
         randomNickColorDiff = config.getInt("randomNickColorDiff");
+
+        useEventFeed = config.getBoolean("useEventFeed");
+        eventFeedURL = config.getString("eventFeedURL");
 
         // API KEYS
 
@@ -463,6 +482,10 @@ public class BotManager {
         } else {
             return null;
         }
+    }
+
+    public synchronized boolean checkChannel(String channel) {
+        return channelList.containsKey(channel.toLowerCase());
     }
 
     public synchronized boolean addChannel(String name, int mode) {
