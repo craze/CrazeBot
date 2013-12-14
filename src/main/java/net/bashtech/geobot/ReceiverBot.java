@@ -327,7 +327,7 @@ public class ReceiverBot extends PircBot {
 
             //Me filter
             if (channelInfo.getFilterMe() && !isRegular) {
-                if (msg[0].equalsIgnoreCase("/me")) {
+                if (msg[0].equalsIgnoreCase("/me") || message.startsWith("\u0001ACTION")) {
                     int warningCount = 0;
 
                     channelInfo.incWarningCount(sender, FilterType.ME);
@@ -557,28 +557,28 @@ public class ReceiverBot extends PircBot {
         }
 
         // !resolution - All
-        if (msg[0].equalsIgnoreCase(prefix + "res") || msg[0].equalsIgnoreCase(prefix + "resolution")) {
-            log("RB: Matched command !resolution");
-
-            Long video_height = JSONUtil.getSourceRes(twitchName);
-            if (video_height > 1)
-                send(channel, "The source resolution is " + video_height + "p");
-            else
-                send(channel, "Stream is not live or an error occurred.");
-            return;
-        }
+//        if (msg[0].equalsIgnoreCase(prefix + "res") || msg[0].equalsIgnoreCase(prefix + "resolution")) {
+//            log("RB: Matched command !resolution");
+//
+//            Long video_height = JSONUtil.getSourceRes(twitchName);
+//            if (video_height > 1)
+//                send(channel, "The source resolution is " + video_height + "p");
+//            else
+//                send(channel, "Stream is not live or an error occurred.");
+//            return;
+//        }
 
         // !bitrate - All
-        if (msg[0].equalsIgnoreCase(prefix + "bitrate")) {
-            log("RB: Matched command !resolution");
-
-            double bitrate = JSONUtil.getSourceBitrate(twitchName);
-            if (bitrate > 1)
-                send(channel, "The source bitrate is " + (int) bitrate + " Kbps");
-            else
-                send(channel, "Stream is not live or an error occurred.");
-            return;
-        }
+//        if (msg[0].equalsIgnoreCase(prefix + "bitrate")) {
+//            log("RB: Matched command !resolution");
+//
+//            double bitrate = JSONUtil.getSourceBitrate(twitchName);
+//            if (bitrate > 1)
+//                send(channel, "The source bitrate is " + (int) bitrate + " Kbps");
+//            else
+//                send(channel, "Stream is not live or an error occurred.");
+//            return;
+//        }
 
 
         // !uptime - All
@@ -1207,6 +1207,7 @@ public class ReceiverBot extends PircBot {
                 send(channel, "Timeout duration: " + channelInfo.getTimeoutDuration());
                 send(channel, "Display warnings: " + channelInfo.checkSignKicks());
                 send(channel, "Max message length: " + channelInfo.getFilterMax());
+                send(channel, "Me: " + channelInfo.getFilterMe());
                 send(channel, "Links: " + channelInfo.getFilterLinks());
                 send(channel, "Banned phrases: " + channelInfo.getFilterOffensive() + " ~ severity=" + channelInfo.config.getInt("banPhraseSeverity"));
                 send(channel, "Caps: " + channelInfo.getFilterCaps() + " ~ percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps=" + channelInfo.getfilterCapsMinCapitals());
