@@ -557,28 +557,25 @@ public class ReceiverBot extends PircBot {
         }
 
         // !resolution - All
-//        if (msg[0].equalsIgnoreCase(prefix + "res") || msg[0].equalsIgnoreCase(prefix + "resolution")) {
-//            log("RB: Matched command !resolution");
-//
-//            Long video_height = JSONUtil.getSourceRes(twitchName);
-//            if (video_height > 1)
-//                send(channel, "The source resolution is " + video_height + "p");
-//            else
-//                send(channel, "Stream is not live or an error occurred.");
-//            return;
-//        }
+        if (msg[0].equalsIgnoreCase(prefix + "res") || msg[0].equalsIgnoreCase(prefix + "resolution")) {
+            log("RB: Matched command !resolution");
 
-        // !bitrate - All
-//        if (msg[0].equalsIgnoreCase(prefix + "bitrate")) {
-//            log("RB: Matched command !resolution");
-//
-//            double bitrate = JSONUtil.getSourceBitrate(twitchName);
-//            if (bitrate > 1)
-//                send(channel, "The source bitrate is " + (int) bitrate + " Kbps");
-//            else
-//                send(channel, "Stream is not live or an error occurred.");
-//            return;
-//        }
+            String res = JSONUtil.getSourceRes(twitchName);
+            send(channel, "The source resolution is " + res);
+            return;
+        }
+
+        //!bitrate - All
+        if (msg[0].equalsIgnoreCase(prefix + "bitrate")) {
+            log("RB: Matched command !resolution");
+
+            double bitrate = JSONUtil.getSourceBitrate(twitchName);
+            if (bitrate > 1)
+                send(channel, "The source bitrate is " + (int) bitrate + " Kbps");
+            else
+                send(channel, "Stream is not live or an error occurred.");
+            return;
+        }
 
 
         // !uptime - All

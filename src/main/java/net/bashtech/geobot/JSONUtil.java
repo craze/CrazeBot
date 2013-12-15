@@ -367,54 +367,45 @@ public class JSONUtil {
 
     }
 
-    public static Long getSourceRes(String channel) {
+    public static Double getSourceBitrate(String channel) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://usher.twitch.tv/find/" + channel + ".json?type=any"));
+            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/stream/list.json?channel=" + channel));
 
             JSONArray outerArray = (JSONArray) obj;
 
-            for (Object transcodeObject : outerArray) {
-                JSONObject transcode = (JSONObject) transcodeObject;
-
-                String display = (String) transcode.get("display");
-                Long video_height = (Long) transcode.get("video_height");
-
-                if (display.equalsIgnoreCase("source"))
-                    return video_height;
+            if (outerArray.size() == 1) {
+                JSONObject channelObject = (JSONObject) outerArray.get(0);
+                Double bitrate = (Double) channelObject.get("video_bitrate");
+                return bitrate;
             }
 
-
-            return new Long(0);
+            return new Double(0);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new Long(0);
+            return new Double(0);
         }
 
     }
 
-    public static Double getSourceBitrate(String channel) {
+    public static String getSourceRes(String channel) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://usher.twitch.tv/find/" + channel + ".json?type=any"));
+            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/stream/list.json?channel=" + channel));
 
             JSONArray outerArray = (JSONArray) obj;
 
-            for (Object transcodeObject : outerArray) {
-                JSONObject transcode = (JSONObject) transcodeObject;
-
-                String display = (String) transcode.get("display");
-                Double bitrate = (Double) transcode.get("bitrate");
-
-                if (display.equalsIgnoreCase("source"))
-                    return bitrate;
+            if (outerArray.size() == 1) {
+                JSONObject channelObject = (JSONObject) outerArray.get(0);
+                Long width = (Long) channelObject.get("video_width");
+                Long height = (Long) channelObject.get("video_height");
+                return width + "x" + height;
             }
 
-
-            return new Double(0);
+            return "Unable to retrieve data";
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new Double(0);
+            return "Unable to retrieve data";
         }
 
     }
