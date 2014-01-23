@@ -57,7 +57,7 @@ public class ReceiverBot extends PircBot {
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
     private Pattern banNoticePattern = Pattern.compile("^You are permanently banned from talking in ([a-z_]+).$", Pattern.CASE_INSENSITIVE);
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
-    private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*(Google|\\*\\*\\*).*", Pattern.CASE_INSENSITIVE);
+    private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*Google.*", Pattern.CASE_INSENSITIVE);
 
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
@@ -315,15 +315,16 @@ public class ReceiverBot extends PircBot {
         // Voluntary Filters
         if (channelInfo.useFilters) {
 
-//            if (!isRegular) {
-//                Matcher m = vinePattern.matcher(message.replaceAll(" ", ""));
-//                if (m.find()) {
-//                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
-//                    this.secondaryBan(channel, sender, FilterType.VINE);
-//                    logGlobalBan(channel, sender, message);
-//                    return;
-//                }
-//            }
+            if (!isRegular) {
+                String normalMessage = org.apache.commons.lang3.StringUtils.stripAccents(message);
+                Matcher m = vinePattern.matcher(normalMessage.replaceAll(" ", ""));
+                if (m.find()) {
+                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
+                    this.secondaryBan(channel, sender, FilterType.VINE);
+                    logGlobalBan(channel, sender, message);
+                    return;
+                }
+            }
 
             //Me filter
             if (channelInfo.getFilterMe() && !isRegular) {
