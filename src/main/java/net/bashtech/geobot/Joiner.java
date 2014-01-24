@@ -1,19 +1,20 @@
 package net.bashtech.geobot;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class Joiner implements Runnable {
 
-    private Map<String, Channel> channels;
+    private List<String> channels;
 
     public Joiner(Map<String, Channel> channels) {
-        this.channels = channels;
+        this.channels = new LinkedList<String>(channels.keySet());
     }
 
     public void run() {
         int count = 0;
-        for (Map.Entry<String, Channel> entry : channels.entrySet()) {
-            String channel = entry.getValue().getChannel();
+        for (String channel : channels) {
             BotManager.getInstance().log("BM: Joining channel " + channel);
             BotManager.getInstance().receiverBot.joinChannel(channel);
 
