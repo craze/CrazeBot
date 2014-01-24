@@ -32,7 +32,6 @@ public class Channel {
 
     private String channel;
     private String twitchname;
-    boolean active;
     boolean staticChannel;
     private HashMap<String, String> commands = new HashMap<String, String>();
     private HashMap<String, Integer> commandsRestrictions = new HashMap<String, Integer>();

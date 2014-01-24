@@ -174,11 +174,6 @@ public class ReceiverBot extends PircBot {
         String twitchName = channelInfo.getTwitchName();
         String prefix = channelInfo.getPrefix();
 
-        if (BotManager.getInstance().ignoreHistory && !channelInfo.active) {
-            System.out.println("DEBUG: Channel not active, message ignored.");
-            return;
-        }
-
         if (!sender.equalsIgnoreCase(this.getNick()))
             channelInfo.messageCount++; //Inc message count
 
@@ -1900,11 +1895,11 @@ public class ReceiverBot extends PircBot {
                     if (!BotManager.getInstance().verboseLogging)
                         System.out.println("RAW: CLEARCHAT");
                 }
-            } else if (msg[0].equalsIgnoreCase("HISTORYEND")) {
-                String channel = msg[1];
-                Channel ci = BotManager.getInstance().getChannel("#" + channel);
-                ci.active = true;
-                //System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
+//            } else if (msg[0].equalsIgnoreCase("HISTORYEND")) {
+//                String channel = msg[1];
+//                Channel ci = BotManager.getInstance().getChannel("#" + channel);
+//                ci.active = true;
+//                //System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
             } else if (msg[0].equalsIgnoreCase("EMOTESET")) {
                 String user = msg[1];
                 String setsList = msg[2].replaceAll("(\\[|\\])", "");
@@ -1940,24 +1935,6 @@ public class ReceiverBot extends PircBot {
 
     }
 
-//    private Color generateRandomColor() {
-//        Color mix = new Color(0, 0, 0);
-//        Random random = new Random();
-//        int red = random.nextInt(256);
-//        int green = random.nextInt(256);
-//        int blue = random.nextInt(256);
-//
-//        // mix the color
-//        if (mix != null) {
-//            red = (red + mix.getRed()) / 2;
-//            green = (green + mix.getGreen()) / 2;
-//            blue = (blue + mix.getBlue()) / 2;
-//        }
-//
-//        Color color = new Color(red, green, blue);
-//        return color;
-//    }
-
     @Override
     public void onDisconnect() {
         lastPing = -1;
@@ -1978,6 +1955,7 @@ public class ReceiverBot extends PircBot {
 
     }
 
+    @Override
     public void onJoin(String channel, String sender, String login, String hostname) {
         Channel channelInfo = getChannelObject(channel);
 
@@ -1993,9 +1971,6 @@ public class ReceiverBot extends PircBot {
                     System.out.println("+ Adding " + channel);
                     joinedChannels.add(channel);
                 }
-            }
-            if (BotManager.getInstance().ignoreHistory) {
-                channelInfo.active = false;
             }
         }
     }
