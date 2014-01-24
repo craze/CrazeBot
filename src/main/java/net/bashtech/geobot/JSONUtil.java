@@ -285,50 +285,53 @@ public class JSONUtil {
     }
 
     public static boolean krakenOutdatedChannel(String channel) {
-        if (BotManager.getInstance().twitchChannels == false)
-            return false;
 
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
+        return false; //TODO: Temp bypass to disable check
 
-            JSONObject jsonObject = (JSONObject) obj;
-
-            Object statusO = jsonObject.get("status");
-            Long status;
-            if (statusO != null) {
-                status = (Long) statusO;
-                if (status == 422 || status == 404) {
-                    System.out.println("Channel " + channel + " returned status: " + status + ". Parting channel.");
-                    return true;
-                }
-            }
-
-            String updatedAtString = (String) jsonObject.get("updated_at");
-            //System.out.println("Time: " + updatedAtString);
-
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            format.setTimeZone(java.util.TimeZone.getTimeZone("US/Pacific"));
-            long differenceDay = 0;
-
-            try {
-                Date then = format.parse(updatedAtString);
-                long differenceSec = (long) (System.currentTimeMillis() / 1000) - (then.getTime() / 1000);
-                differenceDay = (long) (differenceSec / 86400);
-            } catch (Exception exi) {
-                exi.printStackTrace();
-            }
-
-            if (differenceDay > 30) {
-                System.out.println("Channel " + channel + " not updated in " + differenceDay + " days. Parting channel.");
-                return true;
-            }
-
-        } catch (Exception ex) {
-            return false;
-        }
-
-        return false;
+//        if (BotManager.getInstance().twitchChannels == false)
+//            return false;
+//
+//        try {
+//            JSONParser parser = new JSONParser();
+//            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
+//
+//            JSONObject jsonObject = (JSONObject) obj;
+//
+//            Object statusO = jsonObject.get("status");
+//            Long status;
+//            if (statusO != null) {
+//                status = (Long) statusO;
+//                if (status == 422 || status == 404) {
+//                    System.out.println("Channel " + channel + " returned status: " + status + ". Parting channel.");
+//                    return true;
+//                }
+//            }
+//
+//            String updatedAtString = (String) jsonObject.get("updated_at");
+//            //System.out.println("Time: " + updatedAtString);
+//
+//            DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//            format.setTimeZone(java.util.TimeZone.getTimeZone("US/Pacific"));
+//            long differenceDay = 0;
+//
+//            try {
+//                Date then = format.parse(updatedAtString);
+//                long differenceSec = (long) (System.currentTimeMillis() / 1000) - (then.getTime() / 1000);
+//                differenceDay = (long) (differenceSec / 86400);
+//            } catch (Exception exi) {
+//                exi.printStackTrace();
+//            }
+//
+//            if (differenceDay > 30) {
+//                System.out.println("Channel " + channel + " not updated in " + differenceDay + " days. Parting channel.");
+//                return true;
+//            }
+//
+//        } catch (Exception ex) {
+//            return false;
+//        }
+//
+//        return false;
 
     }
 

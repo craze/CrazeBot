@@ -112,17 +112,10 @@ public class BotManager {
 
 
         receiverBot = new ReceiverBot(server, port);
-        List<String> outdatedChannels = new LinkedList<String>();
-        for (Map.Entry<String, Channel> entry : channelList.entrySet()) {
-            String channel = entry.getValue().getChannel();
-            if (!JSONUtil.krakenOutdatedChannel(channel.substring(1)) || receiverBot.getNick().equalsIgnoreCase(channel.substring(1)) || entry.getValue().staticChannel) {
-                log("BM: Joining channel " + channel);
-                receiverBot.joinChannel(channel);
-            } else {
-                outdatedChannels.add(channel);
-            }
-
-        }
+        Runnable jTask = new Joiner(channelList);
+        Thread jWorker = new Thread(jTask);
+        jWorker.setName("Joiner");
+        jWorker.start();
 
         //Start EventFeedReader
         if (useEventFeed) {
@@ -132,11 +125,6 @@ public class BotManager {
             worker.start();
         }
 
-        //Remove outdatedChannels
-        for (String channel : outdatedChannels) {
-            log("BM: Removing channel: " + channel);
-            this.removeChannel(channel);
-        }
 
         //Start timer to check for bot disconnects
         Timer reconnectTimer = new Timer();

@@ -59,6 +59,8 @@ public class ReceiverBot extends PircBot {
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
     private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*Google.*", Pattern.CASE_INSENSITIVE);
 
+    private Set<String> joinedChannels = new HashSet<String>();
+
     public ReceiverBot(String server, int port) {
         ReceiverBot.setInstance(this);
         linkPatterns[0] = Pattern.compile(".*http://.*", Pattern.CASE_INSENSITIVE);
@@ -84,7 +86,6 @@ public class ReceiverBot extends PircBot {
             logMain("RB: [ERROR] Error connecting to server - " + this.getNick() + " " + this.getServer());
         }
 
-        startJoinCheck();
     }
 
     public static ReceiverBot getInstance() {
@@ -173,7 +174,7 @@ public class ReceiverBot extends PircBot {
         String twitchName = channelInfo.getTwitchName();
         String prefix = channelInfo.getPrefix();
 
-        if (!channelInfo.active) {
+        if (BotManager.getInstance().ignoreHistory && !channelInfo.active) {
             System.out.println("DEBUG: Channel not active, message ignored.");
             return;
         }
@@ -1903,7 +1904,7 @@ public class ReceiverBot extends PircBot {
                 String channel = msg[1];
                 Channel ci = BotManager.getInstance().getChannel("#" + channel);
                 ci.active = true;
-                System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
+                //System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
             } else if (msg[0].equalsIgnoreCase("EMOTESET")) {
                 String user = msg[1];
                 String setsList = msg[2].replaceAll("(\\[|\\])", "");
@@ -1978,16 +1979,22 @@ public class ReceiverBot extends PircBot {
     }
 
     public void onJoin(String channel, String sender, String login, String hostname) {
-
         Channel channelInfo = getChannelObject(channel);
 
         if (channelInfo == null)
             return;
 
         if (this.getNick().equalsIgnoreCase(sender)) {
-            log("RB: Got self join for " + channel);
+            synchronized (joinedChannels) {
+                //log("RB: Got self join for " + channel);
+                if (!joinedChannels.contains(channel)) {
+                    System.out.println("DEBUG: Got self join on " + channel);
+                    System.out.println("DEBUG: Got JOIN for " + joinedChannels.size() + " " + this.getChannels().length);
+                    System.out.println("+ Adding " + channel);
+                    joinedChannels.add(channel);
+                }
+            }
             if (BotManager.getInstance().ignoreHistory) {
-                System.out.println("DEBUG: Marking " + channel + " as inactive.");
                 channelInfo.active = false;
             }
         }
@@ -2064,24 +2071,28 @@ public class ReceiverBot extends PircBot {
         BotManager.getInstance().log(line);
     }
 
-    private void startJoinCheck() {
+    public void startJoinCheck() {
 
         joinCheck = new Timer();
 
-        int delay = 60000;
+        int delay = 120000;
 
         joinCheck.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                String[] currentChanList = ReceiverBot.this.getChannels();
+                System.err.println("DEBUG: Running joined list comparison");
+                //String[] currentChanList = ReceiverBot.this.getChannels();
                 for (Map.Entry<String, Channel> entry : BotManager.getInstance().channelList.entrySet()) {
                     boolean inList = false;
-                    for (String c : currentChanList) {
-                        if (entry.getValue().getChannel().equals(c))
-                            inList = true;
-                    }
+                    if (joinedChannels.contains(entry.getValue().getChannel()))
+                        inList = true;
+
+//                    for (String c : currentChanList) {
+//                        if (entry.getValue().getChannel().equals(c))
+//                            inList = true;
+//                    }
 
                     if (!inList) {
-                        log("RB: " + entry.getValue().getChannel() + " is not in the joined list.");
+                        System.err.println("DEBUG: " + entry.getValue().getChannel() + " is not in the joined list.");
                         ReceiverBot.this.joinChannel(entry.getValue().getChannel());
                     }
 
