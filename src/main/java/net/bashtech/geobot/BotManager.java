@@ -68,8 +68,6 @@ public class BotManager {
     int multipleTimeout;
     boolean randomNickColor;
     int randomNickColorDiff;
-    boolean useEventFeed;
-    String eventFeedURL;
 
     Map<Integer, List<Pattern>> banPhraseLists;
     // ********
@@ -116,15 +114,6 @@ public class BotManager {
         Thread jWorker = new Thread(jTask);
         jWorker.setName("Joiner");
         jWorker.start();
-
-        //Start EventFeedReader
-        if (useEventFeed) {
-            Runnable task = new EventFeedReader();
-            Thread worker = new Thread(task);
-            worker.setName("Reader");
-            worker.start();
-        }
-
 
         //Start timer to check for bot disconnects
         Timer reconnectTimer = new Timer();
@@ -395,13 +384,6 @@ public class BotManager {
             config.setInt("randomNickColorDiff", 5);
         }
 
-        if (!config.keyExists("useEventFeed")) {
-            config.setBoolean("useEventFeed", false);
-        }
-
-        if (!config.keyExists("eventFeedURL")) {
-            config.setString("eventFeedURL", "");
-        }
         // ********
 
         nick = config.getString("nick");
@@ -427,8 +409,6 @@ public class BotManager {
         randomNickColor = config.getBoolean("randomNickColor");
         randomNickColorDiff = config.getInt("randomNickColorDiff");
 
-        useEventFeed = config.getBoolean("useEventFeed");
-        eventFeedURL = config.getString("eventFeedURL");
 
         // API KEYS
 

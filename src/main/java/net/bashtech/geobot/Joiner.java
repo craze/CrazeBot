@@ -20,10 +20,10 @@ public class Joiner implements Runnable {
 
             count++;
 
-            if (count > 15) {
+            if (count > 100) {
                 count = 0;
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(7000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -122,7 +122,7 @@ public class ReceiverBot extends PircBot {
     @Override
     protected void onOp(String channel, String sourceNick, String sourceLogin, String sourceHostname, String recipient) {
         recipient = recipient.replace(":", "");
-        System.out.println("DEBUG: Got OP for " + recipient);
+        //System.out.println("DEBUG: Got OP for " + recipient);
         this.getChannelObject(channel).tagModerators.add(recipient);
     }
 
@@ -162,8 +162,7 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-        if (!BotManager.getInstance().useEventFeed)
-            onChannelMessage(channel, sender, message);
+        onChannelMessage(channel, sender, message);
     }
 
     protected void onChannelMessage(String channel, String sender, String message) {
@@ -1975,14 +1974,6 @@ public class ReceiverBot extends PircBot {
         }
     }
 
-    public void onPart(String channel, String sender, String login, String hostname) {
-
-        Channel channelInfo = getChannelObject(channel);
-
-        if (channelInfo == null)
-            return;
-    }
-
     public void send(String target, String sender, String message) {
         send(target, sender, message, null);
     }
@@ -2023,17 +2014,6 @@ public class ReceiverBot extends PircBot {
     public void onServerPing(String response) {
         super.onServerPing(response);
         lastPing = (int) (System.currentTimeMillis() / 1000);
-    }
-
-    private User matchUser(String nick, String channel) {
-        User[] userList = this.getUsers(channel);
-
-        for (int i = 0; i < userList.length; i++) {
-            if (userList[i].equals(nick)) {
-                return userList[i];
-            }
-        }
-        return null;
     }
 
     public void log(String line) {
@@ -2098,25 +2078,6 @@ public class ReceiverBot extends PircBot {
         return caps;
     }
 
-    private int countConsecutiveCapitals(String s) {
-        int caps = 0;
-        int max = 0;
-        //boolean con = true;
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isUpperCase(s.charAt(i))) {
-                caps++;
-            } else {
-                if (caps > 0 && caps > max)
-                    max = caps;
-                caps = 0;
-            }
-        }
-        if (caps > max)
-            return caps;
-        else
-            return max;
-    }
-
     private boolean containsLink(String message, Channel ch) {
         String[] splitMessage = message.toLowerCase().split(" ");
         for (String m : splitMessage) {
@@ -2140,20 +2101,6 @@ public class ReceiverBot extends PircBot {
 //                return true;
 //            }
 //        }
-        return false;
-    }
-
-    private boolean containsSymbol(String message, Channel ch) {
-
-        for (Pattern pattern : symbolsPatterns) {
-            Matcher match = pattern.matcher(message);
-            if (match.find()) {
-                log("RB: Symbol match on " + pattern.pattern());
-                return true;
-            }
-
-        }
-
         return false;
     }
 
