@@ -129,7 +129,7 @@ public class ReceiverBot extends PircBot {
     @Override
     protected void onConnect() {
         //Force TMI to send USERCOLOR AND SPECIALUSER messages.
-        this.sendRawLine("TWITCHCLIENT 2");
+        this.sendRawLine("TWITCHCLIENT 3");
     }
 
     @Override
@@ -302,7 +302,7 @@ public class ReceiverBot extends PircBot {
         //Global banned word filter
         if (!isOp && channelInfo.config.getBoolean("globalFilter") && this.isGlobalBannedWord(message)) {
             //this.secondaryBan(channel, sender, FilterType.GLOBALBAN);
-            this.secondaryTO(channel, sender, 604800, FilterType.GLOBALBAN, message);
+            this.secondaryTO(channel, sender, 86400, FilterType.GLOBALBAN, message);
             logMain("GLOBALBAN: Global banned word timeout: " + sender + " in " + channel + " : " + message);
             logGlobalBan(channel, sender, message);
             return;
@@ -1870,6 +1870,8 @@ public class ReceiverBot extends PircBot {
     }
 
     protected void onAdministrativeMessage(String message, Channel channelinfo) {
+        System.out.println("ADM MSG: " + message);
+
         String[] msg = message.trim().split(" ");
 
         if (msg.length > 0) {
@@ -1881,8 +1883,8 @@ public class ReceiverBot extends PircBot {
                     BotManager.getInstance().addTagAdmin(user);
                 if (tag.equalsIgnoreCase("staff"))
                     BotManager.getInstance().addTagStaff(user);
-//				if(tag.equalsIgnoreCase("subscriber") && channelinfo != null)
-//                    channelinfo.addSubscriber(user);
+                if (tag.equalsIgnoreCase("subscriber") && channelinfo != null)
+                    channelinfo.addSubscriber(user);
             } else if (msg[0].equalsIgnoreCase("USERCOLOR")) {
                 String user = msg[1];
                 String color = msg[2];
@@ -1895,18 +1897,14 @@ public class ReceiverBot extends PircBot {
                     if (!BotManager.getInstance().verboseLogging)
                         System.out.println("RAW: CLEARCHAT");
                 }
-//            } else if (msg[0].equalsIgnoreCase("HISTORYEND")) {
-//                String channel = msg[1];
-//                Channel ci = BotManager.getInstance().getChannel("#" + channel);
-//                ci.active = true;
-//                //System.out.println("DEBUG: Channel " + ci.getChannel() + " marked active.");
-            } else if (msg[0].equalsIgnoreCase("EMOTESET")) {
-                String user = msg[1];
-                String setsList = msg[2].replaceAll("(\\[|\\])", "");
-                String[] sets = setsList.split(",");
-                for (String s : sets)
-                    BotManager.getInstance().addSubBySet(user, s);
             }
+//            } else if (msg[0].equalsIgnoreCase("EMOTESET")) {
+//                String user = msg[1];
+//                String setsList = msg[2].replaceAll("(\\[|\\])", "");
+//                String[] sets = setsList.split(",");
+//                for (String s : sets)
+//                    BotManager.getInstance().addSubBySet(user, s);
+//            }
         }
     }
 

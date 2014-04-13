@@ -727,9 +727,9 @@ public class Channel {
         if (subscribers.contains(name.toLowerCase()))
             return true;
 
-        if (emoteSet.length() > 0)
-            if (BotManager.getInstance().checkEmoteSetMapping(name, emoteSet))
-                return true;
+//        if (emoteSet.length() > 0)
+//            if (BotManager.getInstance().checkEmoteSetMapping(name, emoteSet))
+//                return true;
         return false;
     }
 
