@@ -173,18 +173,18 @@ public class ReceiverBot extends PircBot {
         String twitchName = channelInfo.getTwitchName();
         String prefix = channelInfo.getPrefix();
 
+        //Handle future administrative messages from JTV
+        if (sender.equals("jtv")) {
+            onAdministrativeMessage(message, channelInfo);
+            return;
+        }
+
         if (!sender.equalsIgnoreCase(this.getNick()))
             channelInfo.messageCount++; //Inc message count
 
         //Ignore messages from self.
         if (sender.equalsIgnoreCase(this.getNick())) {
             //System.out.println("Message from bot");
-            return;
-        }
-
-        //Handle future administrative messages from JTV
-        if (sender.equals("jtv")) {
-            onAdministrativeMessage(message, channelInfo);
             return;
         }
 
