@@ -760,6 +760,16 @@ public class ReceiverBot extends PircBot {
             return;
         }
 
+        // !skipcommercial
+        if (msg[0].equalsIgnoreCase(prefix + "skipcommercial") && BotManager.getInstance().twitchChannels) {
+            log("RB: Matched command !skipcommercial");
+            if (isOwner) {
+                channelInfo.skipNextCommercial = true;
+                send(channel, "The next commercial command will be ignored. If you have the command overridden with a custom command it will still be displayed.");
+            }
+            return;
+        }
+
         // !command - Ops
         if (msg[0].equalsIgnoreCase(prefix + "command") && isOwner) {
             log("RB: Matched command !command");

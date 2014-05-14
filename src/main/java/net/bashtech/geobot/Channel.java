@@ -90,6 +90,7 @@ public class Channel {
     String prefix;
     String emoteSet;
     boolean subscriberRegulars;
+    boolean skipNextCommercial = false;
 
     private Map<String, Object> defaults = new HashMap<String, Object>();
 
@@ -1448,6 +1449,12 @@ public class Channel {
     }
 
     public void runCommercial() {
+        if (skipNextCommercial) {
+            System.out.println("Commercial skipped via command.");
+            skipNextCommercial = false;
+            return;
+        }
+
         if (JSONUtil.krakenIsLive(getChannel().substring(1))) {
             String dataIn = "";
             dataIn = BotManager.postRemoteDataTwitch("https://api.twitch.tv/kraken/channels/" + getChannel().substring(1) + "/commercial", "length=" + commercialLength, 2);
