@@ -1867,7 +1867,7 @@ public class ReceiverBot extends PircBot {
                     }
                 } else {
                     if (channelInfo.checkCommandRestriction(command, accessLevel))
-                        send(channel, sender, value);
+                        send(channel, sender, value, Arrays.copyOfRange(msg, 1, msg.length));
                 }
 
             }
