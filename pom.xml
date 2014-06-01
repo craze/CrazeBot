@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.bashtech</groupId>
-    <artifactId>GeoBot</artifactId>
-    <version>1.3.0-tmi-SNAPSHOT</version>
-    <name>GeoBot</name>
-    <url>http://bashtech.net/wiki/Geobot</url>
+    <artifactId>CrazeBot</artifactId>
+    <version>1.0.0-tmi-SNAPSHOT</version>
+    <name>CrazeBot</name>
+    <url>http://www.crazeweb.org</url>
     <repositories>
         <repository>
             <id>gson</id>
@@ -95,12 +95,11 @@
             </plugin>
         </plugins>
     </build>
-    <description>Geobot is a Java-based IRC bot based on the PIRC framework designed for Justin.tv as moobot
-        alternative.
+    <description>CrazeBot is a customized Geobot, a Java-based IRC bot designed for Twitch.
     </description>
     <organization>
-        <url>http://bashtech.net/</url>
-        <name>Bashore Technologies</name>
+        <url>http://crazeweb.org/</url>
+        <name>World Wide CrazeWeb</name>
     </organization>
     <ciManagement>
         <system>Jenkins</system>

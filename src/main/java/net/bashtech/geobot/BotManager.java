@@ -38,6 +38,7 @@ public class BotManager {
     public String SteamAPIKey;
     public String krakenOAuthToken;
     public String krakenClientID;
+    public String tweetServer;
     String nick;
     String server;
     int port;
@@ -352,6 +353,10 @@ public class BotManager {
             config.setString("krakenClientID", "");
         }
 
+        if (!config.keyExists("tweetServer")) {
+            config.setString("tweetServer", "");
+        }
+
         if (!config.keyExists("wsPort")) {
             config.setInt("wsPort", 8887);
         }
@@ -418,6 +423,7 @@ public class BotManager {
         SteamAPIKey = config.getString("SteamAPIKey");
         krakenOAuthToken = config.getString("krakenOAuthToken");
         krakenClientID = config.getString("krakenClientID");
+	tweetServer = config.getString("tweetServer");
 
 
         // ********

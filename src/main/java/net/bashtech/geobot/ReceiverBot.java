@@ -59,6 +59,7 @@ public class ReceiverBot extends PircBot {
     private Pattern toNoticePattern = Pattern.compile("^You are banned from talking in ([a-z_]+) for (?:[0-9]+) more seconds.$", Pattern.CASE_INSENSITIVE);
     private Pattern vinePattern = Pattern.compile(".*(vine|4).*(4|vine).*Google.*", Pattern.CASE_INSENSITIVE);
 
+    private String tweetServer = BotManager.getInstance().tweetServer;
     private Set<String> joinedChannels = new HashSet<String>();
 
     public ReceiverBot(String server, int port) {
@@ -510,6 +511,13 @@ public class ReceiverBot extends PircBot {
             if (!isOp)
                 return;
         }
+
+	// Old Style !newtweet
+        if (msg[0].equalsIgnoreCase(prefix + "newtweet") && isOp) {
+            log("RB: Matched command !newtweet");
+            channelInfo.config.setString("siteTweet", fuseArray(msg, 1));
+            send(channel, "Updated http://" + tweetServer + "/" + channel.substring(1) + "/");
+	}
 
         // !ping - All
         if (msg[0].equalsIgnoreCase(prefix + "ping") && isOp) {

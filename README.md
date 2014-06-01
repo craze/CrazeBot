@@ -1,5 +1,6 @@
 ##  Summary
 
+CrazeBot is a Twitch robot based on Geobot
 Geobot is a Java-based IRC bot based on the
 [PIRC](http://www.jibble.org/pircbot.php) framework designed for [Twitch](http://twitch.tv).
 
@@ -9,10 +10,6 @@ Geobot is a Java-based IRC bot based on the
   * Twitch API integration
   * Custom Triggers and Auto replies
   * Open Source!
-
-##  Issues/Feature Requests
-
-Open a [new issue](https://bitbucket.org/bashtech/geobot/issues) on BitBucket.
 
 ##  Commands
 
