@@ -1238,7 +1238,7 @@ public class Channel {
         defaults.put("staticChannel", false);
         defaults.put("enableWarnings", true);
         defaults.put("timeoutDuration", 600);
-        defaults.put("clickToTweetFormat", "Checkout (_CHANNEL_URL_) playing (_GAME_) on @TwitchTV");
+        defaults.put("clickToTweetFormat", "Checkout (_CHANNEL_URL_) playing (_GAME_) on @Twitch");
         defaults.put("filterSymbolsPercent", 50);
         defaults.put("filterSymbolsMin", 5);
         defaults.put("commandPrefix", "!");
