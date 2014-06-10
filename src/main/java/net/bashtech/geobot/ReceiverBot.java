@@ -312,17 +312,6 @@ public class ReceiverBot extends PircBot {
         // Voluntary Filters
         if (channelInfo.useFilters) {
 
-            if (!isRegular) {
-                String normalMessage = org.apache.commons.lang3.StringUtils.stripAccents(message);
-                Matcher m = vinePattern.matcher(normalMessage.replaceAll(" ", ""));
-                if (m.find()) {
-                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
-                    this.secondaryBan(channel, sender, FilterType.VINE);
-                    logGlobalBan(channel, sender, message);
-                    return;
-                }
-            }
-
             //Me filter
             if (channelInfo.getFilterMe() && !isRegular) {
                 if (msg[0].equalsIgnoreCase("/me") || message.startsWith("\u0001ACTION")) {
@@ -460,7 +449,18 @@ public class ReceiverBot extends PircBot {
                 }
 
             }
-
+/*
+            if (!isRegular) {
+                String normalMessage = org.apache.commons.lang3.StringUtils.stripAccents(message);
+                Matcher m = vinePattern.matcher(normalMessage.replaceAll(" ", ""));
+                if (m.find()) {
+                    logMain("VINEBAN: " + sender + " in " + channel + " : " + message);
+                    this.secondaryBan(channel, sender, FilterType.VINE);
+                    logGlobalBan(channel, sender, message);
+                    return;
+                }
+            }
+*/
         }
 
         // ********************************************************************************
