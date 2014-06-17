@@ -26,6 +26,8 @@ public class MessageReplaceParser {
 
         if (sender != null && message.contains("(_USER_)"))
             message = message.replace("(_USER_)", sender);
+        if (message.contains("(_CHANNEL_)"))
+            message = message.replace("(_CHANNEL_)", channel.substring(1));
         if (message.contains("(_GAME_)"))
             message = message.replace("(_GAME_)", JSONUtil.krakenGame(channel.substring(1)));
         if (message.contains("(_STATUS_)"))
