@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class JSONUtil {
@@ -439,12 +440,17 @@ public class JSONUtil {
         List<String> emotes = new LinkedList<String>();
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://direct.twitchemotes.com/global.json"));
+            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/chat/emoticons"));
 
             JSONObject jsonObject = (JSONObject) obj;
+            JSONArray emoticons = (JSONArray) jsonObject.get("emoticons");
 
-            for (Object o : jsonObject.keySet()) {
-                String name = (String) o;
+            for (Object o : emoticons) {
+                String name = (String) ((JSONObject)o).get("regex");
+
+                if(!name.matches("\\w+"))
+                    continue;
+
                 if (name.length() > 0)
                     emotes.add(name);
             }
