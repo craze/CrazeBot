@@ -18,8 +18,8 @@ Copy jar to desired location
 
 
 GeoBot depends on the following libraries. You can either manually download them or copy from Maven cache to the `lib` folder:
-    * json-simple-1.1.jar
-    * common-lang3-3.2.1.jar
+- json-simple-1.1.jar
+- common-lang3-3.2.1.jar
 
 
 ###  Running
