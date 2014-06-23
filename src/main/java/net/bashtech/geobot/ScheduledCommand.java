@@ -19,6 +19,7 @@
 package net.bashtech.geobot;
 
 import it.sauronsoftware.cron4j.Scheduler;
+import java.util.TimeZone;
 
 public class ScheduledCommand {
     String key;
@@ -37,6 +38,11 @@ public class ScheduledCommand {
         active = _active;
 
         s = new Scheduler();
+        channelInfo = BotManager.getInstance().getChannel(_channel);
+        if (channelInfo.config.getString("timezone")) {
+        	TimeZone tz = TimeZone.getTimeZone(channelInfo.config.getString("timezone"));
+        	s.setTimeZone(tz);
+        }
         System.out.println("Scheduling " + key + " on " + pattern);
         s.schedule(pattern, new ScheduledCommandTask(_channel, key, messageDifference));
         if (active)
