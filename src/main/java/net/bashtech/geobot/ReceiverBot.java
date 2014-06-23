@@ -512,7 +512,7 @@ public class ReceiverBot extends PircBot {
         }
 
 	// Old Style !newtweet
-        if (msg[0].equalsIgnoreCase(prefix + "newtweet") && isOp) {
+        if ( (tweetServer.length() > 0) && msg[0].equalsIgnoreCase(prefix + "newtweet") && isOp ) {
             log("RB: Matched command !newtweet");
             channelInfo.config.setString("siteTweet", fuseArray(msg, 1));
             send(channel, "Updated http://" + tweetServer + "/" + channel.substring(1) + "/");
