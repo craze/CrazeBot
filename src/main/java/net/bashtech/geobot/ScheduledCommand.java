@@ -38,8 +38,8 @@ public class ScheduledCommand {
         active = _active;
 
         s = new Scheduler();
-        channelInfo = BotManager.getInstance().getChannel(_channel);
-        if (channelInfo.config.getString("timezone")) {
+        Channel channelInfo = BotManager.getInstance().getChannel(_channel);
+        if (!channelInfo.config.getString("timezone").equals("")) {
         	TimeZone tz = TimeZone.getTimeZone(channelInfo.config.getString("timezone"));
         	s.setTimeZone(tz);
         }

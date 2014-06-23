@@ -311,7 +311,7 @@ public class ReceiverBot extends PircBot {
 
         // Voluntary Filters
         if (channelInfo.useFilters) {
-/*
+
             if (!isRegular) {
                 String normalMessage = org.apache.commons.lang3.StringUtils.stripAccents(message);
                 Matcher m = vinePattern.matcher(normalMessage.replaceAll(" ", ""));
@@ -322,7 +322,7 @@ public class ReceiverBot extends PircBot {
                     return;
                 }
             }
-*/
+
             //Me filter
             if (channelInfo.getFilterMe() && !isRegular) {
                 if (msg[0].equalsIgnoreCase("/me") || message.startsWith("\u0001ACTION")) {
@@ -1704,15 +1704,23 @@ public class ReceiverBot extends PircBot {
                     send(channel, "Subscriber alert message set to: " + channelInfo.config.getString("subMessage"));
                 }
             } else if (msg[1].equalsIgnoreCase("timezone")) {
-            	if (TimeZone.getAvailableIDs().contains(msg[2])) {
-                    channelInfo.config.setString("timezone", msg[2]);
-                    send(channel, "TimeZone set to: " + channelInfo.config.getString("timezone"));            		
-            	} else if (msg[2].substring(0,3).equalsIgnoreCase("GMT")) {
-                    channelInfo.config.setString("timezone", msg[2]);
-                    send(channel, "TimeZone set to: " + channelInfo.config.getString("timezone"));
+		String[] tzList = TimeZone.getAvailableIDs();
+		boolean tzOK = false;
+            	if (msg[2].substring(0,3).equalsIgnoreCase("GMT")) {
+			tzOK = true;
                 } else {
-                	send(channel, "Unrecognized TimeZone: " + msg[2]);
+			for (String str : tzList) {
+			      if (str != null && str.equalsIgnoreCase(msg[2])) {
+				tzOK = true;
+			      }
+			}
                 }
+		if (tzOK) {
+                    channelInfo.config.setString("timezone", msg[2]);
+                    send(channel, "TimeZone set to: " + TimeZone.getTimeZone(channelInfo.config.getString("timezone")).getDisplayName());
+		} else {
+                	send(channel, "Unrecognized TimeZone: " + msg[2]);
+		}
             }
             return;
         }
