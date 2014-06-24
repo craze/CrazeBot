@@ -22,6 +22,7 @@ import it.sauronsoftware.cron4j.Scheduler;
 import java.util.TimeZone;
 
 public class ScheduledCommand {
+    String channel;
     String key;
     String pattern;
     Scheduler s;
@@ -36,13 +37,16 @@ public class ScheduledCommand {
         lastMessageCount = 0;
         messageDifference = _messageDifference;
         active = _active;
+	channel = _channel;
 
         s = new Scheduler();
-        Channel channelInfo = BotManager.getInstance().getChannel(_channel);
-        if (!channelInfo.config.getString("timezone").equals("")) {
-        	TimeZone tz = TimeZone.getTimeZone(channelInfo.config.getString("timezone"));
-        	s.setTimeZone(tz);
-        }
+        Channel channelInfo = BotManager.getInstance().getChannel(channel);
+	boolean tzCheck = (channelInfo instanceof Channel) && channelInfo.config.getString("timezone") instanceof String;
+        if (tzCheck) {
+      		TimeZone tz = TimeZone.getTimeZone(channelInfo.config.getString("timezone"));
+       		s.setTimeZone(tz);
+	}
+
         System.out.println("Scheduling " + key + " on " + pattern);
         s.schedule(pattern, new ScheduledCommandTask(_channel, key, messageDifference));
         if (active)
