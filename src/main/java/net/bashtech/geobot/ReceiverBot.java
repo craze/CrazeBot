@@ -1706,11 +1706,11 @@ public class ReceiverBot extends PircBot {
             } else if (msg[1].equalsIgnoreCase("timezone")) {
 		String[] tzList = TimeZone.getAvailableIDs();
 		boolean tzOK = false;
-            	if (msg[2].substring(0,3).equalsIgnoreCase("GMT")) {
+            	if (msg[2].substring(0,3).equals("GMT")) {
 			tzOK = true;
                 } else {
 			for (String str : tzList) {
-			      if (str != null && str.equalsIgnoreCase(msg[2])) {
+			      if (str != null && str.equals(msg[2])) {
 				tzOK = true;
 			      }
 			}
