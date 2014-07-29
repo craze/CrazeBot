@@ -451,7 +451,7 @@ public class JSONUtil {
                 if(!name.matches("\\w+"))
                     continue;
 
-                if (name.length() > 0)
+                if (name.length() > 2)
                     emotes.add(name);
             }
         } catch (Exception ex) {

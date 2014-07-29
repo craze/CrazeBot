@@ -110,6 +110,11 @@ public class BotManager {
 
 
         receiverBot = new ReceiverBot(server, port);
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Runnable jTask = new Joiner(channelList);
         Thread jWorker = new Thread(jTask);
         jWorker.setName("Joiner");

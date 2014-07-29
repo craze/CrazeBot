@@ -166,9 +166,6 @@ public class ReceiverBot extends PircBot {
     }
 
     protected void onChannelMessage(String channel, String sender, String message) {
-        if (!BotManager.getInstance().verboseLogging)
-            logMain("MSG: " + channel + " " + sender + " : " + message);
-
         Channel channelInfo = getChannelObject(channel);
         String twitchName = channelInfo.getTwitchName();
         String prefix = channelInfo.getPrefix();
@@ -178,6 +175,9 @@ public class ReceiverBot extends PircBot {
             onAdministrativeMessage(message, channelInfo);
             return;
         }
+
+        if (!BotManager.getInstance().verboseLogging)
+            logMain("MSG: " + channel + " " + sender + " : " + message);
 
         if (!sender.equalsIgnoreCase(this.getNick()))
             channelInfo.messageCount++; //Inc message count
@@ -1880,7 +1880,7 @@ public class ReceiverBot extends PircBot {
     }
 
     protected void onAdministrativeMessage(String message, Channel channelinfo) {
-        System.out.println("ADM MSG: " + message);
+        //System.out.println("ADM MSG: " + message);
 
         String[] msg = message.trim().split(" ");
 
@@ -2181,12 +2181,13 @@ public class ReceiverBot extends PircBot {
         logMain(line);
         line = "FILTER: Affected Message: " + message;
         logMain(line);
+        ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration);
 
         int iterations = BotManager.getInstance().multipleTimeout;
 
         for (int i = 0; i < iterations; i++) {
             Timer timer = new Timer();
-            int delay = 1000 * i;
+            int delay = 500 * i;
             timer.schedule(new TimerTask() {
                 public void run() {
                     ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration);
