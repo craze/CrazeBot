@@ -25,6 +25,7 @@ import org.java_websocket.WebSocketImpl;
 
 import java.io.*;
 import java.net.*;
+import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -707,6 +708,23 @@ public class BotManager {
         }
 
         return false;
+    }
+
+    public void cloneConfig(String source, String dest) throws IOException {
+        source = source + ".properties";
+        dest = dest + ".properties";
+
+        FileChannel inputChannel = null;
+        FileChannel outputChannel = null;
+        try {
+            inputChannel = new FileInputStream(source).getChannel();
+            outputChannel = new FileOutputStream(dest).getChannel();
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+        } finally {
+            inputChannel.close();
+            outputChannel.close();
+        }
+
     }
 
     public void log(String line) {

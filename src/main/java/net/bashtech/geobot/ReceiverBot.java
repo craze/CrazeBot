@@ -1799,7 +1799,7 @@ public class ReceiverBot extends PircBot {
                 }
                 return;
             } else if (msg[1].equalsIgnoreCase("part") && msg.length > 2) {
-                if (msg[2].contains("#")) {
+                if (msg[2].startsWith("#")) {
                     String toPart = msg[2];
                     send(channel, "Channel " + toPart + " parting...");
                     BotManager.getInstance().removeChannel(toPart);
@@ -1813,11 +1813,30 @@ public class ReceiverBot extends PircBot {
                 BotManager.getInstance().reconnectAllBotsSoft();
                 return;
             } else if (msg[1].equalsIgnoreCase("reload") && msg.length > 2) {
-                if (msg[2].contains("#")) {
+                if (msg[2].startsWith("#")) {
                     String toReload = msg[2];
                     send(channel, "Reloading channel " + toReload);
                     BotManager.getInstance().reloadChannel(toReload);
                     send(channel, "Channel " + toReload + " reloaded.");
+                } else {
+                    send(channel, "Invalid channel format. Must be in format #channelname.");
+                }
+                return;
+            } else if (msg[1].equalsIgnoreCase("clone") && msg.length > 3) {
+                if (msg[2].startsWith("#") && msg[3].startsWith("#")) {
+                    String src = msg[2];
+                    String dest = msg[3];
+
+                    try {
+                        BotManager.getInstance().cloneConfig(src, dest);
+                    } catch (IOException ioE) {
+                        ioE.printStackTrace();
+                        send(channel, "An IO exception occurred running this command and thus it was not successful.");
+                    }
+
+                    send(channel, "Channel " + src + " has been cloned to " + dest);
+                    BotManager.getInstance().reloadChannel(dest);
+                    send(channel, "Attempting to reload " + dest);
                 } else {
                     send(channel, "Invalid channel format. Must be in format #channelname.");
                 }
