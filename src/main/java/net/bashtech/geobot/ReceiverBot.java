@@ -18,22 +18,15 @@
 
 package net.bashtech.geobot;
 
-import net.bashtech.geobot.modules.BotModule;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
-import org.jibble.pircbot.User;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -536,56 +529,25 @@ public class ReceiverBot extends PircBot {
         // !viewers - All
         if ((msg[0].equalsIgnoreCase(prefix + "viewers") || msg[0].equalsIgnoreCase(prefix + "lurkers"))) {
             log("RB: Matched command !viewers");
-            if (BotManager.getInstance().twitchChannels) {
-                try {
-                    send(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
-                } catch (Exception e) {
-                    send(channel, "Stream is not live.");
-                }
-            } else {
-                try {
-                    send(channel, JSONUtil.jtvViewers(twitchName) + " viewers.");
-                } catch (Exception e) {
-                    send(channel, "Stream is not live.");
-                }
-            }
-
-            return;
-        }
-
-        // !resolution - All
-        if (msg[0].equalsIgnoreCase(prefix + "res") || msg[0].equalsIgnoreCase(prefix + "resolution")) {
-            log("RB: Matched command !resolution");
-
-            String res = JSONUtil.getSourceRes(twitchName);
-            send(channel, "The source resolution is " + res);
-            return;
-        }
-
-        //!bitrate - All
-        if (msg[0].equalsIgnoreCase(prefix + "bitrate")) {
-            log("RB: Matched command !resolution");
-
-            double bitrate = JSONUtil.getSourceBitrate(twitchName);
-            if (bitrate > 1)
-                send(channel, "The source bitrate is " + (int) bitrate + " Kbps");
-            else
-                send(channel, "Stream is not live or an error occurred.");
-            return;
-        }
-
-
-        // !uptime - All
-        if (msg[0].equalsIgnoreCase(prefix + "uptime")) {
-            log("RB: Matched command !uptime");
             try {
-                String uptime = this.getStreamList("up_time", channelInfo);
-                send(channel, "Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
+                send(channel, JSONUtil.krakenViewers(twitchName) + " viewers.");
             } catch (Exception e) {
-                send(channel, "Error accessing Twitch API.");
+                send(channel, "Stream is not live.");
             }
             return;
         }
+
+//        // !uptime - All
+//        if (msg[0].equalsIgnoreCase(prefix + "uptime")) {
+//            log("RB: Matched command !uptime");
+//            try {
+//                String uptime = this.getStreamList("up_time", channelInfo);
+//                send(channel, "Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
+//            } catch (Exception e) {
+//                send(channel, "Error accessing Twitch API.");
+//            }
+//            return;
+//        }
 
         // !music - All
         if (msg[0].equalsIgnoreCase(prefix + "music") || msg[0].equalsIgnoreCase(prefix + "lastfm")) {
@@ -609,7 +571,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !game - All
-        if (msg[0].equalsIgnoreCase(prefix + "game") && BotManager.getInstance().twitchChannels) {
+        if (msg[0].equalsIgnoreCase(prefix + "game")) {
             log("RB: Matched command !game");
             if (isOwner && msg.length > 1) {
                 String game = this.fuseArray(msg, 1);
@@ -637,7 +599,7 @@ public class ReceiverBot extends PircBot {
         // !status - All
         if (msg[0].equalsIgnoreCase(prefix + "status")) {
             log("RB: Matched command !status");
-            if (isOwner && msg.length > 1 && BotManager.getInstance().twitchChannels) {
+            if (isOwner && msg.length > 1) {
                 String status = this.fuseArray(msg, 1);
                 status.trim();
                 try {
@@ -648,11 +610,7 @@ public class ReceiverBot extends PircBot {
                 }
             } else {
                 String status = "";
-                if (BotManager.getInstance().twitchChannels)
-                    status = JSONUtil.krakenStatus(twitchName);
-                else
-                    status = JSONUtil.jtvStatus(twitchName);
-
+                status = JSONUtil.krakenStatus(twitchName);
                 if (status.length() > 0) {
                     send(channel, status);
                 } else {
@@ -663,7 +621,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !followme - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "followme") && isOwner && BotManager.getInstance().twitchChannels) {
+        if (msg[0].equalsIgnoreCase(prefix + "followme") && isOwner) {
             log("RB: Matched command !followme");
             BotManager.getInstance().followChannel(twitchName);
             send(channel, "Follow update sent.");
@@ -671,7 +629,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !properties - Owner
-        if (msg[0].equalsIgnoreCase(prefix + "properties") && isOwner && BotManager.getInstance().twitchChannels) {
+        if (msg[0].equalsIgnoreCase(prefix + "properties") && isOwner) {
             log("RB: Matched command !properties");
             send(channel, JSONUtil.getChatProperties(channelInfo.getTwitchName()));
             return;
@@ -702,20 +660,13 @@ public class ReceiverBot extends PircBot {
             log("RB: Matched command !topic");
             if (msg.length < 2 || !isOp) {
                 if (channelInfo.getTopic().equalsIgnoreCase("")) {
-                    if (BotManager.getInstance().twitchChannels) {
-                        String status = "";
-                        if (BotManager.getInstance().twitchChannels)
-                            status = JSONUtil.krakenStatus(twitchName);
-                        else
-                            status = JSONUtil.jtvStatus(twitchName);
+                    String status = "";
+                    status = JSONUtil.krakenStatus(twitchName);
 
-                        if (status.length() > 0)
-                            send(channel, status);
-                        else
-                            send(channel, "Unable to query API.");
-                    } else {
-                        send(channel, "Topic not set");
-                    }
+                    if (status.length() > 0)
+                        send(channel, status);
+                    else
+                        send(channel, "Unable to query API.");
                 } else {
                     send(channel, "Topic: " + channelInfo.getTopic() + " (Set " + channelInfo.getTopicTime() + " ago)");
                 }
@@ -751,7 +702,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !commercial
-        if (msg[0].equalsIgnoreCase(prefix + "commercial") && BotManager.getInstance().twitchChannels) {
+        if (msg[0].equalsIgnoreCase(prefix + "commercial")) {
             log("RB: Matched command !commercial");
             if (isOwner) {
                 channelInfo.runCommercial();
@@ -761,7 +712,7 @@ public class ReceiverBot extends PircBot {
         }
 
         // !skipcommercial
-        if (msg[0].equalsIgnoreCase(prefix + "skipcommercial") && BotManager.getInstance().twitchChannels) {
+        if (msg[0].equalsIgnoreCase(prefix + "skipcommercial")) {
             log("RB: Matched command !skipcommercial");
             if (isOwner) {
                 channelInfo.skipNextCommercial = true;
@@ -2262,31 +2213,7 @@ public class ReceiverBot extends PircBot {
         }
     }
 
-    private String getStreamList(String key, Channel channelInfo) throws Exception {
-        URL feedSource = new URL("http://api.justin.tv/api/stream/list.xml?channel=" + channelInfo.getTwitchName());
-        URLConnection uc = feedSource.openConnection();
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(uc.getInputStream());
-        doc.getDocumentElement().normalize();
 
-        NodeList nList = doc.getElementsByTagName("stream");
-        if (nList.getLength() < 1)
-            throw new Exception();
-
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-
-            Node nNode = nList.item(temp);
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) nNode;
-
-                return getTagValue(key, eElement);
-
-            }
-        }
-
-        return "";
-    }
 
     public String getTimeStreaming(String uptime) {
         DateFormat format = new SimpleDateFormat("EEE MMMM dd HH:mm:ss yyyy");

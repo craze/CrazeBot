@@ -20,7 +20,6 @@ package net.bashtech.geobot;
 
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
-import net.bashtech.geobot.modules.Logger;
 import org.java_websocket.WebSocketImpl;
 
 import java.io.*;
@@ -61,20 +60,17 @@ public class BotManager {
     boolean wsEnabled;
     int wsPort;
     String wsAdminPassword;
-    boolean twitchChannels;
+    int multipleTimeout;
+    boolean randomNickColor;
+    int randomNickColorDiff;
+    Map<Integer, List<Pattern>> banPhraseLists;
+    Map<String, Set<String>> emoteSetMapping;
     private PropertiesFile config;
     private Set<BotModule> modules;
     private Set<String> tagAdmins;
     private Set<String> tagStaff;
-    int multipleTimeout;
-    boolean randomNickColor;
-    int randomNickColorDiff;
-
-    Map<Integer, List<Pattern>> banPhraseLists;
     // ********
     private String _propertiesFile;
-
-    Map<String, Set<String>> emoteSetMapping;
 
 
     public BotManager(String propertiesFile) {
@@ -408,7 +404,6 @@ public class BotManager {
         wsPort = config.getInt("wsPort");
         wsAdminPassword = config.getString("wsAdminPassword");
 
-        twitchChannels = config.getBoolean("twitchChannels");
         ignoreHistory = config.getBoolean("ignoreHistory");
         multipleTimeout = config.getInt("multipleTimeout");
 
