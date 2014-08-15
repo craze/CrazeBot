@@ -29,16 +29,31 @@ import java.util.regex.Pattern;
 
 public class Channel {
     public PropertiesFile config;
-
-    private String channel;
-    private String twitchname;
+    public boolean useTopic = true;
+    public boolean useFilters = true;
+    public boolean logChat;
+    public long messageCount;
+    public int commercialLength;
     boolean staticChannel;
-    private HashMap<String, String> commands = new HashMap<String, String>();
-    private HashMap<String, Integer> commandsRestrictions = new HashMap<String, Integer>();
     HashMap<String, RepeatCommand> commandsRepeat = new HashMap<String, RepeatCommand>();
     HashMap<String, ScheduledCommand> commandsSchedule = new HashMap<String, ScheduledCommand>();
     List<Pattern> autoReplyTrigger = new ArrayList<Pattern>();
     List<String> autoReplyResponse = new ArrayList<String>();
+    Set<String> tagModerators = new HashSet<String>();
+    Raffle raffle;
+    String clickToTweetFormat;
+    Map<String, EnumMap<FilterType, Integer>> warningCount;
+    Map<String, Long> warningTime;
+    Map<String, Long> commandCooldown;
+    Set<WebSocket> wsSubscribers = new HashSet<WebSocket>();
+    String prefix;
+    String emoteSet;
+    boolean subscriberRegulars;
+    boolean skipNextCommercial = false;
+    private String channel;
+    private String twitchname;
+    private HashMap<String, String> commands = new HashMap<String, String>();
+    private HashMap<String, Integer> commandsRestrictions = new HashMap<String, Integer>();
     private boolean filterCaps;
     private int filterCapsPercent;
     private int filterCapsMinCharacters;
@@ -57,12 +72,9 @@ public class Channel {
     private Set<String> regulars = new HashSet<String>();
     private Set<String> subscribers = new HashSet<String>();
     private Set<String> moderators = new HashSet<String>();
-    Set<String> tagModerators = new HashSet<String>();
     private Set<String> owners = new HashSet<String>();
     private Set<String> permittedUsers = new HashSet<String>();
     private ArrayList<String> permittedDomains = new ArrayList<String>();
-    public boolean useTopic = true;
-    public boolean useFilters = true;
     private Poll currentPoll;
     private Giveaway currentGiveaway;
     private boolean enableThrow;
@@ -72,26 +84,12 @@ public class Channel {
     private String steamID;
     private int mode; //0: Admin/owner only; 1: Mod Only; 2: Everyone; -1 Special mode to admins to use for channel moderation
     private int bulletInt;
-    Raffle raffle;
-    public boolean logChat;
-    public long messageCount;
-    public int commercialLength;
-    String clickToTweetFormat;
     private boolean filterColors;
     private boolean filterMe;
     private Set<String> offensiveWords = new HashSet<String>();
     private List<Pattern> offensiveWordsRegex = new LinkedList<Pattern>();
-    Map<String, EnumMap<FilterType, Integer>> warningCount;
-    Map<String, Long> warningTime;
     private int timeoutDuration;
     private boolean enableWarnings;
-    Map<String, Long> commandCooldown;
-    Set<WebSocket> wsSubscribers = new HashSet<WebSocket>();
-    String prefix;
-    String emoteSet;
-    boolean subscriberRegulars;
-    boolean skipNextCommercial = false;
-
     private Map<String, Object> defaults = new HashMap<String, Object>();
 
     public Channel(String name) {
@@ -489,13 +487,13 @@ public class Channel {
         return filterSymbolsMin;
     }
 
-    public int getFilterSymbolsPercent() {
-        return filterSymbolsPercent;
-    }
-
     public void setFilterSymbolsMin(int symbols) {
         filterSymbolsMin = symbols;
         config.setInt("filterSymbolsMin", filterSymbolsMin);
+    }
+
+    public int getFilterSymbolsPercent() {
+        return filterSymbolsPercent;
     }
 
     public void setFilterSymbolsPercent(int symbols) {
@@ -505,6 +503,11 @@ public class Channel {
 
     public boolean getFilterCaps() {
         return filterCaps;
+    }
+
+    public void setFilterCaps(boolean caps) {
+        filterCaps = caps;
+        config.setBoolean("filterCaps", filterCaps);
     }
 
     public int getfilterCapsPercent() {
@@ -517,11 +520,6 @@ public class Channel {
 
     public int getfilterCapsMinCapitals() {
         return filterCapsMinCapitals;
-    }
-
-    public void setFilterCaps(boolean caps) {
-        filterCaps = caps;
-        config.setBoolean("filterCaps", filterCaps);
     }
 
     public void setfilterCapsPercent(int caps) {
@@ -539,13 +537,17 @@ public class Channel {
         config.setInt("filterCapsMinCapitals", filterCapsMinCapitals);
     }
 
+    public boolean getFilterLinks() {
+        return filterLinks;
+    }
+
     public void setFilterLinks(boolean links) {
         filterLinks = links;
         config.setBoolean("filterLinks", links);
     }
 
-    public boolean getFilterLinks() {
-        return filterLinks;
+    public boolean getFilterOffensive() {
+        return filterOffensive;
     }
 
     public void setFilterOffensive(boolean option) {
@@ -553,8 +555,8 @@ public class Channel {
         config.setBoolean("filterOffensive", option);
     }
 
-    public boolean getFilterOffensive() {
-        return filterOffensive;
+    public boolean getFilterEmotes() {
+        return filterEmotes;
     }
 
     public void setFilterEmotes(boolean option) {
@@ -562,17 +564,13 @@ public class Channel {
         config.setBoolean("filterEmotes", option);
     }
 
-    public boolean getFilterEmotes() {
-        return filterEmotes;
+    public boolean getFilterSymbols() {
+        return filterSymbols;
     }
 
     public void setFilterSymbols(boolean option) {
         filterSymbols = option;
         config.setBoolean("filterSymbols", option);
-    }
-
-    public boolean getFilterSymbols() {
-        return filterSymbols;
     }
 
     public int getFilterMax() {
@@ -584,13 +582,13 @@ public class Channel {
         config.setInt("filterMaxLength", option);
     }
 
+    public int getFilterEmotesMax() {
+        return filterEmotesMax;
+    }
+
     public void setFilterEmotesMax(int option) {
         filterEmotesMax = option;
         config.setInt("filterEmotesMax", option);
-    }
-
-    public int getFilterEmotesMax() {
-        return filterEmotesMax;
     }
 
     public boolean getFilterEmotesSingle() {
@@ -603,13 +601,17 @@ public class Channel {
         config.setBoolean("filterEmotesSingle", filterEmotesSingle);
     }
 
+    public boolean getAnnounceJoinParts() {
+        return announceJoinParts;
+    }
+
     public void setAnnounceJoinParts(boolean bol) {
         announceJoinParts = bol;
         config.setBoolean("announceJoinParts", bol);
     }
 
-    public boolean getAnnounceJoinParts() {
-        return announceJoinParts;
+    public boolean getFilterColor() {
+        return filterColors;
     }
 
     public void setFilterColor(boolean option) {
@@ -617,8 +619,8 @@ public class Channel {
         config.setBoolean("filterColors", option);
     }
 
-    public boolean getFilterColor() {
-        return filterColors;
+    public boolean getFilterMe() {
+        return filterMe;
     }
 
     public void setFilterMe(boolean option) {
@@ -626,8 +628,8 @@ public class Channel {
         config.setBoolean("filterMe", option);
     }
 
-    public boolean getFilterMe() {
-        return filterMe;
+    public boolean getEnableWarnings() {
+        return enableWarnings;
     }
 
     public void setEnableWarnings(boolean option) {
@@ -635,17 +637,13 @@ public class Channel {
         config.setBoolean("enableWarnings", option);
     }
 
-    public boolean getEnableWarnings() {
-        return enableWarnings;
+    public int getTimeoutDuration() {
+        return timeoutDuration;
     }
 
     public void setTimeoutDuration(int option) {
         timeoutDuration = option;
         config.setInt("timeoutDuration", option);
-    }
-
-    public int getTimeoutDuration() {
-        return timeoutDuration;
     }
 
     //###################################################
@@ -1042,13 +1040,13 @@ public class Channel {
         config.setBoolean("signKicks", this.signKicks);
     }
 
+    public boolean getLogging() {
+        return logChat;
+    }
+
     public void setLogging(boolean option) {
         logChat = option;
         config.setBoolean("logChat", option);
-    }
-
-    public boolean getLogging() {
-        return logChat;
     }
 
     public int getCommercialLength() {
@@ -1291,6 +1289,11 @@ public class Channel {
         steamID = config.getString("steamID");
         logChat = Boolean.parseBoolean(config.getString("logChat"));
         mode = config.getInt("mode");
+        //Removing -1
+        if (mode == -1) {
+            setMode(0);
+        }
+        //End
         filterMaxLength = config.getInt("filterMaxLength");
         commercialLength = config.getInt("commercialLength");
         filterColors = Boolean.parseBoolean(config.getString("filterColors"));
@@ -1422,26 +1425,13 @@ public class Channel {
 
     }
 
+    public int getMode() {
+        return mode;
+    }
+
     public void setMode(int mode) {
         this.mode = mode;
         config.setInt("mode", this.mode);
-
-        if (mode == -1) {
-            this.setFiltersFeature(true);
-            this.setFilterEmotes(false);
-            this.setFilterEmotesMax(5);
-            this.setFilterSymbols(true);
-            this.setFilterCaps(false);
-            this.setFilterLinks(false);
-            this.setFilterOffensive(true);
-            this.setSignKicks(false);
-            this.setTopicFeature(false);
-            this.setThrow(false);
-        }
-    }
-
-    public int getMode() {
-        return mode;
     }
 
     private long getTime() {

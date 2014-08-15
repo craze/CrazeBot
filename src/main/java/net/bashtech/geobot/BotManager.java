@@ -709,6 +709,11 @@ public class BotManager {
         source = source + ".properties";
         dest = dest + ".properties";
 
+        File dest_temp = new File(dest);
+        if (dest_temp.exists()) {
+            dest_temp.delete();
+        }
+
         FileChannel inputChannel = null;
         FileChannel outputChannel = null;
         try {
