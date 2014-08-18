@@ -6,9 +6,9 @@ Prebuilt jars are available through [Jenkins](http://bashtech.net:8080/job/GeoBo
 
 ###  Installing from source
 
-Downloading source code (Source access currently unavailable but will be back soon.)
+Downloading source code
 
-    git clone git@bitbucket.org:bashtech/geobot.git
+    git clone https://bitbucket.org/bashtech/geobot.git
 
 Compile with maven
 
