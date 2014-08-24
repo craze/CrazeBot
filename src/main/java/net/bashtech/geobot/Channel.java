@@ -1246,7 +1246,7 @@ public class Channel {
         defaults.put("filterEmotesSingle", false);
         defaults.put("subMessage", "(_1_) has subscribed!");
         defaults.put("subscriberAlert", false);
-        defaults.put("banPhraseSeverity", 99);
+        defaults.put("banPhraseSeverity", 50);
         defaults.put("globalFilter", true);
 
         Iterator it = defaults.entrySet().iterator();
