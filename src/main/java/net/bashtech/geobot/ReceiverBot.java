@@ -1134,7 +1134,7 @@ public class ReceiverBot extends PircBot {
         //Filters
         if (msg[0].equalsIgnoreCase(prefix + "filter") && isOwner) {
             if (msg.length < 2) {
-                send(channel, "Syntax: !filter <option> [sub options]. Options: on/off, status, me, enablewarnings, timeoutduration, displaywarnings, messagelength, links, pd, banphrase, caps, emotes, and symbols.");
+                send(channel, "Syntax: !filter <option> [sub options]. Options: on/off, status, me, ignoresubs, enablewarnings, timeoutduration, displaywarnings, messagelength, links, pd, banphrase, caps, emotes, and symbols.");
                 return;
             }
 
@@ -1162,6 +1162,7 @@ public class ReceiverBot extends PircBot {
                 send(channel, "Timeout duration: " + channelInfo.getTimeoutDuration());
                 send(channel, "Display warnings: " + channelInfo.checkSignKicks());
                 send(channel, "Max message length: " + channelInfo.getFilterMax());
+                send(channel, "Ignore Subs: " + channelInfo.getSubscriberRegulars());
                 send(channel, "Me: " + channelInfo.getFilterMe());
                 send(channel, "Links: " + channelInfo.getFilterLinks());
                 send(channel, "Banned phrases: " + channelInfo.getFilterOffensive() + " ~ severity=" + channelInfo.config.getInt("banPhraseSeverity"));
@@ -1189,6 +1190,17 @@ public class ReceiverBot extends PircBot {
                     channelInfo.setEnableWarnings(false);
                     send(channel, "Feature: Timeout warnings are off");
                 }
+            }
+
+            if (msg[0].equalsIgnoreCase("ignoresubs") && msg.length == 2) {
+                if (msg[1].equalsIgnoreCase("on")) {
+                    channelInfo.setSubscriberRegulars(true);
+                    send(channel, "Subscribers are now immune to filters.");
+                } else if (msg[1].equalsIgnoreCase("off")) {
+                    channelInfo.setSubscriberRegulars(false);
+                    send(channel, "Subscribers are no longer immune to filters.");
+                }
+
             }
 
             if (msg[0].equalsIgnoreCase("timeoutduration") && msg.length == 2) {
