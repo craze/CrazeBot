@@ -798,7 +798,7 @@ public class ReceiverBot extends PircBot {
                         if (msg.length == 5)
                             difference = Integer.parseInt(msg[4]);
 
-                        if (channelInfo.getCommand(key).equalsIgnoreCase("invalid") || delay < 30) {
+                        if (channelInfo.getCommand(key) == null || delay < 30) {
                             //Key not found or delay to short
                             send(channel, "Command not found or delay is less than 30 seconds.");
                         } else {
@@ -864,7 +864,7 @@ public class ReceiverBot extends PircBot {
                         if (msg.length == 5)
                             difference = Integer.parseInt(msg[4]);
 
-                        if (channelInfo.getCommand(key).equalsIgnoreCase("invalid") || pattern.contains(",,")) {
+                        if (channelInfo.getCommand(key) == null || pattern.contains(",,")) {
                             //Key not found or delay to short
                             send(channel, "Command not found or invalid pattern.");
                         } else {
