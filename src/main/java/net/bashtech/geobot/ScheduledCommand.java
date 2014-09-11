@@ -71,7 +71,9 @@ public class ScheduledCommand {
             Channel channelInfo = BotManager.getInstance().getChannel(channel);
             if (channelInfo.messageCount - ScheduledCommand.this.lastMessageCount >= messageDifference) {
                 String command = channelInfo.getCommand(key);
-                ReceiverBot.getInstance().send(channel, command);
+
+                if (command != null)
+                    ReceiverBot.getInstance().send(channel, command);
 
                 if (key.equalsIgnoreCase("commercial"))
                     channelInfo.runCommercial();
