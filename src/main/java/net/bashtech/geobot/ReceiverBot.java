@@ -542,7 +542,7 @@ public class ReceiverBot extends PircBot {
             log("RB: Matched command !uptime");
             try {
                 String uptime = JSONUtil.krakenCreated_at(channelInfo.getTwitchName());
-                send(channel, "Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + ".");
+                send(channel, this.getTimeStreaming(uptime));
             } catch (Exception e) {
                 send(channel, "Error accessing Twitch API.");
             }
@@ -2233,12 +2233,12 @@ public class ReceiverBot extends PircBot {
         format.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         try {
             Date then = format.parse(uptime);
-            return this.getTimeTilNow(then);
+            return "Streaming for " + this.getTimeTilNow(then) + " since " + uptime + ".";
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return "Error getting date.";
+        return "An error occurred or stream is offline";
     }
 
     public boolean checkStalePing() {
