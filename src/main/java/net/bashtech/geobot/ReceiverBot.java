@@ -537,17 +537,17 @@ public class ReceiverBot extends PircBot {
             return;
         }
 
-//        // !uptime - All
-//        if (msg[0].equalsIgnoreCase(prefix + "uptime")) {
-//            log("RB: Matched command !uptime");
-//            try {
-//                String uptime = this.getStreamList("up_time", channelInfo);
-//                send(channel, "Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + " PST.");
-//            } catch (Exception e) {
-//                send(channel, "Error accessing Twitch API.");
-//            }
-//            return;
-//        }
+        // !uptime - All
+        if (msg[0].equalsIgnoreCase(prefix + "uptime")) {
+            log("RB: Matched command !uptime");
+            try {
+                String uptime = JSONUtil.krakenCreated_at(channelInfo.getTwitchName());
+                send(channel, "Streaming for " + this.getTimeStreaming(uptime) + " since " + uptime + ".");
+            } catch (Exception e) {
+                send(channel, "Error accessing Twitch API.");
+            }
+            return;
+        }
 
         // !music - All
         if (msg[0].equalsIgnoreCase(prefix + "music") || msg[0].equalsIgnoreCase(prefix + "lastfm")) {
@@ -2228,8 +2228,9 @@ public class ReceiverBot extends PircBot {
 
 
     public String getTimeStreaming(String uptime) {
-        DateFormat format = new SimpleDateFormat("EEE MMMM dd HH:mm:ss yyyy");
-        format.setTimeZone(java.util.TimeZone.getTimeZone("US/Pacific"));
+        uptime = uptime.replace("Z", "UTC");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        format.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
         try {
             Date then = format.parse(uptime);
             return this.getTimeTilNow(then);
