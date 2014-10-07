@@ -24,10 +24,9 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 public class JSONUtil {
@@ -63,34 +62,22 @@ public class JSONUtil {
 
     }
 
-    public static Long jtvViewers(String channel) {
+    public static String krakenCreated_at(String channel) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/stream/summary.json?channel=" + channel));
+            Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/streams/" + channel, 2));
 
             JSONObject jsonObject = (JSONObject) obj;
 
-            Long viewers = (Long) jsonObject.get("viewers_count");
+            JSONObject stream = (JSONObject) (jsonObject.get("stream"));
+            if (stream == null)
+                return "(offline)";
+
+            String viewers = (String) stream.get("created_at");
             return viewers;
         } catch (Exception ex) {
             ex.printStackTrace();
-            return (long) 0;
-        }
-
-    }
-
-    public static String jtvStatus(String channel) {
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/channel/show/" + channel + ".json"));
-
-            JSONObject jsonObject = (JSONObject) obj;
-
-            String status = (String) jsonObject.get("status");
-            return status;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return "Unable to query API";
+            return "(error)";
         }
 
     }
@@ -266,9 +253,6 @@ public class JSONUtil {
     }
 
     public static boolean krakenChannelExist(String channel) {
-        if (BotManager.getInstance().twitchChannels == false)
-            return true;
-
         try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(BotManager.getRemoteContentTwitch("https://api.twitch.tv/kraken/channels/" + channel, 2));
@@ -282,7 +266,6 @@ public class JSONUtil {
             //ex.printStackTrace();
             return false;
         }
-
     }
 
     public static boolean krakenOutdatedChannel(String channel) {
@@ -371,48 +354,6 @@ public class JSONUtil {
 
     }
 
-    public static Double getSourceBitrate(String channel) {
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/stream/list.json?channel=" + channel));
-
-            JSONArray outerArray = (JSONArray) obj;
-
-            if (outerArray.size() == 1) {
-                JSONObject channelObject = (JSONObject) outerArray.get(0);
-                Double bitrate = (Double) channelObject.get("video_bitrate");
-                return bitrate;
-            }
-
-            return new Double(0);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new Double(0);
-        }
-
-    }
-
-    public static String getSourceRes(String channel) {
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("http://api.justin.tv/api/stream/list.json?channel=" + channel));
-
-            JSONArray outerArray = (JSONArray) obj;
-
-            if (outerArray.size() == 1) {
-                JSONObject channelObject = (JSONObject) outerArray.get(0);
-                Long width = (Long) channelObject.get("video_width");
-                Long height = (Long) channelObject.get("video_height");
-                return width + "x" + height;
-            }
-
-            return "Unable to retrieve data";
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return "Unable to retrieve data";
-        }
-
-    }
 
     public static String getChatProperties(String channel) {
         try {
@@ -451,7 +392,7 @@ public class JSONUtil {
                 if(!name.matches("\\w+"))
                     continue;
 
-                if (name.length() > 0)
+                if (name.length() > 2)
                     emotes.add(name);
             }
         } catch (Exception ex) {
