@@ -1,6 +1,6 @@
 ##  Summary
 
-CrazeBot is a Twitch robot based on Geobot
+CrazeBot is a Twitch robot based on Geobot.
 Geobot is a Java-based IRC bot based on the
 [PIRC](http://www.jibble.org/pircbot.php) framework designed for [Twitch](http://twitch.tv).
 
@@ -229,8 +229,6 @@ Admin nicks are defined in global.properties. Twitch Admins and Staff also have 
 
   * `!admin join [#channelname]` - Joins channelname. (Note: Forces mode level -1)
   * `!admin part [#channelname]` - Leaves channelname
-<<<<<<< HEAD
-=======
   * `!admin reload [#channelname]`
   * `!admin clone [#src] [#dest]`
->>>>>>> refs/remotes/origin/master
+  
