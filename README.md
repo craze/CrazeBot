@@ -94,9 +94,7 @@ Example:
 #### Shortcuts
   * `+m` - Slow mode on. 
   * `-m` - Slow mode off. 
-  * `+f` - Followers only mode on. 
-  * `-f` - Followers only mode off. 
-  * `+s` - Subscribers only mode off. 
+  * `+s` - Subscribers only mode off.
   * `-s` - Subscribers only mode off. 
   * `+b [user]` - Bans a user. 
   * `-b [user]` - Unbans a user. 
@@ -231,3 +229,8 @@ Admin nicks are defined in global.properties. Twitch Admins and Staff also have 
 
   * `!admin join [#channelname]` - Joins channelname. (Note: Forces mode level -1)
   * `!admin part [#channelname]` - Leaves channelname
+<<<<<<< HEAD
+=======
+  * `!admin reload [#channelname]`
+  * `!admin clone [#src] [#dest]`
+>>>>>>> refs/remotes/origin/master
