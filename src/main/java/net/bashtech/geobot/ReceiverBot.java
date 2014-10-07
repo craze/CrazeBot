@@ -304,7 +304,7 @@ public class ReceiverBot extends PircBot {
 
         // Voluntary Filters
         if (channelInfo.useFilters) {
-/*
+
             if (!isRegular) {
                 String normalMessage = org.apache.commons.lang3.StringUtils.stripAccents(message);
                 Matcher m = vinePattern.matcher(normalMessage.replaceAll(" ", ""));
@@ -315,7 +315,7 @@ public class ReceiverBot extends PircBot {
                     return;
                 }
             }
-*/
+
             //Me filter
             if (channelInfo.getFilterMe() && !isRegular) {
                 if (msg[0].equalsIgnoreCase("/me") || message.startsWith("\u0001ACTION")) {
@@ -505,7 +505,7 @@ public class ReceiverBot extends PircBot {
         }
 
 	// Old Style !newtweet
-        if (msg[0].equalsIgnoreCase(prefix + "newtweet") && isOp) {
+        if ( (tweetServer.length() > 0) && msg[0].equalsIgnoreCase(prefix + "newtweet") && isOp ) {
             log("RB: Matched command !newtweet");
             channelInfo.config.setString("siteTweet", fuseArray(msg, 1));
             send(channel, "Updated http://" + tweetServer + "/" + channel.substring(1) + "/");
