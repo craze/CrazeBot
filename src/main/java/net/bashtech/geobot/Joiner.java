@@ -20,7 +20,7 @@ public class Joiner implements Runnable {
 
             count++;
 
-            if (count > 100) {
+            if (count > 50) {
                 count = 0;
                 try {
                     Thread.sleep(7000);

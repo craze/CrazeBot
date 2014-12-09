@@ -21,6 +21,8 @@ package net.bashtech.geobot;
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
 import org.java_websocket.WebSocketImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.*;
@@ -29,6 +31,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class BotManager {
+    static Logger LOGGER_D = LoggerFactory.getLogger("debugLogger");
+    static Logger LOGGER_R = LoggerFactory.getLogger("recordLogger");
 
     static BotManager instance;
     // API KEYS
@@ -99,7 +103,7 @@ public class BotManager {
             try {
                 ws = new WSServer(wsPort);
                 ws.start();
-                System.out.println("WebSocket server started on port: " + ws.getPort());
+                LOGGER_D.debug("WebSocket server started on port: " + ws.getPort());
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -137,7 +141,7 @@ public class BotManager {
         String dataIn = "";
         try {
             URL url = new URL(urlString);
-            //System.out.println("DEBUG: Getting data from " + url.toString());
+            //LOGGER_D.debug("DEBUG: Getting data from " + url.toString());
             URLConnection conn = url.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
@@ -156,7 +160,7 @@ public class BotManager {
         String dataIn = "";
         try {
             URL url = new URL(urlString);
-            //System.out.println("DEBUG: Getting data from " + url.toString());
+            //LOGGER_D.debug("DEBUG: Getting data from " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 //            conn.setConnectTimeout(connectTimeout);
 //            conn.setReadTimeout(socketTimeout);
@@ -219,8 +223,8 @@ public class BotManager {
             while (inStream.hasNextLine())
                 response += (inStream.nextLine());
 
-            System.out.println(conn.getResponseCode());
-            System.out.println(response);
+            LOGGER_D.debug("" + conn.getResponseCode());
+            LOGGER_D.debug(response);
             return response;
 
         } catch (MalformedURLException ex) {
@@ -261,8 +265,8 @@ public class BotManager {
             while (inStream.hasNextLine())
                 response += (inStream.nextLine());
 
-            System.out.println(conn.getResponseCode());
-            System.out.println(response);
+            LOGGER_D.debug("" + conn.getResponseCode());
+            LOGGER_D.debug(response);
             return response;
 
         } catch (MalformedURLException ex) {
@@ -424,7 +428,7 @@ public class BotManager {
         // ********
 
         for (String s : config.getString("channelList").split(",")) {
-            System.out.println("DEBUG: Adding channel " + s);
+            LOGGER_D.debug("DEBUG: Adding channel " + s);
             if (s.length() > 1) {
                 channelList.put(s.toLowerCase(), new Channel(s));
             }
@@ -459,7 +463,7 @@ public class BotManager {
 
     public synchronized boolean addChannel(String name, int mode) {
         if (channelList.containsKey(name.toLowerCase())) {
-            System.out.println("INFO: Already in channel " + name);
+            LOGGER_D.debug("INFO: Already in channel " + name);
             return false;
         }
         Channel tempChan = new Channel(name.toLowerCase(), mode);
@@ -485,7 +489,7 @@ public class BotManager {
         Channel tempChan = channelList.get(name.toLowerCase());
 
         //Stop timers
-        System.out.println("Stopping timers");
+        LOGGER_D.debug("Stopping timers");
         Iterator itr = tempChan.commandsRepeat.entrySet().iterator();
         while (itr.hasNext()) {
             Map.Entry pairs = (Map.Entry) itr.next();
@@ -593,7 +597,7 @@ public class BotManager {
         emoteSet.clear();
         emoteSet = JSONUtil.getEmotes();
 
-        System.out.println("Loaded " + emoteSet.size() + " emotes.");
+        LOGGER_D.debug("Loaded " + emoteSet.size() + " emotes.");
     }
 
     public void loadGlobalBannedWords() {
@@ -618,7 +622,7 @@ public class BotManager {
                     else
                         line = ".*" + Pattern.quote(line) + ".*";
 
-                    System.out.println(line);
+                    LOGGER_D.debug(line);
                     Pattern tempP = Pattern.compile(line, Pattern.CASE_INSENSITIVE);
                     globalBannedWords.add(tempP);
                 }
@@ -662,14 +666,14 @@ public class BotManager {
                     else
                         line = ".*\\b" + Pattern.quote(line) + "\\b.*";
 
-                    System.out.println(line);
+                    LOGGER_D.debug(line);
                     Pattern tempP = Pattern.compile(line, Pattern.CASE_INSENSITIVE);
 
                     for (int c = severity; c >= 0; c--) {
                         if (!banPhraseLists.containsKey(c))
                             banPhraseLists.put(c, new LinkedList<Pattern>());
                         banPhraseLists.get(c).add(tempP);
-                        System.out.println("Adding " + tempP.toString() + " to s=" + c);
+                        LOGGER_D.debug("Adding " + tempP.toString() + " to s=" + c);
                     }
                 }
             }
@@ -682,7 +686,7 @@ public class BotManager {
 
     public void followChannel(String channel) {
         try {
-            System.out.println(BotManager.putRemoteData("https://api.twitch.tv/kraken/users/" + this.nick + "/follows/channels/" + channel, ""));
+            LOGGER_D.debug(BotManager.putRemoteData("https://api.twitch.tv/kraken/users/" + this.nick + "/follows/channels/" + channel, ""));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -728,10 +732,14 @@ public class BotManager {
     }
 
     public void log(String line) {
-        System.out.println(line);
-
-        if (wsEnabled && !line.startsWith("MSG:") && !line.startsWith("SEND:"))
+        if (wsEnabled && !line.startsWith("MSG:") && !line.startsWith("SEND:")) {
             ws.sendToAdmin(line);
+        }
+
+        if (line.startsWith("MSG:") || line.startsWith("SEND:"))
+            LOGGER_D.info(line);
+        else
+            LOGGER_R.info(line);
 
         if (useGUI) {
             getGUI().log(line);
