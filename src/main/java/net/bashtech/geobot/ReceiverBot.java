@@ -210,7 +210,7 @@ public class ReceiverBot extends PircBot {
         //Check for user level based on other factors.
         if (BotManager.getInstance().isAdmin(sender))
             isAdmin = true;
-        if (BotManager.getInstance().isTagAdmin(sender) || BotManager.getInstance().isTagStaff(sender))
+        if (BotManager.getInstance().isTagAdmin(sender) || BotManager.getInstance().isTagStaff(sender) || BotManager.getInstance().isTagGlobalMod(sender))
             isAdmin = true;
         if (channel.equalsIgnoreCase("#" + sender))
             isOwner = true;
@@ -1873,10 +1873,12 @@ public class ReceiverBot extends PircBot {
                 String user = msg[1];
                 String tag = msg[2];
 
-                if (tag.equalsIgnoreCase("admin") || tag.equalsIgnoreCase("staff"))
+                if (tag.equalsIgnoreCase("admin"))
                     BotManager.getInstance().addTagAdmin(user);
                 if (tag.equalsIgnoreCase("staff"))
                     BotManager.getInstance().addTagStaff(user);
+                if (tag.equalsIgnoreCase("global_mod"))
+                    BotManager.getInstance().addTagGlobalMod(user);
                 if (tag.equalsIgnoreCase("subscriber") && channelinfo != null)
                     channelinfo.addSubscriber(user);
             } else if (msg[0].equalsIgnoreCase("USERCOLOR")) {

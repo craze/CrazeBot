@@ -73,6 +73,7 @@ public class BotManager {
     private Set<BotModule> modules;
     private Set<String> tagAdmins;
     private Set<String> tagStaff;
+    private Set<String> tagGlobalMods;
     // ********
     private String _propertiesFile;
 
@@ -85,6 +86,7 @@ public class BotManager {
         modules = new HashSet<BotModule>();
         tagAdmins = new HashSet<String>();
         tagStaff = new HashSet<String>();
+        tagGlobalMods = new HashSet<String>();
         emoteSet = new LinkedList<String>();
         globalBannedWords = new LinkedList<Pattern>();
         emoteSetMapping = new HashMap<String, Set<String>>();
@@ -585,8 +587,16 @@ public class BotManager {
         return tagStaff.contains(name.toLowerCase());
     }
 
+    public boolean isTagGlobalMod(String name) {
+        return tagGlobalMods.contains(name.toLowerCase());
+    }
+
     public void addTagAdmin(String name) {
         tagAdmins.add(name.toLowerCase());
+    }
+
+    public void addTagGlobalMod(String name) {
+        tagGlobalMods.add(name.toLowerCase());
     }
 
     public void addTagStaff(String name) {
