@@ -860,6 +860,18 @@ public abstract class PircBot implements ReplyConstants {
     }
 
     /**
+     * This method is called whenever a message is sent to a channel.
+     * <p/>
+     * The implementation of this method in the PircBot abstract class
+     * performs no actions and may be overridden as required.
+     *
+     * @param channel  The channel to which the state belongs too.
+     * @param tags     IRC v3 tags
+     */
+    protected void onUserState(String channel, String tags) {
+    }
+
+    /**
      * This method handles events when any line of text arrives from the server,
      * then calling the appropriate method in the PircBot.  This method is
      * protected and only called by the InputThread for this instance.
@@ -881,22 +893,21 @@ public abstract class PircBot implements ReplyConstants {
         String sourceNick = "";
         String sourceLogin = "";
         String sourceHostname = "";
+        String v3Tags = "";
+
+        if (line.startsWith("@")) {
+            //This message has tags
+            v3Tags = line.substring(1, line.indexOf(" "));
+            line = line.substring(line.indexOf(" ") + 1);
+        }
 
         StringTokenizer tokenizer = new StringTokenizer(line);
-        String senderInfo = "";
+        String senderInfo;
         String command;
-        String v3Tags = "";
-        String firstToken;
         try {
-            firstToken = tokenizer.nextToken();
-
-            if (firstToken.startsWith("@")) {
-                v3Tags = firstToken;
-                senderInfo = tokenizer.nextToken();
-            } else {
-                senderInfo = firstToken;
-            }
+            senderInfo = tokenizer.nextToken();
         } catch (NoSuchElementException ex) {
+            senderInfo = "";
         }
 
         try {
@@ -1057,6 +1068,9 @@ public abstract class PircBot implements ReplyConstants {
         } else if (command.equals("INVITE")) {
             // Somebody is inviting somebody else into a channel.
             this.onInvite(target, sourceNick, sourceLogin, sourceHostname, line.substring(line.indexOf(" :") + 2));
+        } else if (command.equals("USERSTATE")) {
+            String channel = target;
+            this.onUserState(channel, v3Tags);
         } else {
             // If we reach this point, then we've found something that the PircBot
             // Doesn't currently deal with.

@@ -18,6 +18,7 @@
 
 package net.bashtech.geobot;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
@@ -126,6 +127,8 @@ public class ReceiverBot extends PircBot {
     protected void onConnect() {
         //Force TMI to send USERCOLOR AND SPECIALUSER messages.
         this.sendRawLine("TWITCHCLIENT 3");
+        this.sendRawLine("CAP REQ :twitch.tv/tags");
+        this.sendRawLine("CAP REQ :twitch.tv/commands");
     }
 
     @Override
@@ -158,10 +161,22 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message, String tags) {
-        onChannelMessage(channel, sender, message, tags);
+        Map<String, String> tagMap = mapTags(tags);
+
+        Iterator it = tagMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
+        }
+        onChannelMessage(channel, sender, message, tagMap);
     }
 
-    protected void onChannelMessage(String channel, String sender, String message, String tags) {
+    @Override
+    protected void onUserState(String channel, String tags) {
+        LOGGER_D.debug("Got tags '" + tags + "' for " + channel);
+    }
+
+    protected void onChannelMessage(String channel, String sender, String message, Map<String, String> tags) {
         Channel channelInfo = getChannelObject(channel);
         String twitchName = channelInfo.getTwitchName();
         String prefix = channelInfo.getPrefix();
@@ -192,10 +207,8 @@ public class ReceiverBot extends PircBot {
             }
         }
 
-
         //Split message on spaces.
         String[] msg = message.trim().split(" ");
-
 
         // ********************************************************************************
         // ****************************** User Ranks **************************************
@@ -208,21 +221,25 @@ public class ReceiverBot extends PircBot {
         int accessLevel = 0;
 
         //Check for user level based on other factors.
+        String v3_user_type = (tags.containsKey("user_type") ? tags.get("user_type") : "user");
+
+        LOGGER_D.debug("v3 user_type = " + v3_user_type);
+
         if (BotManager.getInstance().isAdmin(sender))
             isAdmin = true;
-        if (BotManager.getInstance().isTagAdmin(sender) || BotManager.getInstance().isTagStaff(sender) || BotManager.getInstance().isTagGlobalMod(sender))
+        if (BotManager.getInstance().isTagAdmin(sender) || BotManager.getInstance().isTagStaff(sender) || BotManager.getInstance().isTagGlobalMod(sender) || v3_user_type.equals("admin") || v3_user_type.equals("staff") || v3_user_type.equals("global_mod"))
             isAdmin = true;
         if (channel.equalsIgnoreCase("#" + sender))
             isOwner = true;
-        if (channelInfo.isModerator(sender))
+        if (channelInfo.isModerator(sender) || v3_user_type.equals("mod"))
             isOp = true;
         if (channelInfo.isOwner(sender))
             isOwner = true;
-        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && channelInfo.isSubscriber(sender)))
+        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && (channelInfo.isSubscriber(sender) || tags.containsKey("subscriber"))))
             isRegular = true;
 
-        if (channelInfo.isSubscriber(sender))
-            LOGGER_D.debug(sender + " is a subscriber");
+        if (isRegular)
+            LOGGER_D.debug(sender + " is a regular");
 
         //Give users all the ranks below them
         if (isAdmin) {
@@ -259,7 +276,6 @@ public class ReceiverBot extends PircBot {
 
                 message = fuseArray(msg, 0);
             }
-
         }
 
         //Impersonation command
@@ -425,7 +441,10 @@ public class ReceiverBot extends PircBot {
 
             //Emote filter
             if (!isRegular && channelInfo.getFilterEmotes()) {
-                if (countEmotes(message) > channelInfo.getFilterEmotesMax()) {
+                int count_emotes = 0;
+                if (tags.containsKey("emotes"))
+                    count_emotes = StringUtils.countMatches(tags.get("emotes"), "-");
+                if (count_emotes > channelInfo.getFilterEmotesMax()) {
                     int warningCount = 0;
 
                     channelInfo.incWarningCount(sender, FilterType.EMOTES);
@@ -1910,6 +1929,24 @@ public class ReceiverBot extends PircBot {
         }
     }
 
+    private Map<String, String> mapTags(String rawTags) {
+        Map<String, String> tags = new HashMap<String, String>();
+
+        StringTokenizer tokenizer = new StringTokenizer(rawTags);
+
+        while (tokenizer.hasMoreTokens()) {
+            String tag = tokenizer.nextToken(";");
+            if (tag.contains("=")) {
+                String[] parts = tag.split("=");
+                tags.put(parts[0], parts[1]);
+            } else {
+                tags.put(tag, null);
+            }
+        }
+
+        return tags;
+    }
+
     private void setRandomNickColor() {
         if (!BotManager.getInstance().randomNickColor)
             return;
@@ -1973,7 +2010,7 @@ public class ReceiverBot extends PircBot {
     }
 
     public void send(String target, String sender, String message, String[] args) {
-        Channel channelInfo = getChannelObject(target);
+        //    Channel channelInfo = getChannelObject(target);
 
         if (!BotManager.getInstance().verboseLogging)
             logMain("SEND: " + target + " " + getNick() + " : " + message);
