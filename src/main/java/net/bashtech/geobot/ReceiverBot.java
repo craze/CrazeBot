@@ -126,7 +126,7 @@ public class ReceiverBot extends PircBot {
     @Override
     protected void onConnect() {
         //Force TMI to send USERCOLOR AND SPECIALUSER messages.
-        this.sendRawLine("TWITCHCLIENT 3");
+        //this.sendRawLine("TWITCHCLIENT 3");
         this.sendRawLine("CAP REQ :twitch.tv/tags");
         this.sendRawLine("CAP REQ :twitch.tv/commands");
     }
@@ -161,6 +161,20 @@ public class ReceiverBot extends PircBot {
 
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message, String tags) {
+        LOGGER_D.debug("Tags: " + tags);
+        Map<String, String> tagMap = mapTags(tags);
+//        Iterator it = tagMap.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pairs = (Map.Entry) it.next();
+//            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
+//        }
+        onChannelMessage(channel, sender, message, tagMap);
+    }
+
+    @Override
+    protected void onUserState(String channel, String tags) {
+        LOGGER_D.debug("Got USERSTATE '" + tags + "' for " + channel);
+
         Map<String, String> tagMap = mapTags(tags);
 
         Iterator it = tagMap.entrySet().iterator();
@@ -168,12 +182,6 @@ public class ReceiverBot extends PircBot {
             Map.Entry pairs = (Map.Entry) it.next();
             System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
         }
-        onChannelMessage(channel, sender, message, tagMap);
-    }
-
-    @Override
-    protected void onUserState(String channel, String tags) {
-        LOGGER_D.debug("Got tags '" + tags + "' for " + channel);
     }
 
     protected void onChannelMessage(String channel, String sender, String message, Map<String, String> tags) {
@@ -235,7 +243,7 @@ public class ReceiverBot extends PircBot {
             isOp = true;
         if (channelInfo.isOwner(sender))
             isOwner = true;
-        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && (channelInfo.isSubscriber(sender) || tags.containsKey("subscriber"))))
+        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && (channelInfo.isSubscriber(sender))))
             isRegular = true;
 
         if (isRegular)
@@ -1903,21 +1911,7 @@ public class ReceiverBot extends PircBot {
             } else if (msg[0].equalsIgnoreCase("USERCOLOR")) {
                 String user = msg[1];
                 String color = msg[2];
-            } else if (msg[0].equalsIgnoreCase("CLEARCHAT")) {
-//                if (msg.length > 1) {
-//                    String user = msg[1];
-//
-//                } else {
-//
-//                }
             }
-//            } else if (msg[0].equalsIgnoreCase("EMOTESET")) {
-//                String user = msg[1];
-//                String setsList = msg[2].replaceAll("(\\[|\\])", "");
-//                String[] sets = setsList.split(",");
-//                for (String s : sets)
-//                    BotManager.getInstance().addSubBySet(user, s);
-//            }
         }
     }
 
@@ -1938,7 +1932,7 @@ public class ReceiverBot extends PircBot {
             String tag = tokenizer.nextToken(";");
             if (tag.contains("=")) {
                 String[] parts = tag.split("=");
-                tags.put(parts[0], parts[1]);
+                tags.put(parts[0], (parts.length == 2 ? parts[1] : null));
             } else {
                 tags.put(tag, null);
             }
