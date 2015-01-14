@@ -528,6 +528,30 @@ public class ReceiverBot extends PircBot {
         // ********************************* Commands *************************************
         // ********************************************************************************
 
+        // ********************************************************************************
+        // ***************************** Info/Catch-all Command ***************************
+        // ********************************************************************************
+
+        if (msg[0].substring(0, 1).equalsIgnoreCase(prefix)) {
+            String command = msg[0].substring(1);
+            String value = channelInfo.getCommand(command);
+            if (value != null) {
+                log("Matched command " + msg[0]);
+                if (msg.length > 1 && isOwner) {
+                    String updatedMessage = fuseArray(msg, 1);
+                    if (!updatedMessage.contains(",,")) {
+                        channelInfo.setCommand(command, updatedMessage);
+                        send(channel, "Command updated.");
+                    } else {
+                        send(channel, "Command cannot contain double commas (\",,\").");
+                    }
+                } else {
+                    if (channelInfo.checkCommandRestriction(command, accessLevel))
+                        send(channel, sender, value);
+                }
+            }
+        }
+
         //Command cooldown check
         if (msg[0].substring(0, 1).equalsIgnoreCase("!") && channelInfo.onCooldown(msg[0])) {
             if (!isOp)
@@ -1851,31 +1875,6 @@ public class ReceiverBot extends PircBot {
                     return;
                 }
             }
-        }
-        // ********************************************************************************
-        // ***************************** Info/Catch-all Command ***************************
-        // ********************************************************************************
-
-        if (msg[0].substring(0, 1).equalsIgnoreCase(prefix)) {
-            String command = msg[0].substring(1);
-            String value = channelInfo.getCommand(command);
-            if (value != null) {
-                log("Matched command " + msg[0]);
-                if (msg.length > 1 && isOwner) {
-                    String updatedMessage = fuseArray(msg, 1);
-                    if (!updatedMessage.contains(",,")) {
-                        channelInfo.setCommand(command, updatedMessage);
-                        send(channel, "Command updated.");
-                    } else {
-                        send(channel, "Command cannot contain double commas (\",,\").");
-                    }
-                } else {
-                    if (channelInfo.checkCommandRestriction(command, accessLevel))
-                        send(channel, sender, value);
-                }
-
-            }
-
         }
 
         // ********************************************************************************
