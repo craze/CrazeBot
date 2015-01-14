@@ -163,11 +163,11 @@ public class ReceiverBot extends PircBot {
     protected void onMessage(String channel, String sender, String login, String hostname, String message, String tags) {
         LOGGER_D.debug("Tags: " + tags);
         Map<String, String> tagMap = mapTags(tags);
-//        Iterator it = tagMap.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry pairs = (Map.Entry) it.next();
-//            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
-//        }
+        Iterator it = tagMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
+        }
         onChannelMessage(channel, sender, message, tagMap);
     }
 
@@ -229,7 +229,8 @@ public class ReceiverBot extends PircBot {
         int accessLevel = 0;
 
         //Check for user level based on other factors.
-        String v3_user_type = (tags.containsKey("user_type") ? tags.get("user_type") : "user");
+        String v3_user_type = (tags.get("user_type") != null ? tags.get("user_type") : "user");
+        String v3_subscriber = (tags.get("subscriber") != null ? tags.get("subscriber") : "0");
 
         LOGGER_D.debug("v3 user_type = " + v3_user_type);
 
@@ -243,7 +244,7 @@ public class ReceiverBot extends PircBot {
             isOp = true;
         if (channelInfo.isOwner(sender))
             isOwner = true;
-        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && (channelInfo.isSubscriber(sender))))
+        if (channelInfo.isRegular(sender) || (channelInfo.subscriberRegulars && (channelInfo.isSubscriber(sender) || v3_subscriber.equals("1"))))
             isRegular = true;
 
         if (isRegular)
