@@ -127,8 +127,7 @@ public class ReceiverBot extends PircBot {
     protected void onConnect() {
         //Force TMI to send USERCOLOR AND SPECIALUSER messages.
         //this.sendRawLine("TWITCHCLIENT 3");
-        this.sendRawLine("CAP REQ :twitch.tv/tags");
-        this.sendRawLine("CAP REQ :twitch.tv/commands");
+        this.sendRawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
     }
 
     @Override
@@ -450,9 +449,12 @@ public class ReceiverBot extends PircBot {
 
             //Emote filter
             if (!isRegular && channelInfo.getFilterEmotes()) {
-                int count_emotes = 0;
+                String emote_tag = null;
                 if (tags.containsKey("emotes"))
-                    count_emotes = StringUtils.countMatches(tags.get("emotes"), "-");
+                    emote_tag = tags.get("emotes");
+
+                int count_emotes = 0;
+                count_emotes = StringUtils.countMatches(emote_tag, "-");
                 if (count_emotes > channelInfo.getFilterEmotesMax()) {
                     int warningCount = 0;
 
@@ -467,7 +469,7 @@ public class ReceiverBot extends PircBot {
 
                 }
 
-                if (channelInfo.getFilterEmotesSingle() && checkSingleEmote(message)) {
+                if (channelInfo.getFilterEmotesSingle() && checkSingleEmote(message, emote_tag)) {
                     int warningCount = 0;
 
                     channelInfo.incWarningCount(sender, FilterType.EMOTES);
@@ -2135,11 +2137,28 @@ public class ReceiverBot extends PircBot {
         return count;
     }
 
-    private boolean checkSingleEmote(String message) {
-        for (String emote : BotManager.getInstance().emoteSet) {
-            if (emote.equals(message))
+    private boolean checkSingleEmote(String message, String emote_tags) {
+        if (emote_tags == null)
+            return false;
+
+        String[] emotes = emote_tags.split("/");
+
+        if (emotes.length > 1)
+            return false;
+
+        for (String e : emotes) {
+            if (e.contains(","))
+                continue;
+
+            String id = e.substring(0, e.indexOf(":"));
+            int first_char = Integer.parseInt(e.substring(e.indexOf(":") + 1, e.indexOf("-")));
+            int last_char = Integer.parseInt(e.substring(e.indexOf("-") + 1));
+
+            if (first_char == 0 && last_char == message.length() - 1)
                 return true;
         }
+
+
         return false;
     }
 
