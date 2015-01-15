@@ -54,7 +54,6 @@ public class BotManager {
     BotGUI gui;
     Map<String, Channel> channelList;
     Set<String> admins;
-    List<String> emoteSet;
     List<Pattern> globalBannedWords;
     boolean verboseLogging;
     ReceiverBot receiverBot;
@@ -87,7 +86,6 @@ public class BotManager {
         tagAdmins = new HashSet<String>();
         tagStaff = new HashSet<String>();
         tagGlobalMods = new HashSet<String>();
-        emoteSet = new LinkedList<String>();
         globalBannedWords = new LinkedList<Pattern>();
         emoteSetMapping = new HashMap<String, Set<String>>();
         banPhraseLists = new HashMap<Integer, List<Pattern>>();
@@ -442,7 +440,6 @@ public class BotManager {
             }
         }
 
-        loadEmotes();
         loadGlobalBannedWords();
         loadBanPhraseList();
 
@@ -603,12 +600,6 @@ public class BotManager {
         tagStaff.add(name.toLowerCase());
     }
 
-    private void loadEmotes() {
-        emoteSet.clear();
-        emoteSet = JSONUtil.getEmotes();
-
-        LOGGER_D.debug("Loaded " + emoteSet.size() + " emotes.");
-    }
 
     public void loadGlobalBannedWords() {
         globalBannedWords.clear();
