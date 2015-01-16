@@ -20,11 +20,11 @@ package net.bashtech.geobot;
 
 import net.bashtech.geobot.gui.BotGUI;
 import net.bashtech.geobot.modules.BotModule;
-import net.bashtech.geobot.modules.Logger;
 import org.java_websocket.WebSocketImpl;
 
 import java.io.*;
 import java.net.*;
+import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -61,20 +61,17 @@ public class BotManager {
     boolean wsEnabled;
     int wsPort;
     String wsAdminPassword;
-    boolean twitchChannels;
+    int multipleTimeout;
+    boolean randomNickColor;
+    int randomNickColorDiff;
+    Map<Integer, List<Pattern>> banPhraseLists;
+    Map<String, Set<String>> emoteSetMapping;
     private PropertiesFile config;
     private Set<BotModule> modules;
     private Set<String> tagAdmins;
     private Set<String> tagStaff;
-    int multipleTimeout;
-    boolean randomNickColor;
-    int randomNickColorDiff;
-
-    Map<Integer, List<Pattern>> banPhraseLists;
     // ********
     private String _propertiesFile;
-
-    Map<String, Set<String>> emoteSetMapping;
 
 
     public BotManager(String propertiesFile) {
@@ -111,6 +108,11 @@ public class BotManager {
 
 
         receiverBot = new ReceiverBot(server, port);
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Runnable jTask = new Joiner(channelList);
         Thread jWorker = new Thread(jTask);
         jWorker.setName("Joiner");
@@ -407,7 +409,6 @@ public class BotManager {
         wsPort = config.getInt("wsPort");
         wsAdminPassword = config.getString("wsAdminPassword");
 
-        twitchChannels = config.getBoolean("twitchChannels");
         ignoreHistory = config.getBoolean("ignoreHistory");
         multipleTimeout = config.getInt("multipleTimeout");
 
@@ -708,6 +709,28 @@ public class BotManager {
         }
 
         return false;
+    }
+
+    public void cloneConfig(String source, String dest) throws IOException {
+        source = source + ".properties";
+        dest = dest + ".properties";
+
+        File dest_temp = new File(dest);
+        if (dest_temp.exists()) {
+            dest_temp.delete();
+        }
+
+        FileChannel inputChannel = null;
+        FileChannel outputChannel = null;
+        try {
+            inputChannel = new FileInputStream(source).getChannel();
+            outputChannel = new FileOutputStream(dest).getChannel();
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+        } finally {
+            inputChannel.close();
+            outputChannel.close();
+        }
+
     }
 
     public void log(String line) {

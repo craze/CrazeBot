@@ -32,12 +32,8 @@ public class MessageReplaceParser {
             message = message.replace("(_GAME_)", JSONUtil.krakenGame(channel.substring(1)));
         if (message.contains("(_STATUS_)"))
             message = message.replace("(_STATUS_)", JSONUtil.krakenStatus(channel.substring(1)));
-        if (message.contains("(_JTV_STATUS_)"))
-            message = message.replace("(_JTV_STATUS_)", JSONUtil.jtvStatus(channel.substring(1)));
         if (message.contains("(_VIEWERS_)"))
             message = message.replace("(_VIEWERS_)", "" + JSONUtil.krakenViewers(channel.substring(1)));
-        if (message.contains("(_JTV_VIEWERS_)"))
-            message = message.replace("(_JTV_VIEWERS_)", "" + JSONUtil.jtvViewers(channel.substring(1)));
 //        if (message.contains("(_CHATTERS_)"))
 //            message = message.replace("(_CHATTERS_)", "" + ReceiverBot.getInstance().getUsers(channel).length);
         if (message.contains("(_SONG_)"))
