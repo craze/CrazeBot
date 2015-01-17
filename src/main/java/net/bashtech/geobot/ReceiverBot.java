@@ -1685,7 +1685,7 @@ public class ReceiverBot extends PircBot {
 									+ TimeZone.getTimeZone(
 											channelInfo.config
 													.getString("timezone"))
-											.getDisplayName());
+											.getDisplayName() + " (" + msg[2] + ")");
 				} else {
 					send(channel, "Unrecognized TimeZone: " + msg[2]);
 				}
