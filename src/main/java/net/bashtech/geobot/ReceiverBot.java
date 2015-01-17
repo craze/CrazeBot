@@ -282,7 +282,7 @@ public class ReceiverBot extends PircBot {
 
 
         //!leave - Owner
-        if ((msg[0].equalsIgnoreCase(prefix + "leave") || msg[0].equalsIgnoreCase(prefix + "remove") || msg[0].equalsIgnoreCase(prefix + "part")) && isOwner) {
+        if ((msg[0].equalsIgnoreCase(prefix + "remove") || msg[0].equalsIgnoreCase(prefix + "part")) && isOwner) {
             send(channel, "Leaving channel " + channelInfo.getChannel() + ".");
             BotManager.getInstance().removeChannel(channelInfo.getChannel());
             return;
