@@ -1,4 +1,3 @@
-*.properties
 lib/
 build/
 *.jar
