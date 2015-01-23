@@ -2119,23 +2119,6 @@ public class ReceiverBot extends PircBot {
         return false;
     }
 
-    private int countEmotes(String message) {
-        String str = message;
-        int count = 0;
-        for (String findStr : BotManager.getInstance().emoteSet) {
-            int lastIndex = 0;
-            while (lastIndex != -1) {
-
-                lastIndex = str.indexOf(findStr, lastIndex);
-
-                if (lastIndex != -1) {
-                    count++;
-                    lastIndex += findStr.length();
-                }
-            }
-        }
-        return count;
-    }
 
     private boolean checkSingleEmote(String message, String emote_tags) {
         if (emote_tags == null)
@@ -2153,6 +2136,11 @@ public class ReceiverBot extends PircBot {
             String id = e.substring(0, e.indexOf(":"));
             int first_char = Integer.parseInt(e.substring(e.indexOf(":") + 1, e.indexOf("-")));
             int last_char = Integer.parseInt(e.substring(e.indexOf("-") + 1));
+
+            if (message.startsWith("/me ")) {
+                first_char -= 8;
+                last_char -= 8;
+            }
 
             if (first_char == 0 && last_char == message.length() - 1)
                 return true;

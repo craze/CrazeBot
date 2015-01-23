@@ -67,7 +67,6 @@ public class BotManager {
     boolean randomNickColor;
     int randomNickColorDiff;
     Map<Integer, List<Pattern>> banPhraseLists;
-    Map<String, Set<String>> emoteSetMapping;
     private PropertiesFile config;
     private Set<BotModule> modules;
     private Set<String> tagAdmins;
@@ -87,7 +86,6 @@ public class BotManager {
         tagStaff = new HashSet<String>();
         tagGlobalMods = new HashSet<String>();
         globalBannedWords = new LinkedList<Pattern>();
-        emoteSetMapping = new HashMap<String, Set<String>>();
         banPhraseLists = new HashMap<Integer, List<Pattern>>();
 
         loadGlobalProfile();
@@ -693,22 +691,6 @@ public class BotManager {
         }
     }
 
-    public void addSubBySet(String username, String setID) {
-        if (emoteSetMapping.containsKey(setID)) {
-            emoteSetMapping.get(setID).add(username);
-        } else {
-            emoteSetMapping.put(setID, new HashSet<String>());
-        }
-    }
-
-    public boolean checkEmoteSetMapping(String username, String setID) {
-        if (emoteSetMapping.containsKey(setID)) {
-            if (emoteSetMapping.get(setID).contains(username))
-                return true;
-        }
-
-        return false;
-    }
 
     public void cloneConfig(String source, String dest) throws IOException {
         source = source + ".properties";
