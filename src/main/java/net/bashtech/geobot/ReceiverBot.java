@@ -154,19 +154,19 @@ public class ReceiverBot extends PircBot {
     }
 
     @Override
-    protected void onAction(String sender, String login, String hostname, String target, String action) {
-        this.onMessage(target, sender, login, hostname, "/me " + action, null);
+    protected void onAction(String sender, String login, String hostname, String target, String action, String tags) {
+        this.onMessage(target, sender, login, hostname, "/me " + action, tags);
     }
 
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message, String tags) {
         LOGGER_D.debug("Tags: " + tags);
         Map<String, String> tagMap = mapTags(tags);
-        Iterator it = tagMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
-        }
+//        Iterator it = tagMap.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pairs = (Map.Entry) it.next();
+//            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
+//        }
         onChannelMessage(channel, sender, message, tagMap);
     }
 
@@ -176,11 +176,11 @@ public class ReceiverBot extends PircBot {
 
         Map<String, String> tagMap = mapTags(tags);
 
-        Iterator it = tagMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
-        }
+//        Iterator it = tagMap.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pairs = (Map.Entry) it.next();
+//            System.out.println("'" + pairs.getKey() + "' = '" + pairs.getValue() + "'");
+//        }
     }
 
     protected void onChannelMessage(String channel, String sender, String message, Map<String, String> tags) {
@@ -2125,6 +2125,7 @@ public class ReceiverBot extends PircBot {
             return false;
 
         String[] emotes = emote_tags.split("/");
+        int length = message.length();
 
         if (emotes.length > 1)
             return false;
@@ -2140,9 +2141,10 @@ public class ReceiverBot extends PircBot {
             if (message.startsWith("/me ")) {
                 first_char -= 8;
                 last_char -= 8;
+                length -= 4;
             }
 
-            if (first_char == 0 && last_char == message.length() - 1)
+            if (first_char == 0 && last_char == length - 1)
                 return true;
         }
 

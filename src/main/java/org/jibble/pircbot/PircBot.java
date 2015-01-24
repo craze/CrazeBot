@@ -986,7 +986,7 @@ public abstract class PircBot implements ReplyConstants {
                 this.onVersion(sourceNick, sourceLogin, sourceHostname, target);
             } else if (request.startsWith("ACTION ")) {
                 // ACTION request
-                this.onAction(sourceNick, sourceLogin, sourceHostname, target, request.substring(7));
+                this.onAction(sourceNick, sourceLogin, sourceHostname, target, request.substring(7), v3Tags);
             } else if (request.startsWith("PING ")) {
                 // PING request
                 this.onPing(sourceNick, sourceLogin, sourceHostname, target, request.substring(5));
@@ -1301,8 +1301,9 @@ public abstract class PircBot implements ReplyConstants {
      * @param hostname The hostname of the user that sent the action.
      * @param target   The target of the action, be it a channel or our nick.
      * @param action   The action carried out by the user.
+     * @param tags   IRCv3 tags
      */
-    protected void onAction(String sender, String login, String hostname, String target, String action) {
+    protected void onAction(String sender, String login, String hostname, String target, String action, String tags) {
     }
 
     /**
