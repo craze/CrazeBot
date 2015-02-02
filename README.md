@@ -32,9 +32,7 @@ This documentation uses the default command prefix of `!`. This can be changed o
   * `!leave` - Owner - Removes the bot from channel 
 
   * `!topic [new topic]` - Displays and sets the topic. If no topic is set, Twitch channel title will be returned.
-  * `!bitrate` - The current broadcast bitrate.  
-  * `!resolution` or `!res` - Displays source broadcast resolution.
-  * `!viewers` - Displays the number of Twitch viewers. 
+  * `!viewers` - Displays the number of Twitch viewers.
   * `!uptime` - Displays stream starting time and length of time streamed. 
   * `!music` - Displays what you are currently listening to on Last.fm. See `!set lastfm` to set account info.
   * `!steam` - Display Steam profile, current game and server See `!set steam` to set account info.
