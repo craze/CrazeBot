@@ -1214,17 +1214,28 @@ public class ReceiverBot extends PircBot {
 
             if (msg[0].equalsIgnoreCase("status")) {
                 send(channel, "Global: " + channelInfo.useFilters);
-                send(channel, "Enable warnings: " + channelInfo.getEnableWarnings());
-                send(channel, "Timeout duration: " + channelInfo.getTimeoutDuration());
-                send(channel, "Display warnings: " + channelInfo.checkSignKicks());
-                send(channel, "Max message length: " + channelInfo.getFilterMax());
-                send(channel, "Ignore Subs: " + channelInfo.getSubscriberRegulars());
-                send(channel, "Me: " + channelInfo.getFilterMe());
-                send(channel, "Links: " + channelInfo.getFilterLinks());
-                send(channel, "Banned phrases: " + channelInfo.getFilterOffensive() + " ~ severity=" + channelInfo.config.getInt("banPhraseSeverity"));
-                send(channel, "Caps: " + channelInfo.getFilterCaps() + " ~ percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps=" + channelInfo.getfilterCapsMinCapitals());
-                send(channel, "Emotes: " + channelInfo.getFilterEmotes() + " ~ max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
-                send(channel, "Symbols: " + channelInfo.getFilterSymbols() + " ~ percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
+                send(channel, "Enable warnings (enablewarnings): " + channelInfo.getEnableWarnings());
+                send(channel, "Ignore Subs (ignoresubs): " + channelInfo.getSubscriberRegulars());
+                send(channel, "Timeout duration (timeoutduration): " + channelInfo.getTimeoutDuration());
+                send(channel, "Display warnings (displaywarnings): " + channelInfo.checkSignKicks());
+                send(channel, "Max message length (messagelength): " + channelInfo.getFilterMax());
+                send(channel, "Me (me): " + channelInfo.getFilterMe());
+                send(channel, "Links (links): " + channelInfo.getFilterLinks());
+                send(channel, "Banned phrases (banphrase): " + channelInfo.getFilterOffensive() + " ~ severity=" + channelInfo.config.getInt("banPhraseSeverity"));
+                send(channel, "Caps (caps): " + channelInfo.getFilterCaps() + " ~ percent=" + channelInfo.getfilterCapsPercent() + ", minchars=" + channelInfo.getfilterCapsMinCharacters() + ", mincaps=" + channelInfo.getfilterCapsMinCapitals());
+                send(channel, "Emotes (emotes): " + channelInfo.getFilterEmotes() + " ~ max=" + channelInfo.getFilterEmotesMax() + ", single=" + channelInfo.getFilterEmotesSingle());
+                send(channel, "Symbols (symbols): " + channelInfo.getFilterSymbols() + " ~ percent=" + channelInfo.getFilterSymbolsPercent() + ", min=" + channelInfo.getFilterSymbolsMin());
+            }
+
+            if (msg[0].equalsIgnoreCase("ignoresubs") && msg.length == 2) {
+                if (msg[1].equalsIgnoreCase("on")) {
+                    channelInfo.setSubscriberRegulars(true);
+                    send(channel, "Subscribers are not exempt to filters (treated as regulars).");
+                } else if (msg[1].equalsIgnoreCase("off")) {
+                    channelInfo.setSubscriberRegulars(false);
+                    send(channel, "Subscribers are no longer exempt to filters.");
+                }
+                return;
             }
 
             if (msg[0].equalsIgnoreCase("me") && msg.length == 2) {
