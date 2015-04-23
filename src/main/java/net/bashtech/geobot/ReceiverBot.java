@@ -228,7 +228,7 @@ public class ReceiverBot extends PircBot {
         int accessLevel = 0;
 
         //Check for user level based on other factors.
-        String v3_user_type = (tags.get("user_type") != null ? tags.get("user_type") : "user");
+        String v3_user_type = (tags.get("user-type") != null ? tags.get("user-type") : "user");
         String v3_subscriber = (tags.get("subscriber") != null ? tags.get("subscriber") : "0");
 
         LOGGER_D.debug("v3 user_type = " + v3_user_type);
@@ -1230,7 +1230,7 @@ public class ReceiverBot extends PircBot {
             if (msg[0].equalsIgnoreCase("ignoresubs") && msg.length == 2) {
                 if (msg[1].equalsIgnoreCase("on")) {
                     channelInfo.setSubscriberRegulars(true);
-                    send(channel, "Subscribers are not exempt to filters (treated as regulars).");
+                    send(channel, "Subscribers are now exempt to filters (treated as regulars).");
                 } else if (msg[1].equalsIgnoreCase("off")) {
                     channelInfo.setSubscriberRegulars(false);
                     send(channel, "Subscribers are no longer exempt to filters.");
@@ -1259,16 +1259,6 @@ public class ReceiverBot extends PircBot {
                 }
             }
 
-            if (msg[0].equalsIgnoreCase("ignoresubs") && msg.length == 2) {
-                if (msg[1].equalsIgnoreCase("on")) {
-                    channelInfo.setSubscriberRegulars(true);
-                    send(channel, "Subscribers are now immune to filters.");
-                } else if (msg[1].equalsIgnoreCase("off")) {
-                    channelInfo.setSubscriberRegulars(false);
-                    send(channel, "Subscribers are no longer immune to filters.");
-                }
-
-            }
 
             if (msg[0].equalsIgnoreCase("timeoutduration") && msg.length == 2) {
                 if (Main.isInteger(msg[1])) {
@@ -2150,8 +2140,8 @@ public class ReceiverBot extends PircBot {
             int last_char = Integer.parseInt(e.substring(e.indexOf("-") + 1));
 
             if (message.startsWith("/me ")) {
-                first_char -= 8;
-                last_char -= 8;
+                //first_char -= 8;
+                //last_char -= 8;
                 length -= 4;
             }
 
