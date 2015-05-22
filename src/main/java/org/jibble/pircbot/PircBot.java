@@ -16,6 +16,7 @@ package org.jibble.pircbot;
 
 import net.bashtech.geobot.BotManager;
 
+import javax.net.SocketFactory;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -104,6 +105,8 @@ public abstract class PircBot implements ReplyConstants {
     private String _finger = "You ought to be arrested for fingering a bot!";
     private String _channelPrefixes = "#&+!";
 
+    private SocketFactory _socketFactory = null;
+
 
     /**
      * Constructs a PircBot with the default settings.  Your own constructors
@@ -111,6 +114,20 @@ public abstract class PircBot implements ReplyConstants {
      * for changing the default settings if required.
      */
     public PircBot() {
+    }
+
+    /**
+     * Returns the last SocketFactory that we used to connect to an IRC server.
+     * This does not imply that the connection attempt to the server was
+     * successful (we suggest you look at the onConnect method).
+     * A value of null is returned if the PircBot has never tried to connect
+     * to a server using a SocketFactory.
+     *
+     * @return The last SocketFactory that we used when connecting to an IRC server.
+     * Returns null if we have not previously connected using a SocketFactory.
+     */
+    public final SocketFactory getSocketFactory() {
+        return _socketFactory;
     }
 
     /**
@@ -123,7 +140,7 @@ public abstract class PircBot implements ReplyConstants {
      * @throws NickAlreadyInUseException if our nick is already in use on the server.
      */
     public final synchronized void connect(String hostname) throws IOException, IrcException, NickAlreadyInUseException {
-        this.connect(hostname, 6667, null);
+        this.connect(hostname, 6667, null, null);
     }
 
     /**
@@ -136,8 +153,8 @@ public abstract class PircBot implements ReplyConstants {
      * @throws IrcException              if the server would not let us join it.
      * @throws NickAlreadyInUseException if our nick is already in use on the server.
      */
-    public final synchronized void connect(String hostname, int port) throws IOException, IrcException, NickAlreadyInUseException {
-        this.connect(hostname, port, null);
+    public final synchronized void connect(String hostname, int port, SocketFactory socketFactory) throws IOException, IrcException, NickAlreadyInUseException {
+        this.connect(hostname, port, null, socketFactory);
     }
 
     /**
@@ -152,11 +169,12 @@ public abstract class PircBot implements ReplyConstants {
      * @throws IrcException              if the server would not let us join it.
      * @throws NickAlreadyInUseException if our nick is already in use on the server.
      */
-    public final synchronized void connect(String hostname, int port, String password) throws IOException, IrcException, NickAlreadyInUseException {
+    public final synchronized void connect(String hostname, int port, String password, SocketFactory socketFactory) throws IOException, IrcException, NickAlreadyInUseException {
 
         _server = hostname;
         _port = port;
         _password = password;
+        _socketFactory = socketFactory;
 
         if (isConnected()) {
             throw new IOException("The PircBot is already connected to an IRC server.  Disconnect first.");
@@ -171,13 +189,22 @@ public abstract class PircBot implements ReplyConstants {
         // Connect to the server.
         String localAddress = BotManager.getInstance().getLocalAddress();
         Socket socket;
+
         if (localAddress.equalsIgnoreCase("")) {
-            socket = new Socket(hostname, port);
+            if (socketFactory == null) {
+                socket = new Socket(hostname, port);
+            } else {
+                socket = socketFactory.createSocket(hostname, port);
+            }
         } else {
             InetAddress localAddr = InetAddress.getByName(BotManager.getInstance().getLocalAddress());
             int bindPort = this.findUnusedPort("localhost");
             System.out.println("Attempting to bind to " + localAddr.toString() + ":" + bindPort);
-            socket = new Socket(hostname, port, localAddr, bindPort);
+            if (socketFactory == null) {
+                socket = new Socket(hostname, port, localAddr, bindPort);
+            } else {
+                socket = socketFactory.createSocket(hostname, port, localAddr, bindPort);
+            }
         }
         //***********************************************************************************************
         this.log("*** Connected to server " + this.getServer() + ".");
@@ -281,7 +308,7 @@ public abstract class PircBot implements ReplyConstants {
         if (getServer() == null) {
             throw new IrcException("Cannot reconnect to an IRC server because we were never connected to one previously!");
         }
-        connect(getServer(), getPort(), getPassword());
+        connect(getServer(), getPort(), getPassword(), getSocketFactory());
     }
 
     /**

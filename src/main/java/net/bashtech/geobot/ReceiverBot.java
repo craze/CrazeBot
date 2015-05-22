@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
+import org.jibble.pircbot.TrustingSSLSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -76,7 +77,7 @@ public class ReceiverBot extends PircBot {
 
         this.setVerbose(BotManager.getInstance().verboseLogging);
         try {
-            this.connect(server, port, BotManager.getInstance().getInstance().password);
+            this.connect(server, port, BotManager.getInstance().getInstance().password, new TrustingSSLSocketFactory());
         } catch (NickAlreadyInUseException e) {
             logMain("[ERROR] Nickname already in use - " + this.getNick() + " " + this.getServer());
         } catch (IOException e) {
