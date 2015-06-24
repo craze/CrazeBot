@@ -148,9 +148,6 @@ public class ReceiverBot extends PircBot {
             BotManager.getInstance().log("SB: Detected timeout in " + channel + ". Parting..");
             BotManager.getInstance().removeChannel(channel);
         }
-
-        if (sender.equals("jtv"))
-            onAdministrativeMessage(message, null);
     }
 
     @Override
@@ -190,7 +187,6 @@ public class ReceiverBot extends PircBot {
 
         //Handle future administrative messages from JTV
         if (sender.equals("jtv")) {
-            onAdministrativeMessage(message, channelInfo);
             return;
         }
 
@@ -1889,31 +1885,6 @@ public class ReceiverBot extends PircBot {
 
                 if (!channelInfo.onCooldown(channelInfo.autoReplyTrigger.get(i).toString()))
                     send(channel, sender, channelInfo.autoReplyResponse.get(i));
-            }
-        }
-    }
-
-    protected void onAdministrativeMessage(String message, Channel channelinfo) {
-        //System.out.println("ADM MSG: " + message);
-
-        String[] msg = message.trim().split(" ");
-
-        if (msg.length > 0) {
-            if (msg[0].equalsIgnoreCase("SPECIALUSER")) {
-                String user = msg[1];
-                String tag = msg[2];
-
-                if (tag.equalsIgnoreCase("admin"))
-                    BotManager.getInstance().addTagAdmin(user);
-                if (tag.equalsIgnoreCase("staff"))
-                    BotManager.getInstance().addTagStaff(user);
-                if (tag.equalsIgnoreCase("global_mod"))
-                    BotManager.getInstance().addTagGlobalMod(user);
-                if (tag.equalsIgnoreCase("subscriber") && channelinfo != null)
-                    channelinfo.addSubscriber(user);
-            } else if (msg[0].equalsIgnoreCase("USERCOLOR")) {
-                String user = msg[1];
-                String color = msg[2];
             }
         }
     }
