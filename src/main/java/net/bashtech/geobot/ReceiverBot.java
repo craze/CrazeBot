@@ -67,7 +67,7 @@ public class ReceiverBot extends PircBot {
         linkPatterns[2] = Pattern.compile(".*[-A-Za-z0-9](\\.|\\(dot\\))([a-z]{2,})(\\W|$).*", Pattern.CASE_INSENSITIVE);
         linkPatterns[3] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
 
-        symbolsPatterns[0] = Pattern.compile("(\\p{InPhonetic_Extensions}|\\p{InLetterlikeSymbols}|\\p{InDingbats}|\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|?|°|?|¦|¯|_|????e????´?°?????°?????|U?¸????¯°????????????|?????|A????????????|E???????_??????)");
+        symbolsPatterns[0] = Pattern.compile("(\\p{InPhonetic_Extensions}|\\p{InLetterlikeSymbols}|\\p{InDingbats}|\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|?|ï¿½|?|ï¿½|ï¿½|_|????e????ï¿½?ï¿½?????ï¿½?????|U?ï¿½????ï¿½ï¿½????????????|?????|A????????????|E???????_??????)");
         symbolsPatterns[1] = Pattern.compile("[!-/:-@\\[-`{-~]");
 
         this.setName(BotManager.getInstance().getInstance().nick);
@@ -556,6 +556,13 @@ public class ReceiverBot extends PircBot {
                 return;
         }
 
+    	// Old Style !newtweet
+        if ( (tweetServer.length() > 0) && msg[0].equalsIgnoreCase(prefix + "newtweet") && isOp ) {
+            log("RB: Matched command !newtweet");
+            channelInfo.config.setString("siteTweet", fuseArray(msg, 1));
+            send(channel, "Updated http://" + tweetServer + "/" + channel.substring(1) + "/");
+	    }
+        
         // !ping - All
         if (msg[0].equalsIgnoreCase(prefix + "ping") && isOp) {
             log("Matched command !ping");
@@ -702,7 +709,7 @@ public class ReceiverBot extends PircBot {
                 for (int i = 1; i < msg.length; i++) {
                     throwMessage += msg[i] + " ";
                 }
-                send(channel, "(?°?°)??" + throwMessage);
+                send(channel, "(?ï¿½?ï¿½)??" + throwMessage);
             }
             return;
         }
