@@ -426,7 +426,7 @@ public class BotManager {
         SteamAPIKey = config.getString("SteamAPIKey");
         krakenOAuthToken = config.getString("krakenOAuthToken");
         krakenClientID = config.getString("krakenClientID");
-	tweetServer = config.getString("tweetServer");
+        tweetServer = config.getString("tweetServer");
 
 
         // ********
