@@ -24,8 +24,6 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 
@@ -376,31 +374,4 @@ public class JSONUtil {
         }
 
     }
-
-    public static List<String> getEmotes() {
-        List<String> emotes = new LinkedList<String>();
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(BotManager.getRemoteContent("https://api.twitch.tv/kraken/chat/emoticons"));
-
-            JSONObject jsonObject = (JSONObject) obj;
-            JSONArray emoticons = (JSONArray) jsonObject.get("emoticons");
-
-            for (Object o : emoticons) {
-                String name = (String) ((JSONObject)o).get("regex");
-
-                if(!name.matches("\\w+"))
-                    continue;
-
-                if (name.length() > 2)
-                    emotes.add(name);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            return emotes;
-        }
-
-    }
-
 }

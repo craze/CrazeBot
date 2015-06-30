@@ -53,6 +53,11 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>${project.name}</finalName>
@@ -92,6 +97,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArgument></compilerArgument>
+                </configuration>
             </plugin>
         </plugins>
     </build>

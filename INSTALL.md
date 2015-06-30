@@ -2,7 +2,7 @@
 
 ###  Prebuilt Jars
 
-Prebuilt jars are available through [Jenkins](http://bashtech.net:8080/job/GeoBot/).
+Prebuilt jars are available through [Jenkins](http://builds.bashtech.net/job/GeoBot/lastSuccessfulBuild/artifact/target/GeoBot-jar-with-dependencies.jar).
 
 ###  Installing from source
 
