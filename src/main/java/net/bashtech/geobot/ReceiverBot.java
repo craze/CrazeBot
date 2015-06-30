@@ -50,7 +50,7 @@ public class ReceiverBot extends PircBot {
     private Pattern[] linkPatterns = new Pattern[4];
     private Pattern[] symbolsPatterns = new Pattern[2];
     private int lastPing = -1;
-    private char bullet[] = {'>', '+', '-', '~'};
+    private char bullet[] = { (char) 15, (char) 127 };
     private int bulletPos = 0;
     private int countToNewColor = BotManager.getInstance().randomNickColorDiff;
     private Pattern twitchnotifySubscriberPattern = Pattern.compile("^([a-z_]+) just subscribed!$", Pattern.CASE_INSENSITIVE);
