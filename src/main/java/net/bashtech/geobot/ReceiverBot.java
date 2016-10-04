@@ -2173,7 +2173,7 @@ public class ReceiverBot extends PircBot {
         logMain(line);
         line = "FILTER: Affected Message: " + message;
         logMain(line);
-        ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration);
+        ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration + type.toString());
 
         int iterations = BotManager.getInstance().multipleTimeout;
 
@@ -2182,7 +2182,7 @@ public class ReceiverBot extends PircBot {
             int delay = 500 * i;
             timer.schedule(new TimerTask() {
                 public void run() {
-                    ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration);
+                    ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration + type.toString());
                 }
             }, delay);
         }
@@ -2205,7 +2205,7 @@ public class ReceiverBot extends PircBot {
             int delay = 1000 * i;
             timer.schedule(new TimerTask() {
                 public void run() {
-                    ReceiverBot.this.sendCommand(channel, ".ban " + name);
+                    ReceiverBot.this.sendCommand(channel, ".ban " + name + type.toString());
                 }
             }, delay);
         }
