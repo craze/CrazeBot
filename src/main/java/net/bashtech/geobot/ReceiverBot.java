@@ -2173,7 +2173,7 @@ public class ReceiverBot extends PircBot {
         logMain(line);
         line = "FILTER: Affected Message: " + message;
         logMain(line);
-        ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration + " " + type.toString());
+        ReceiverBot.this.sendCommand(channel, ".timeout " + name + " " + duration + " Automatically timed out for " + type.toString() + " by " + this.getNick());
 
         int iterations = BotManager.getInstance().multipleTimeout;
 
