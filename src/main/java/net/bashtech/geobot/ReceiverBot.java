@@ -1719,6 +1719,29 @@ public class ReceiverBot extends PircBot {
                     channelInfo.config.setString("subMessage", fuseArray(msg, 3));
                     send(channel, "Subscriber alert message set to: " + channelInfo.config.getString("subMessage"));
                 }
+            } else if (msg[1].equalsIgnoreCase("timezone")) {
+                String[] tzList = TimeZone.getAvailableIDs();
+                boolean tzOK = false;
+                if (msg[2].substring(0, 3).equals("GMT")) {
+                    tzOK = true;
+                } else {
+                    for (String str : tzList) {
+                        if (str != null && str.equals(msg[2])) {
+                            tzOK = true;
+                        }
+                    }
+                }
+                if (tzOK) {
+                    channelInfo.config.setString("timezone", msg[2]);
+                    send(channel,
+                            "TimeZone set to: "
+                                    + TimeZone.getTimeZone(
+                                            channelInfo.config
+                                                    .getString("timezone"))
+                                            .getDisplayName() + " (" + msg[2] + ")");
+                } else {
+                    send(channel, "Unrecognized TimeZone: " + msg[2]);
+                }
             }
             return;
         }
