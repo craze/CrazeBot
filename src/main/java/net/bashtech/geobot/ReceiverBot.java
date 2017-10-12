@@ -1772,18 +1772,18 @@ public class ReceiverBot extends PircBot {
                 return;
             }
 
-            if (JSONUtil.krakenChannelExist(sender)) {
-                send(channel, "Joining channel #" + sender + ".");
-                boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
-                if (joinStatus) {
-                    send(channel, "Channel #" + sender + " joined.");
-                } else {
-                    send(channel, "Already in channel #" + sender + ".");
-                }
+          //  if (JSONUtil.krakenChannelExist(sender)) {
+            send(channel, "Joining channel #" + sender + ".");
+            boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
+            if (joinStatus) {
+                send(channel, "Channel #" + sender + " joined.");
             } else {
-                send(channel, "Unable to join " + sender + ". This could be because your channel is on Justin.tv and not Twitch. If you are sure your channel is on Twitch, try again later.");
+                send(channel, "Already in channel #" + sender + ".");
             }
-            return;
+          //  } else {
+          //      send(channel, "Unable to join " + sender + ". This could be because your channel is on Justin.tv and not Twitch. If you are sure your channel is on Twitch, try again later.");
+          //  }
+          return;
         }
 
         if (msg[0].equalsIgnoreCase(prefix + "rejoin")) {
