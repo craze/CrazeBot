@@ -1772,6 +1772,9 @@ public class ReceiverBot extends PircBot {
                 return;
             }
 
+	    // Restrict !join to bot channel only
+            if (!channel.equalsIgnoreCase("#" + this.getNick())) { return; }
+
           //  if (JSONUtil.krakenChannelExist(sender)) {
             send(channel, "Joining channel #" + sender + ".");
             boolean joinStatus = BotManager.getInstance().addChannel("#" + sender, 2);
