@@ -67,7 +67,7 @@ public class ReceiverBot extends PircBot {
         linkPatterns[2] = Pattern.compile(".*[-A-Za-z0-9](\\.|\\(dot\\))([a-z]{2,})(\\W|$).*", Pattern.CASE_INSENSITIVE);
         linkPatterns[3] = Pattern.compile(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\s+|:|/|$).*");
 
-        symbolsPatterns[0] = Pattern.compile("(\\p{InPhonetic_Extensions}|\\p{InLetterlikeSymbols}|\\p{InDingbats}|\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|つ|°|ຈ|░|▀|▄|̰̦̮̠ę̟̹ͦͯͯ́ͮ̊̐͌̉͑ͨ̊́́̚|U̶̧ͩͭͧ͊̅̊ͥͩ̿̔̔ͥ͌ͬ͊͋ͬ҉|Ọ̵͇̖̖|A̴͍̥̳̠̞̹ͩ̋̆ͤͅ|E̡̛͚̺̖̪͈̲̻̠̰̳̐̿)");
+        symbolsPatterns[0] = Pattern.compile("(\\p{InPhonetic_Extensions}|\\p{InLetterlikeSymbols}|\\p{InDingbats}|\\p{InBoxDrawing}|\\p{InBlockElements}|\\p{InGeometricShapes}|\\p{InHalfwidth_and_Fullwidth_Forms}|ã�¤|Â°|àºˆ|â–‘|â–€|â–„|Ì°Ì¦Ì®Ì eÍ¦ÌšÍ¯Í¯Ì�Í®ÌŠÌ�ÍŒÌ‰Í‘Í¨ÌŠÍ�Í�Ì¨ÌŸÌ¹|UÌ¶Ì§Í©Í­Í§ÍŠÌ…ÌŠÍ¥Í©Ì¿Ì”Ì”Í¥ÍŒÍ¬ÍŠÍ‹Í¬Ò‰|á»ŒÌµÍ‡Ì–Ì–|AÌ´Í�Ì¥Ì³Ì ÌžÌ¹Í©Ì‹Ì†Í¤Í…|EÌ¡Ì›ÍšÌºÌ–ÌªÍˆÌ²Ì»Ì Ì°Ì³Ì�Ì¿)");
         symbolsPatterns[1] = Pattern.compile("[!-/:-@\\[-`{-~]");
 
         this.setName(BotManager.getInstance().getInstance().nick);
@@ -131,10 +131,7 @@ public class ReceiverBot extends PircBot {
     }
 
     @Override
-    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
-        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT") && !message.startsWith("Your color"))
-            LOGGER_D.debug("RB PM: " + sender + " " + message);
-
+    protected void onNotice(String sender, String login, String hostname, String target, String message) {
         Matcher m = banNoticePattern.matcher(message);
         if (m.matches()) {
             String channel = "#" + m.group(1);
@@ -147,7 +144,13 @@ public class ReceiverBot extends PircBot {
             String channel = "#" + m.group(1);
             BotManager.getInstance().log("SB: Detected timeout in " + channel + ". Parting..");
             BotManager.getInstance().removeChannel(channel);
-        }
+        }    	
+    }
+
+    @Override
+    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
+        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT") && !message.startsWith("Your color"))
+            LOGGER_D.debug("RB PM: " + sender + " " + message);
     }
 
     @Override
@@ -709,7 +712,7 @@ public class ReceiverBot extends PircBot {
                 for (int i = 1; i < msg.length; i++) {
                     throwMessage += msg[i] + " ";
                 }
-                send(channel, "(╯°□°）╯︵" + throwMessage);
+                send(channel, "(â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ" + throwMessage);
             }
             return;
         }
