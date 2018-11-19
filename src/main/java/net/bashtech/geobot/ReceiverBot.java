@@ -131,10 +131,7 @@ public class ReceiverBot extends PircBot {
     }
 
     @Override
-    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
-        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT") && !message.startsWith("Your color"))
-            LOGGER_D.debug("RB PM: " + sender + " " + message);
-
+    protected void onNotice(String sender, String login, String hostname, String target, String message) {
         Matcher m = banNoticePattern.matcher(message);
         if (m.matches()) {
             String channel = "#" + m.group(1);
@@ -147,7 +144,13 @@ public class ReceiverBot extends PircBot {
             String channel = "#" + m.group(1);
             BotManager.getInstance().log("SB: Detected timeout in " + channel + ". Parting..");
             BotManager.getInstance().removeChannel(channel);
-        }
+        }    	
+    }
+
+    @Override
+    protected void onPrivateMessage(String sender, String login, String hostname, String message) {
+        if (!message.startsWith("USERCOLOR") && !message.startsWith("EMOTESET") && !message.startsWith("SPECIALUSER") && !message.startsWith("HISTORYEND") && !message.startsWith("CLEARCHAT") && !message.startsWith("Your color"))
+            LOGGER_D.debug("RB PM: " + sender + " " + message);
     }
 
     @Override
@@ -709,7 +712,7 @@ public class ReceiverBot extends PircBot {
                 for (int i = 1; i < msg.length; i++) {
                     throwMessage += msg[i] + " ";
                 }
-                send(channel, "(╯°□°）╯︵" + throwMessage);
+                send(channel, "(╯°□°）╯︵ " + throwMessage);
             }
             return;
         }
