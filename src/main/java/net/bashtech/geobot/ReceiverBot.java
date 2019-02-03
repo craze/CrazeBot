@@ -230,7 +230,19 @@ public class ReceiverBot extends PircBot {
         String v3_user_type = (tags.get("user-type") != null ? tags.get("user-type") : "user");
         String v3_subscriber = (tags.get("subscriber") != null ? tags.get("subscriber") : "0");
 
-        LOGGER_D.debug("v3 user_type = " + v3_user_type);
+        //Check badges for privileges (v3 user-type is deprecated)
+        String[] v3_badges = tags.get("badges").split(",");
+        for (int i = 0; i < v3_badges.length; i++) {
+        	String badge = v3_badges[i].split("/")[0];
+        	if (badge.equals("admin") || badge.equals("staff") || badge.equals("global_mod"))
+        		isAdmin = true;
+        	if (badge.equals("moderator"))
+        		isOp = true;
+        	if (channelInfo.subscriberRegulars && (badge.equals("subscriber") || badge.equals("vip")))
+        		isRegular = true;
+        }
+
+        LOGGER_D.debug("v3 user_type = " + v3_user_type + " ; badge_group = " + ((isAdmin == true) ? "admin," : "") + ((isOp == true) ? "moderator," : "") + ((isRegular == true) ? "regular," : "") );
 
         if (BotManager.getInstance().isAdmin(sender))
             isAdmin = true;
